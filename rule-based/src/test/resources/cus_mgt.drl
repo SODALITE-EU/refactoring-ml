@@ -1,0 +1,140 @@
+global jads.sodalite.rules.RefactoringManager cusMgt;
+global jads.sodalite.rules.DisabledRuleSet disabledSet;
+import jads.sodalite.rules.FeatureSelectedEvent;
+import jads.sodalite.rules.FeatureDeselectedEvent;
+import jads.sodalite.rules.AttributedSelectedEvent;
+import jads.sodalite.rules.AttributedUpdatedEvent;
+import jads.sodalite.rules.FeatureUpdatedEvent;
+import java.util.Map
+import java.util.HashMap;
+
+rule "taxihire_select"
+  when
+    $f1 : FeatureSelectedEvent(name =="TaxiHire") and
+    $f2 : AttributedSelectedEvent((name =="Throughput"))
+  then
+    disabledSet.disable("es2_org_remove_stage1");
+    Map pars = new HashMap();
+    pars.put("throughput", $f2.getValue());
+    cusMgt.addDeploymentOption("HiringTaxi", $f1.getVsnId(),pars);
+end
+
+rule "taxihire_deselect"
+  when
+  $f1 : FeatureDeselectedEvent((name =="TaxiHire"))
+   then
+   disabledSet.disable("es2_org_remove_stage1");
+   cusMgt.removeDeploymentOption("HiringTaxi", $f1.getVsnId());
+end
+
+rule "taxihire_update"
+  when
+  $f1 : FeatureUpdatedEvent((name =="TaxiHire")) and
+  $f2 : AttributedUpdatedEvent((name =="Throughput"))
+   then
+   disabledSet.disable("es2_org_remove_stage1");
+   Map pars = new HashMap();
+   pars.put("throughput", $f2.getValue());
+   cusMgt.updateDeploymentOption("HiringTaxi", $f1.getVsnId(),pars);
+end
+
+rule "rentalvehicle_select"
+  when
+    $f1 : FeatureSelectedEvent(name =="RentalVehicle") and
+    $f2 : AttributedSelectedEvent((name =="Throughput"))
+  then
+    disabledSet.disable("es2_org_remove_stage1");
+    Map pars = new HashMap();
+    pars.put("throughput", $f2.getValue());
+    cusMgt.addDeploymentOption("RentalVehicle", $f1.getVsnId(),pars);
+end
+
+rule "rentalvehicle_deselect"
+  when
+  $f1 : FeatureDeselectedEvent((name =="RentalVehicle"))
+   then
+   disabledSet.disable("es2_org_remove_stage1");
+   cusMgt.removeDeploymentOption("RentalVehicle", $f1.getVsnId());
+end
+
+rule "rentalvehicle_update"
+  when
+  $f1 : FeatureUpdatedEvent((name =="RentalVehicle")) and
+  $f2 : AttributedUpdatedEvent((name =="Throughput"))
+   then
+   disabledSet.disable("es2_org_remove_stage1");
+   Map pars = new HashMap();
+   pars.put("throughput", $f2.getValue());
+   cusMgt.updateDeploymentOption("RentalVehicle", $f1.getVsnId(),pars);
+end
+
+rule "accommodation_select"
+  when
+    $f1 : FeatureSelectedEvent(name =="Accommodation") and
+    $f2 : AttributedSelectedEvent((name =="Throughput"))
+  then
+    disabledSet.disable("es2_org_remove_stage1");
+    Map pars = new HashMap();
+    pars.put("throughput", $f2.getValue());
+    cusMgt.addDeploymentOption("Accommodation", $f1.getVsnId(),pars);
+end
+
+rule "raccommodation_deselect"
+  when
+  $f1 : FeatureDeselectedEvent((name =="RentalVehicle"))
+   then
+   disabledSet.disable("es2_org_remove_stage1");
+   cusMgt.removeDeploymentOption("Accommodation", $f1.getVsnId());
+end
+
+rule "accommodation_update"
+  when
+  $f1 : FeatureUpdatedEvent((name =="RentalVehicle")) and
+  $f2 : AttributedUpdatedEvent((name =="Throughput"))
+   then
+   disabledSet.disable("es2_org_remove_stage1");
+   Map pars = new HashMap();
+   pars.put("throughput", $f2.getValue());
+   cusMgt.updateDeploymentOption("Accommodation", $f1.getVsnId(),pars);
+end
+
+rule "casehandling_select"
+  when
+    $f1 : FeatureSelectedEvent(name =="Accommodation") and
+    $f2 : AttributedSelectedEvent((name =="Throughput"))
+  then
+    disabledSet.disable("es2_org_remove_stage1");
+    Map pars = new HashMap();
+    pars.put("throughput", $f2.getValue());
+    cusMgt.addDeploymentOption("CaseHandling", $f1.getVsnId(),pars);
+end
+
+rule "casehandling_deselect"
+  when
+  $f1 : FeatureDeselectedEvent((name =="RentalVehicle"))
+   then
+   disabledSet.disable("es2_org_remove_stage1");
+   cusMgt.removeDeploymentOption("CaseHandling", $f1.getVsnId());
+end
+
+rule "casehandling_update"
+  when
+  $f1 : FeatureUpdatedEvent((name =="RentalVehicle")) and
+  $f2 : AttributedUpdatedEvent((name =="Throughput"))
+   then
+   disabledSet.disable("es2_org_remove_stage1");
+   Map pars = new HashMap();
+   pars.put("throughput", $f2.getValue());
+   cusMgt.updateDeploymentOption("CaseHandling", $f1.getVsnId(),pars);
+end
+
+rule "major_select"
+  when
+    $f1 : FeatureSelectedEvent(name =="Accommodation") and
+    $f2 : AttributedSelectedEvent((name =="Throughput"))
+  then
+    disabledSet.disable("es2_org_remove_stage1");
+    Map pars = new HashMap();
+    pars.put("throughput", $f2.getValue());
+    cusMgt.addDeploymentOption("CaseHandling", $f1.getVsnId(),pars);
+end
