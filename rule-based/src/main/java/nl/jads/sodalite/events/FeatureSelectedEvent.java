@@ -1,10 +1,10 @@
-package nl.jads.sodalite.rules;
+package nl.jads.sodalite.events;
 
-public class FeatureNotSelectedEvent implements IEvent {
+public class FeatureSelectedEvent implements IEvent {
     private String name;
     private String vsnId;
 
-    public FeatureNotSelectedEvent(String name, String vsnId) {
+    public FeatureSelectedEvent(String name, String vsnId) {
         this.name = name;
         this.vsnId = vsnId;
     }

@@ -1,0 +1,13 @@
+global nl.jads.sodalite.rules.RefactoringManager cusMgt;
+global nl.jads.sodalite.rules.DisabledRuleSet disabledSet;
+import nl.jads.sodalite.events.LocationChangedEvent;
+import java.util.Map
+import java.util.HashMap;
+
+rule "de_to_ie"
+  when
+    $f1 : LocationChangedEvent(preLoc =="de", currentLoc="ie")
+  then
+    disabledSet.disable("de_to_ie");
+    System.out.println("LocationChangedEvent de_to_ie");
+end

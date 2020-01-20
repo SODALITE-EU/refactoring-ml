@@ -12,9 +12,8 @@
 			<param-value>
 				io.swagger.jaxrs.json,
 				io.swagger.jaxrs.listing,
-				nl.jads.tosca.dto,
-				kb.dto,
-				nl.jads.tosca.restapi
+				nl.jads.sodalite.dto,
+				nl.jads.sodalite.api
 			</param-value>
 		</init-param>
 		<init-param>

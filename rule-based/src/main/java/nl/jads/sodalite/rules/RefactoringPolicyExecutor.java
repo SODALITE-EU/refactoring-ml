@@ -1,5 +1,6 @@
 package nl.jads.sodalite.rules;
 
+import nl.jads.sodalite.events.IEvent;
 import org.drools.core.command.runtime.rule.FireAllRulesCommand;
 import org.kie.api.command.Command;
 import org.kie.api.runtime.StatelessKieSession;
@@ -22,19 +23,16 @@ public class RefactoringPolicyExecutor extends DroolsRules {
     public void cleanUp() {
     }
 
-    public RuleExecutionResult insertEvent(IEvent event) throws RulesException {
+    public RuleExecutionResult insertEvent(List<IEvent> events) throws RulesException {
         StatelessKieSession knowledgeSession = kieContainer.newStatelessKieSession();
         List<Command> cmds = new ArrayList<Command>();
-
-        EventCollection ec = (EventCollection) event;
-        for (IEvent e1 : ec.getiEvents()) {
+        for (IEvent e1 : events) {
             cmds.add(CommandFactory.newInsert(e1));
         }
-        RefactoringManager refactoringManager =
-                new RefactoringManager();
-        cmds.add(CommandFactory.newSetGlobal("cusMgt", refactoringManager));
-        cmds.add(CommandFactory.newSetGlobal("disabledSet", ec.getDisabledRuleSet()));
-        cmds.add(new FireAllRulesCommand(new DisabledRuleSetAgendaFilter(ec.getDisabledRuleSet())));
+        DisabledRuleSet disabledRuleSet = new DisabledRuleSet();
+        cmds.add(CommandFactory.newSetGlobal("cusMgt", new RefactoringManager()));
+        cmds.add(CommandFactory.newSetGlobal("disabledSet", disabledRuleSet));
+        cmds.add(new FireAllRulesCommand(new DisabledRuleSetAgendaFilter(disabledRuleSet)));
         knowledgeSession.execute(CommandFactory.newBatchExecution(cmds));
         return null;
     }

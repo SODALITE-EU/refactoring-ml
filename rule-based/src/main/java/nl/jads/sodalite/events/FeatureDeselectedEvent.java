@@ -1,4 +1,4 @@
-package nl.jads.sodalite.rules;
+package nl.jads.sodalite.events;
 
 public class FeatureDeselectedEvent implements IEvent {
     private String name;
