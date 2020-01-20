@@ -1,12 +1,12 @@
-package jads.sodalite.rules;
+package nl.jads.sodalite.rules;
 
-public class AttributedDeSelectedEvent implements IEvent{
+public class AttributedUpdatedEvent implements IEvent{
     private String name;
     private String value;
     private String vsnId;
     private String intValue;
 
-    public AttributedDeSelectedEvent(String name, String value, String vsnId) {
+    public AttributedUpdatedEvent(String name, String value, String vsnId) {
         this.name = name;
         this.value = value;
         this.vsnId = vsnId;

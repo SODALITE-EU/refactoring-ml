@@ -1,4 +1,4 @@
-package jads.sodalite.rules;
+package nl.jads.sodalite.rules;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

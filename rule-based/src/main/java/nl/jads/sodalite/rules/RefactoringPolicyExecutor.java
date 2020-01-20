@@ -1,4 +1,4 @@
-package jads.sodalite.rules;
+package nl.jads.sodalite.rules;
 
 import org.drools.core.command.runtime.rule.FireAllRulesCommand;
 import org.kie.api.command.Command;

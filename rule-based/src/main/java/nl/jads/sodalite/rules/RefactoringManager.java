@@ -1,4 +1,4 @@
-package jads.sodalite.rules;
+package nl.jads.sodalite.rules;
 
 import java.util.HashMap;
 import java.util.Map;

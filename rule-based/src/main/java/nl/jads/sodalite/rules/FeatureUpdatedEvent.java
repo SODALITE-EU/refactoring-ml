@@ -1,10 +1,10 @@
-package jads.sodalite.rules;
+package nl.jads.sodalite.rules;
 
-public class FeatureDeselectedEvent implements IEvent {
+public class FeatureUpdatedEvent implements IEvent {
     private String name;
     private String vsnId;
 
-    public FeatureDeselectedEvent(String name, String vsnId) {
+    public FeatureUpdatedEvent(String name, String vsnId) {
         this.name = name;
         this.vsnId = vsnId;
     }
@@ -19,5 +19,9 @@ public class FeatureDeselectedEvent implements IEvent {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setVsnId(String vsnId) {
+        this.vsnId = vsnId;
     }
 }
