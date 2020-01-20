@@ -1,6 +1,6 @@
 package nl.jads.sodalite.events;
 
-public class AttributedSelectedEvent implements IEvent{
+public class AttributedSelectedEvent implements IEvent {
     private String name;
     private String value;
     private String vsnId;

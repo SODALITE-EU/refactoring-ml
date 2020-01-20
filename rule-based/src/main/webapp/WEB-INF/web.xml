@@ -3,16 +3,15 @@
 		"http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-	<display-name>Bug Predictor REST API</display-name>
+	<display-name>Refactorer REST API</display-name>
 	<servlet>
-		<servlet-name>bug-predictor-api</servlet-name>
+		<servlet-name>refactorer-api</servlet-name>
 		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
 		<init-param>
 			<param-name>jersey.config.server.provider.packages</param-name>
 			<param-value>
 				io.swagger.jaxrs.json,
 				io.swagger.jaxrs.listing,
-				nl.jads.sodalite.dto,
 				nl.jads.sodalite.api
 			</param-value>
 		</init-param>
@@ -24,7 +23,7 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>bug-predictor-api</servlet-name>
+		<servlet-name>refactorer-api</servlet-name>
 		<url-pattern>/v0.1/*</url-pattern>
 	</servlet-mapping>
 <!--	<filter>-->

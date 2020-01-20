@@ -80,7 +80,11 @@ public abstract class DroolsRules {
             path = ruleFile;
         } else {
             path = ruleDir + ruleFile;
-            resource = ResourceFactory.newFileResource(path);
+            if (new File(path).exists()) {
+                resource = ResourceFactory.newFileResource(path);
+            } else {
+                resource = ResourceFactory.newClassPathResource(path, DroolsRules.class);
+            }
         }
         resource.setResourceType(ResourceType.DRL);
         KieServices kieServices = KieServices.Factory.get();
@@ -93,6 +97,7 @@ public abstract class DroolsRules {
         // Build the Kie Bases
         kbuilder.buildAll();
         // Check for errors
+
         if (kbuilder.getResults().hasMessages(Message.Level.ERROR)) {
             System.out.println("Error found in rule file: " + ruleFile
                     + " Errors found: " + kbuilder.getResults().getMessages());

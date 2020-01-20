@@ -13,15 +13,15 @@ public class FeatureUpdatedEvent implements IEvent {
         return vsnId;
     }
 
+    public void setVsnId(String vsnId) {
+        this.vsnId = vsnId;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setVsnId(String vsnId) {
-        this.vsnId = vsnId;
     }
 }

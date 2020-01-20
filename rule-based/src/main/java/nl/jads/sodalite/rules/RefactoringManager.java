@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class RefactoringManager {
     private Map map = new HashMap();
+
     public void addDeploymentOption(String name, String vsnId, Map<String, String> parameters) {
 //        createVSN(vsnId);
 //        opMgt.addRegulationUnitsToProcessRegulationPolicy(vsnId, vsnId, name);
