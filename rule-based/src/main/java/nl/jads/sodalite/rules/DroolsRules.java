@@ -5,10 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.drools.core.definitions.InternalKnowledgePackage;
 import org.drools.core.impl.InternalKnowledgeBase;
 import org.kie.api.KieServices;
-import org.kie.api.builder.KieBuilder;
-import org.kie.api.builder.KieFileSystem;
-import org.kie.api.builder.Message;
-import org.kie.api.builder.ReleaseId;
+import org.kie.api.builder.*;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.definition.rule.Rule;
 import org.kie.api.io.Resource;
@@ -73,52 +70,21 @@ public abstract class DroolsRules {
         if (log.isInfoEnabled()) {
             log.info("Reading KB from " + ruleFile);
         }
-        Resource resource;
-        String path;
-        if (new File(ruleFile).exists()) {
-            resource = ResourceFactory.newFileResource(ruleFile);
-            path = ruleFile;
-        } else {
-            path = ruleDir + ruleFile;
-            if (new File(path).exists()) {
-                resource = ResourceFactory.newFileResource(path);
-            } else {
-                resource = ResourceFactory.newClassPathResource(path, DroolsRules.class);
-            }
-        }
-        resource.setResourceType(ResourceType.DRL);
-        KieServices kieServices = KieServices.Factory.get();
-        KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
-        ReleaseId relId = kieServices.newReleaseId(ruleFile, "road-rep", "1.0.0"); // To create a unique identifier
-        kieFileSystem.generateAndWritePomXML(relId);
-        kieFileSystem.write(path, resource);
-        // Create the builder for the resources of the File System
-        KieBuilder kbuilder = kieServices.newKieBuilder(kieFileSystem);
-        // Build the Kie Bases
-        kbuilder.buildAll();
-        // Check for errors
+        KieServices ks = KieServices.Factory.get();
+        KieRepository kr = ks.getRepository();
+        KieFileSystem kfs = ks.newKieFileSystem();
 
-        if (kbuilder.getResults().hasMessages(Message.Level.ERROR)) {
-            System.out.println("Error found in rule file: " + ruleFile
-                    + " Errors found: " + kbuilder.getResults().getMessages());
-            return false;
+        kfs.write(ResourceFactory.newClassPathResource(ruleDir + ruleFile, this.getClass()));
+
+        KieBuilder kb = ks.newKieBuilder(kfs);
+
+        kb.buildAll(); // kieModule is automatically deployed to KieRepository if successfully built.
+        if (kb.getResults().hasMessages(Message.Level.ERROR)) {
+            throw new RuntimeException("Build Errors:\n" + kb.getResults().toString());
         }
-//        System.out.println(kbuilder.getKieModule().getReleaseId());
-        // Get the Release ID (mvn style: groupId, artifactId,version)
-        Collection<InternalKnowledgePackage> knowledgeBaseCollection;
-        if (kieContainer == null) {
-            kieContainer = kieServices.newKieContainer(relId);
-            knowledgeBaseCollection = ((InternalKnowledgeBase) kieContainer.getKieBase()).getPackagesMap().values();
-        } else {
-            KieContainer tempKieContainer = kieServices.newKieContainer(relId);
-            knowledgeBaseCollection = ((InternalKnowledgeBase) tempKieContainer.getKieBase()).getPackagesMap().values();
-            ((InternalKnowledgeBase) kieContainer.getKieBase()).addPackages(knowledgeBaseCollection);
-        }
-        for (KiePackage kp : knowledgeBaseCollection) {
-            for (Rule rule : kp.getRules()) {
-                regulationRuleMap.put(rule.getName(), new RegulationRule(rule.getName()));
-            }
-        }
+
+        kieContainer = ks.newKieContainer(kr.getDefaultReleaseId());
+
         return true;
     }
 
@@ -157,35 +123,21 @@ public abstract class DroolsRules {
         final InputStream in = dataHandler.getInputStream();
         byte[] byteArray = org.apache.commons.io.IOUtils.toByteArray(in);
         // Loading all rules from a rules file
-        Resource resource = ResourceFactory.newByteArrayResource(byteArray);
-        KieServices kieServices = KieServices.Factory.get();
-        KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
-        kieFileSystem.write(resource.getSourcePath(), resource);
-        // Create the builder for the resources of the File System
-        KieBuilder kbuilder = kieServices.newKieBuilder(kieFileSystem);
-        // Build the Kie Bases
-        kbuilder.buildAll();
-        // Check for errors
-        if (kbuilder.getResults().hasMessages(Message.Level.ERROR)) {
-            log.error("Error found : " + kbuilder.getResults().getMessages());
-            return false;
+        KieServices ks = KieServices.Factory.get();
+        KieRepository kr = ks.getRepository();
+        KieFileSystem kfs = ks.newKieFileSystem();
+
+        kfs.write(ResourceFactory.newByteArrayResource(byteArray));
+
+        KieBuilder kb = ks.newKieBuilder(kfs);
+
+        kb.buildAll(); // kieModule is automatically deployed to KieRepository if successfully built.
+        if (kb.getResults().hasMessages(Message.Level.ERROR)) {
+            throw new RuntimeException("Build Errors:\n" + kb.getResults().toString());
         }
-        // Get the Release ID (mvn style: groupId, artifactId,version)
-        ReleaseId relId = kbuilder.getKieModule().getReleaseId();
-        Collection<InternalKnowledgePackage> knowledgeBaseCollection;
-        if (kieContainer == null) {
-            kieContainer = kieServices.newKieContainer(relId);
-            knowledgeBaseCollection = ((InternalKnowledgeBase) kieContainer.getKieBase()).getPackagesMap().values();
-        } else {
-            KieContainer tempKieContainer = kieServices.newKieContainer(relId);
-            knowledgeBaseCollection = ((InternalKnowledgeBase) tempKieContainer.getKieBase()).getPackagesMap().values();
-            ((InternalKnowledgeBase) kieContainer.getKieBase()).addPackages(knowledgeBaseCollection);
-        }
-        for (KiePackage kp : knowledgeBaseCollection) {
-            for (Rule rule : kp.getRules()) {
-                regulationRuleMap.put(rule.getName(), new RegulationRule(rule.getName()));
-            }
-        }
+
+        kieContainer = ks.newKieContainer(kr.getDefaultReleaseId());
+
         return true;
     }
 
