@@ -1,6 +1,8 @@
 package nl.jads.sodalite.rules;
 
 import nl.jads.sodalite.dto.BlueprintMetadata;
+import nl.jads.sodalite.dto.BuleprintsData;
+import nl.jads.sodalite.dto.POJOFactory;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 
@@ -20,6 +22,10 @@ public class RefactoringManager {
     private Map<String, BlueprintMetadata> mapBM = new HashMap();
     private Map<String, String> keyToToken = new HashMap<>();
     private String currentBlueprintToken;
+
+    public RefactoringManager() {
+        loadConfig();
+    }
 
     public void addDeploymentOption(String name, String vsnId, Map<String, String> parameters) {
 //        createVSN(vsnId);
@@ -110,6 +116,17 @@ public class RefactoringManager {
         System.out.println(" Deployment Status for " + target + "," + token);
         System.out.println(response);
         System.out.println();
+    }
+
+    private void loadConfig() {
+        BuleprintsData[] buleprintsDatas = POJOFactory.fromJsonFile("blueprintdata.json", getClass());
+        for (BuleprintsData buleprintsData : buleprintsDatas) {
+            String[] targets = buleprintsData.getTarget();
+            addBlueprintMetadata(buleprintsData.getBlueprint());
+            for (String target : targets) {
+                addDeploymentModelMapping(target, buleprintsData.getBlueprint().getBlueprintToken());
+            }
+        }
     }
 }
 

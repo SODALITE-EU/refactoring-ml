@@ -1,6 +1,9 @@
 [
   {
-    "target": ["de","at"],
+    "target": [
+      "de",
+      "at"
+    ],
     "blueprint": {
       "message": "string",
       "id": "string",
@@ -11,7 +14,9 @@
     }
   },
   {
-    "target": "it",
+    "target": [
+      "it"
+    ],
     "blueprint": {
       "message": "string",
       "id": "string",
