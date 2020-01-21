@@ -2,19 +2,15 @@ package nl.jads.sodalite.rules;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.drools.core.definitions.InternalKnowledgePackage;
-import org.drools.core.impl.InternalKnowledgeBase;
 import org.kie.api.KieServices;
 import org.kie.api.builder.*;
 import org.kie.api.definition.KiePackage;
 import org.kie.api.definition.rule.Rule;
 import org.kie.api.io.Resource;
-import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieContainer;
 import org.kie.internal.io.ResourceFactory;
 
 import javax.activation.DataHandler;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;

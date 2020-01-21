@@ -1,10 +1,10 @@
 package nl.jads.sodalite.api;
 
 import nl.jads.sodalite.dto.InputEventData;
+import nl.jads.sodalite.events.DeploymentNeeded;
 import nl.jads.sodalite.events.IEvent;
 import nl.jads.sodalite.events.LocationChangedEvent;
 import nl.jads.sodalite.rules.RefactoringPolicyExecutor;
-import nl.jads.sodalite.rules.RuleEngineSingleton;
 import nl.jads.sodalite.rules.RulesException;
 
 import javax.inject.Singleton;
@@ -37,13 +37,25 @@ public class RefactoringService {
                     new LocationChangedEvent(inputEventData.getPreviousLocation(), inputEventData.getNewLocation());
             List<IEvent> iEventList = new ArrayList<>();
             iEventList.add(event);
-            try {
-               policyExecutor.insertEvent(iEventList);
-            } catch (RulesException e) {
-                e.printStackTrace();
-                return Response.serverError().entity("Error Executing Refactoring Logic").build();
-            }
+            return executeRules(iEventList, inputEventData.getEventType());
+        } else if ("DeploymentNeeded".equals(inputEventData.getEventType())) {
+            DeploymentNeeded event =
+                    new DeploymentNeeded(inputEventData.getNewLocation());
+            List<IEvent> iEventList = new ArrayList<>();
+            iEventList.add(event);
+            return executeRules(iEventList, inputEventData.getEventType());
+        } else {
+            return Response.serverError().entity("Unrecognized Event : " + inputEventData.getEventType()).build();
         }
-        return Response.ok("Event Received").build();
+    }
+
+    private Response executeRules(List<IEvent> iEventList, String eventType) {
+        try {
+            policyExecutor.insertEvent(iEventList);
+        } catch (RulesException e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error Executing Refactoring Logic").build();
+        }
+        return Response.ok(eventType + " Event Received").build();
     }
 }
