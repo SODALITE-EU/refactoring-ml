@@ -4,6 +4,7 @@ import nl.jads.sodalite.dto.InputEventData;
 import nl.jads.sodalite.events.DeploymentNeeded;
 import nl.jads.sodalite.events.IEvent;
 import nl.jads.sodalite.events.LocationChangedEvent;
+import nl.jads.sodalite.rules.RefactoringManager;
 import nl.jads.sodalite.rules.RefactoringPolicyExecutor;
 import nl.jads.sodalite.rules.RulesException;
 
@@ -22,9 +23,11 @@ import java.util.List;
 public class RefactoringService {
 
     private RefactoringPolicyExecutor policyExecutor;
+    private RefactoringManager refactoringManager;
 
     public RefactoringService() {
-        policyExecutor = new RefactoringPolicyExecutor("refactoring.drl", "rules/");
+        refactoringManager = new RefactoringManager();
+        policyExecutor = new RefactoringPolicyExecutor("refactoring.drl", "rules/", refactoringManager);
     }
 
     @POST

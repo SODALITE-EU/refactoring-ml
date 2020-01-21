@@ -1,0 +1,24 @@
+[
+  {
+    "target": ["de","at"],
+    "blueprint": {
+      "message": "string",
+      "id": "string",
+      "blueprint_token": "string",
+      "session_token": "string",
+      "version_id": 0,
+      "timestamp": "2020-01-21T15:04:47.858Z"
+    }
+  },
+  {
+    "target": "ie",
+    "blueprint": {
+      "message": "string",
+      "id": "string",
+      "blueprint_token": "string",
+      "session_token": "string",
+      "version_id": 0,
+      "timestamp": "2020-01-21T15:04:47.858Z"
+    }
+  }
+]

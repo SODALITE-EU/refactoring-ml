@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RefactoringPolicyExecutor extends DroolsRules {
+    private RefactoringManager refactoringManager;
 
     public RefactoringPolicyExecutor(String ruleFile, String ruleDir) {
         super(ruleFile, ruleDir);
@@ -18,6 +19,11 @@ public class RefactoringPolicyExecutor extends DroolsRules {
 
     public RefactoringPolicyExecutor(DataHandler ruleFileBinary) {
         super(ruleFileBinary);
+    }
+
+    public RefactoringPolicyExecutor(String ruleFile, String ruleDir, RefactoringManager refactoringManager) {
+        super(ruleFile, ruleDir);
+        this.refactoringManager = refactoringManager;
     }
 
     public void cleanUp() {
@@ -30,7 +36,7 @@ public class RefactoringPolicyExecutor extends DroolsRules {
             cmds.add(CommandFactory.newInsert(e1));
         }
         DisabledRuleSet disabledRuleSet = new DisabledRuleSet();
-        cmds.add(CommandFactory.newSetGlobal("cusMgt", new RefactoringManager()));
+        cmds.add(CommandFactory.newSetGlobal("cusMgt", refactoringManager));
         cmds.add(CommandFactory.newSetGlobal("disabledSet", disabledRuleSet));
         cmds.add(new FireAllRulesCommand(new DisabledRuleSetAgendaFilter(disabledRuleSet)));
         knowledgeSession.execute(CommandFactory.newBatchExecution(cmds));
