@@ -1,7 +1,7 @@
 package nl.jads.sodalite.dto;
 
 public class BuleprintsData {
-    private String [] target;
+    private String[] target;
     private BlueprintMetadata blueprint;
 
     public String[] getTarget() {

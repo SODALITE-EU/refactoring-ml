@@ -36,7 +36,7 @@ public class RefactoringPolicyExecutor extends DroolsRules {
             cmds.add(CommandFactory.newInsert(e1));
         }
         DisabledRuleSet disabledRuleSet = new DisabledRuleSet();
-        cmds.add(CommandFactory.newSetGlobal("cusMgt", refactoringManager));
+        cmds.add(CommandFactory.newSetGlobal("refMgt", refactoringManager));
         cmds.add(CommandFactory.newSetGlobal("disabledSet", disabledRuleSet));
         cmds.add(new FireAllRulesCommand(new DisabledRuleSetAgendaFilter(disabledRuleSet)));
         knowledgeSession.execute(CommandFactory.newBatchExecution(cmds));

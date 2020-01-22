@@ -1,20 +1,27 @@
-global nl.jads.sodalite.rules.RefactoringManager cusMgt;
+global nl.jads.sodalite.rules.RefactoringManager refMgt;
 global nl.jads.sodalite.rules.DisabledRuleSet disabledSet;
 import nl.jads.sodalite.events.LocationChangedEvent;
 import nl.jads.sodalite.events.DeploymentNeeded;
+import nl.jads.sodalite.events.DeploymentChanged;
 
-rule "de_to_ie"
+rule "de_to_it"
   when
-    $f1 : LocationChangedEvent(preLoc == "de", currentLoc == "ie")
+    $f1 : LocationChangedEvent(preLoc == "de", currentLoc == "ie") and
+    $f2 : DeploymentChanged()
   then
-    disabledSet.disable("de_to_ie");
-    System.out.println("LocationChanged Event Rule Triggered");
+    disabledSet.disable("de_to_it");
+    System.out.println("de_to_it rule triggered");
+    refMgt.undeployDeploymentModel($f1.getPreLoc());
+    refMgt.deployDeploymentModel($f1.getCurrentLoc());
+    System.out.println("de_to_it rule executed");
 end
 
-rule "deploy_ie"
+rule "deploy_it"
   when
     $f1 : DeploymentNeeded(currentLoc == "ie")
   then
-    disabledSet.disable("deploy_ie");
-    System.out.println("DeploymentNeeded Event Rule Triggered");
+    disabledSet.disable("deploy_it");
+    System.out.println("deploy_it rule triggered");
+    refMgt.deployDeploymentModel($f1.getCurrentLoc());
+    System.out.println("deploy_it rule executed");
 end

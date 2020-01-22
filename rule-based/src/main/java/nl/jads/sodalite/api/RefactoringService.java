@@ -1,6 +1,7 @@
 package nl.jads.sodalite.api;
 
 import nl.jads.sodalite.dto.InputEventData;
+import nl.jads.sodalite.events.DeploymentChanged;
 import nl.jads.sodalite.events.DeploymentNeeded;
 import nl.jads.sodalite.events.IEvent;
 import nl.jads.sodalite.events.LocationChangedEvent;
@@ -21,7 +22,6 @@ import java.util.List;
 @Path("/events")
 @Singleton
 public class RefactoringService {
-
     private RefactoringPolicyExecutor policyExecutor;
     private RefactoringManager refactoringManager;
 
@@ -35,17 +35,16 @@ public class RefactoringService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/inputs")
     public Response notify(InputEventData inputEventData) {
+        System.out.println("Received Message : " + inputEventData.toString());
         if ("LocationChanged".equals(inputEventData.getEventType())) {
-            LocationChangedEvent event =
-                    new LocationChangedEvent(inputEventData.getPreviousLocation(), inputEventData.getNewLocation());
             List<IEvent> iEventList = new ArrayList<>();
-            iEventList.add(event);
+            iEventList.add(new LocationChangedEvent(
+                    inputEventData.getPreviousLocation(), inputEventData.getNewLocation()));
+            iEventList.add(new DeploymentChanged());
             return executeRules(iEventList, inputEventData.getEventType());
         } else if ("DeploymentNeeded".equals(inputEventData.getEventType())) {
-            DeploymentNeeded event =
-                    new DeploymentNeeded(inputEventData.getNewLocation());
             List<IEvent> iEventList = new ArrayList<>();
-            iEventList.add(event);
+            iEventList.add(new DeploymentNeeded(inputEventData.getNewLocation()));
             return executeRules(iEventList, inputEventData.getEventType());
         } else {
             return Response.serverError().entity("Unrecognized Event : " + inputEventData.getEventType()).build();

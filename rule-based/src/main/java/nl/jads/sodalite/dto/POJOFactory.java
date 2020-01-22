@@ -18,7 +18,7 @@ public class POJOFactory {
         return gson.fromJson(json, BlueprintMetadata.class);
     }
 
-    public static BuleprintsData[] fromJsonFile(String path, Class aClass){
+    public static BuleprintsData[] fromJsonFile(String path, Class aClass) {
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();

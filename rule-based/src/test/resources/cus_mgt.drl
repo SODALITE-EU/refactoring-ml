@@ -1,4 +1,4 @@
-global nl.jads.sodalite.rules.RefactoringManager cusMgt;
+global nl.jads.sodalite.rules.RefactoringManager refMgt;
 global nl.jads.sodalite.rules.DisabledRuleSet disabledSet;
 import nl.jads.sodalite.events.FeatureSelectedEvent;
 import nl.jads.sodalite.events.FeatureDeselectedEvent;
@@ -16,7 +16,7 @@ rule "taxihire_select"
     disabledSet.disable("es2_org_remove_stage1");
     Map pars = new HashMap();
     pars.put("throughput", $f2.getValue());
-    cusMgt.addDeploymentOption("HiringTaxi", $f1.getVsnId(),pars);
+    refMgt.addDeploymentOption("HiringTaxi", $f1.getVsnId(),pars);
 end
 
 rule "taxihire_deselect"
@@ -24,7 +24,7 @@ rule "taxihire_deselect"
   $f1 : FeatureDeselectedEvent((name =="TaxiHire"))
    then
    disabledSet.disable("es2_org_remove_stage1");
-   cusMgt.removeDeploymentOption("HiringTaxi", $f1.getVsnId());
+   refMgt.removeDeploymentOption("HiringTaxi", $f1.getVsnId());
 end
 
 rule "taxihire_update"
@@ -35,7 +35,7 @@ rule "taxihire_update"
    disabledSet.disable("es2_org_remove_stage1");
    Map pars = new HashMap();
    pars.put("throughput", $f2.getValue());
-   cusMgt.updateDeploymentOption("HiringTaxi", $f1.getVsnId(),pars);
+   refMgt.updateDeploymentOption("HiringTaxi", $f1.getVsnId(),pars);
 end
 
 rule "rentalvehicle_select"
@@ -46,7 +46,7 @@ rule "rentalvehicle_select"
     disabledSet.disable("es2_org_remove_stage1");
     Map pars = new HashMap();
     pars.put("throughput", $f2.getValue());
-    cusMgt.addDeploymentOption("RentalVehicle", $f1.getVsnId(),pars);
+    refMgt.addDeploymentOption("RentalVehicle", $f1.getVsnId(),pars);
 end
 
 rule "rentalvehicle_deselect"
@@ -54,7 +54,7 @@ rule "rentalvehicle_deselect"
   $f1 : FeatureDeselectedEvent((name =="RentalVehicle"))
    then
    disabledSet.disable("es2_org_remove_stage1");
-   cusMgt.removeDeploymentOption("RentalVehicle", $f1.getVsnId());
+   refMgt.removeDeploymentOption("RentalVehicle", $f1.getVsnId());
 end
 
 rule "rentalvehicle_update"
@@ -65,7 +65,7 @@ rule "rentalvehicle_update"
    disabledSet.disable("es2_org_remove_stage1");
    Map pars = new HashMap();
    pars.put("throughput", $f2.getValue());
-   cusMgt.updateDeploymentOption("RentalVehicle", $f1.getVsnId(),pars);
+   refMgt.updateDeploymentOption("RentalVehicle", $f1.getVsnId(),pars);
 end
 
 rule "accommodation_select"
@@ -76,7 +76,7 @@ rule "accommodation_select"
     disabledSet.disable("es2_org_remove_stage1");
     Map pars = new HashMap();
     pars.put("throughput", $f2.getValue());
-    cusMgt.addDeploymentOption("Accommodation", $f1.getVsnId(),pars);
+    refMgt.addDeploymentOption("Accommodation", $f1.getVsnId(),pars);
 end
 
 rule "raccommodation_deselect"
@@ -84,7 +84,7 @@ rule "raccommodation_deselect"
   $f1 : FeatureDeselectedEvent((name =="RentalVehicle"))
    then
    disabledSet.disable("es2_org_remove_stage1");
-   cusMgt.removeDeploymentOption("Accommodation", $f1.getVsnId());
+   refMgt.removeDeploymentOption("Accommodation", $f1.getVsnId());
 end
 
 rule "accommodation_update"
@@ -95,7 +95,7 @@ rule "accommodation_update"
    disabledSet.disable("es2_org_remove_stage1");
    Map pars = new HashMap();
    pars.put("throughput", $f2.getValue());
-   cusMgt.updateDeploymentOption("Accommodation", $f1.getVsnId(),pars);
+   refMgt.updateDeploymentOption("Accommodation", $f1.getVsnId(),pars);
 end
 
 rule "casehandling_select"
@@ -106,7 +106,7 @@ rule "casehandling_select"
     disabledSet.disable("es2_org_remove_stage1");
     Map pars = new HashMap();
     pars.put("throughput", $f2.getValue());
-    cusMgt.addDeploymentOption("CaseHandling", $f1.getVsnId(),pars);
+    refMgt.addDeploymentOption("CaseHandling", $f1.getVsnId(),pars);
 end
 
 rule "casehandling_deselect"
@@ -114,7 +114,7 @@ rule "casehandling_deselect"
   $f1 : FeatureDeselectedEvent((name =="RentalVehicle"))
    then
    disabledSet.disable("es2_org_remove_stage1");
-   cusMgt.removeDeploymentOption("CaseHandling", $f1.getVsnId());
+   refMgt.removeDeploymentOption("CaseHandling", $f1.getVsnId());
 end
 
 rule "casehandling_update"
@@ -125,7 +125,7 @@ rule "casehandling_update"
    disabledSet.disable("es2_org_remove_stage1");
    Map pars = new HashMap();
    pars.put("throughput", $f2.getValue());
-   cusMgt.updateDeploymentOption("CaseHandling", $f1.getVsnId(),pars);
+   refMgt.updateDeploymentOption("CaseHandling", $f1.getVsnId(),pars);
 end
 
 rule "major_select"
@@ -136,5 +136,5 @@ rule "major_select"
     disabledSet.disable("es2_org_remove_stage1");
     Map pars = new HashMap();
     pars.put("throughput", $f2.getValue());
-    cusMgt.addDeploymentOption("CaseHandling", $f1.getVsnId(),pars);
+    refMgt.addDeploymentOption("CaseHandling", $f1.getVsnId(),pars);
 end

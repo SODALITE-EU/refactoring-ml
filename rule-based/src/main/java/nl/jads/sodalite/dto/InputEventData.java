@@ -32,4 +32,13 @@ public class InputEventData {
     public void setNewLocation(String newLocation) {
         this.newLocation = newLocation;
     }
+
+    @Override
+    public String toString() {
+        return "InputEventData{" +
+                "eventType='" + eventType + '\'' +
+                ", previousLocation='" + previousLocation + '\'' +
+                ", newLocation='" + newLocation + '\'' +
+                '}';
+    }
 }
