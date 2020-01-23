@@ -25,3 +25,13 @@ rule "deploy_it"
     refMgt.deployDeploymentModel($f1.getCurrentLoc());
     System.out.println("deploy_it rule executed");
 end
+
+rule "deploy_at"
+  when
+    $f1 : DeploymentNeeded(currentLoc == "at")
+  then
+    disabledSet.disable("deploy_at");
+    System.out.println("deploy_it rule triggered");
+    refMgt.deployDeploymentModel($f1.getCurrentLoc());
+    System.out.println("deploy_at rule executed");
+end
