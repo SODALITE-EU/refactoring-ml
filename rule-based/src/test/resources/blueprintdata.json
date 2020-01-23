@@ -5,12 +5,11 @@
       "at"
     ],
     "blueprint": {
-      "message": "string",
-      "id": "string",
-      "blueprint_token": "string",
-      "session_token": "string",
-      "version_id": 0,
-      "timestamp": "2020-01-21T15:04:47.858Z"
+      "message": "Saved blueprint to database",
+      "id": "vehicle_demo",
+      "blueprint_token": "14f5b52a-26ad-47ec-a482-ffc777f6ff9d",
+      "version_id": 1,
+      "timestamp": "2020-01-23T16:30:50.477593"
     }
   },
   {
@@ -18,12 +17,11 @@
       "it"
     ],
     "blueprint": {
-      "message": "string",
-      "id": "string",
-      "blueprint_token": "string",
-      "session_token": "string",
+      "message": "Saved blueprint to database",
+      "id": "vehicle_demo",
+      "blueprint_token": "9d83da21-3897-4898-a4a2-b9c983845ead",
       "version_id": 1,
-      "timestamp": "2020-01-21T15:04:47.858Z"
+      "timestamp": "2020-01-23T16:35:18.167247"
     }
   }
 ]
