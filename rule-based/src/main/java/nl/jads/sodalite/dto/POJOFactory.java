@@ -18,11 +18,11 @@ public class POJOFactory {
         return gson.fromJson(json, BlueprintMetadata.class);
     }
 
-    public static BuleprintsData[] fromJsonFile(String path, Class aClass) {
+    public static BuleprintsData[] fromJsonFile(String path) {
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
-        InputStream in = aClass.getResourceAsStream(path);
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
         JsonReader jsonReader =
                 gson.newJsonReader(new BufferedReader(new InputStreamReader(in)));
         return gson.fromJson(jsonReader, BuleprintsData[].class);

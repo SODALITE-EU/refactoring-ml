@@ -6,7 +6,7 @@ import nl.jads.sodalite.events.DeploymentChanged;
 
 rule "de_to_it"
   when
-    $f1 : LocationChangedEvent(preLoc == "de", currentLoc == "ie") and
+    $f1 : LocationChangedEvent(preLoc == "de", currentLoc == "it") and
     $f2 : DeploymentChanged()
   then
     disabledSet.disable("de_to_it");
@@ -18,7 +18,7 @@ end
 
 rule "deploy_it"
   when
-    $f1 : DeploymentNeeded(currentLoc == "ie")
+    $f1 : DeploymentNeeded(currentLoc == "it")
   then
     disabledSet.disable("deploy_it");
     System.out.println("deploy_it rule triggered");

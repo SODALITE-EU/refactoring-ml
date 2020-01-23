@@ -8,7 +8,7 @@ public class RuleBasedRefactorerTest {
 
     @Test
     public void testJSON() {
-        BuleprintsData[] buleprintsDatas = POJOFactory.fromJsonFile("blueprintdata.json", getClass());
+        BuleprintsData[] buleprintsDatas = POJOFactory.fromJsonFile("blueprintdata.json");
         assertEquals(buleprintsDatas.length, 2);
         assertEquals(buleprintsDatas[0].getTarget().length, 2);
         assertEquals(buleprintsDatas[1].getBlueprint().getVersionId(), 1);

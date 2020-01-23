@@ -119,7 +119,7 @@ public class RefactoringManager {
     }
 
     private void loadConfig() {
-        BuleprintsData[] buleprintsDatas = POJOFactory.fromJsonFile("blueprintdata.json", getClass());
+        BuleprintsData[] buleprintsDatas = POJOFactory.fromJsonFile("blueprintdata.json");
         for (BuleprintsData buleprintsData : buleprintsDatas) {
             String[] targets = buleprintsData.getTarget();
             addBlueprintMetadata(buleprintsData.getBlueprint());
