@@ -1,9 +1,11 @@
-package nl.jads.sodalite.dto;
+package nl.jads.sodalite.utils;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
+import nl.jads.sodalite.dto.BlueprintMetadata;
+import nl.jads.sodalite.dto.BuleprintsData;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -26,5 +28,6 @@ public class POJOFactory {
         JsonReader jsonReader =
                 gson.newJsonReader(new BufferedReader(new InputStreamReader(in)));
         return gson.fromJson(jsonReader, BuleprintsData[].class);
+
     }
 }

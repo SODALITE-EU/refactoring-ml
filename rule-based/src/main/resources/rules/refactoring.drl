@@ -3,6 +3,7 @@ global nl.jads.sodalite.rules.DisabledRuleSet disabledSet;
 import nl.jads.sodalite.events.LocationChangedEvent;
 import nl.jads.sodalite.events.DeploymentNeeded;
 import nl.jads.sodalite.events.DeploymentChanged;
+import nl.jads.sodalite.events.DeploymentRemove;
 
 rule "de_to_it"
   when
@@ -31,7 +32,27 @@ rule "deploy_at"
     $f1 : DeploymentNeeded(currentLoc == "at")
   then
     disabledSet.disable("deploy_at");
-    System.out.println("deploy_it rule triggered");
+    System.out.println("deploy_at rule triggered");
     refMgt.deployDeploymentModel($f1.getCurrentLoc());
     System.out.println("deploy_at rule executed");
+end
+
+rule "deploy_remove_at"
+  when
+    $f1 : DeploymentRemove(preLoc == "at")
+  then
+    disabledSet.disable("deploy_remove_at");
+    System.out.println("deploy_remove_at rule triggered");
+    refMgt.undeployDeploymentModel($f1.getPreLoc());
+    System.out.println("deploy_remove_at rule executed");
+end
+
+rule "deploy_remove_it"
+  when
+    $f1 : DeploymentRemove(preLoc == "it")
+  then
+    disabledSet.disable("deploy_remove_it");
+    System.out.println("deploy_remove_it rule triggered");
+    refMgt.undeployDeploymentModel($f1.getPreLoc());
+    System.out.println("deploy_remove_it rule executed");
 end

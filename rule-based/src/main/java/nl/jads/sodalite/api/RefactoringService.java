@@ -1,10 +1,7 @@
 package nl.jads.sodalite.api;
 
 import nl.jads.sodalite.dto.InputEventData;
-import nl.jads.sodalite.events.DeploymentChanged;
-import nl.jads.sodalite.events.DeploymentNeeded;
-import nl.jads.sodalite.events.IEvent;
-import nl.jads.sodalite.events.LocationChangedEvent;
+import nl.jads.sodalite.events.*;
 import nl.jads.sodalite.rules.RefactoringManager;
 import nl.jads.sodalite.rules.RefactoringPolicyExecutor;
 import nl.jads.sodalite.rules.RulesException;
@@ -45,6 +42,10 @@ public class RefactoringService {
         } else if ("DeploymentNeeded".equals(inputEventData.getEventType())) {
             List<IEvent> iEventList = new ArrayList<>();
             iEventList.add(new DeploymentNeeded(inputEventData.getNewLocation()));
+            return executeRules(iEventList, inputEventData.getEventType());
+        } else if ("DeploymentRemove".equals(inputEventData.getEventType())) {
+            List<IEvent> iEventList = new ArrayList<>();
+            iEventList.add(new DeploymentRemove(inputEventData.getPreviousLocation()));
             return executeRules(iEventList, inputEventData.getEventType());
         } else {
             return Response.serverError().entity("Unrecognized Event : " + inputEventData.getEventType()).build();

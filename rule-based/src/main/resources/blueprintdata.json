@@ -4,6 +4,7 @@
       "de",
       "at"
     ],
+    "input": "vehicle-iot-v1/input.yaml",
     "blueprint": {
       "message": "Saved blueprint to database",
       "id": "vehicle_demo",
@@ -16,6 +17,7 @@
     "target": [
       "it"
     ],
+    "input": "vehicle-iot-v2/input.yaml",
     "blueprint":{
       "message": "Saved blueprint to database",
       "id": "vehicle_demo",
