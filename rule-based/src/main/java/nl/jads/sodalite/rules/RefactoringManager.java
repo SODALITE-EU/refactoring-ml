@@ -121,8 +121,10 @@ public class RefactoringManager {
                         MediaType.APPLICATION_OCTET_STREAM_TYPE);
 
         multipart.bodyPart(fileDataBodyPart);
-        Response response = webTarget.request(MediaType.APPLICATION_JSON_TYPE)
-                .post(Entity.entity(multipart, multipart.getMediaType()));
+        Response response = webTarget
+                .request(MediaType.APPLICATION_JSON)
+                .build("DELETE", Entity.entity(multipart, multipart.getMediaType()))
+                .invoke();
         String message = response.readEntity(String.class);
         response.close();
 

@@ -1,5 +1,4 @@
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
-import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 
@@ -29,8 +28,10 @@ public class Slimclient {
 
         multipart.bodyPart(fileDataBodyPart);
 
-        Response response = webTarget.request(MediaType.APPLICATION_JSON_TYPE)
-                .post(Entity.entity(multipart, multipart.getMediaType()));
+        Response response = webTarget
+                .request(MediaType.APPLICATION_JSON)
+                .build("DELETE", Entity.entity(multipart, multipart.getMediaType()))
+                .invoke();
         String message = response.readEntity(String.class);
         response.close();
         System.out.println(message);

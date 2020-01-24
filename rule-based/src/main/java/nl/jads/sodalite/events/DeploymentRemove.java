@@ -1,6 +1,6 @@
 package nl.jads.sodalite.events;
 
-public class DeploymentRemove implements IEvent{
+public class DeploymentRemove implements IEvent {
     private String preLoc;
 
     public DeploymentRemove(String preLoc) {

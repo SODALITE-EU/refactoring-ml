@@ -8,7 +8,7 @@ import java.io.InputStream;
 public class ResourceUtil {
     public static File getResourceAsFile(String resourcePath) {
         try {
-            InputStream in =  Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
+            InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(resourcePath);
             if (in == null) {
                 return null;
             }
