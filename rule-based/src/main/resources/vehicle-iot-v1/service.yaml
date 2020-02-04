@@ -1,0 +1,486 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+node_types:
+
+  sodalite.nodes.DockerHost:
+    derived_from: tosca.nodes.SoftwareComponent
+    properties:
+      registry_ip:
+        type: string
+        description: IP of the SODALITE docker registry
+        required: true
+        default: localhost
+    attributes:
+      registry_ip:
+        type: string
+        description: IP of the SODALITE docker registry
+      ansible_ip:        
+        type: string
+        description: ansible ipv4
+    interfaces:
+      Standard:
+        type: tosca.interfaces.node.lifecycle.Standard
+        create:
+          inputs:
+            registry_ip:          { default: { get_property: [ SELF, registry_ip ] } }
+            public_ipv4_address:  { default:  { get_attribute: [ SELF, host, public_address ] } }            
+          implementation:
+            primary: playbooks/docker/create_docker_host.yml
+        delete:
+          inputs:
+            registry_ip:          { default: { get_property: [ SELF, registry_ip ] } }
+          implementation:
+            primary: playbooks/docker/destroy_docker_host.yml
+    capabilities:
+      host:
+        type: tosca.capabilities.Compute
+        valid_source_types: [ sodalite.nodes.DockerizedComponent ]
+
+  sodalite.nodes.DockerizedComponent:
+    derived_from: tosca.nodes.SoftwareComponent
+    properties:
+      image_name:
+        type: string
+        description: The name of the image on the host
+        required: true
+      alias:
+        type: string
+        description: Alias name for docker container
+        required: false 
+      command:
+        type: list
+        description: Commands list for starting the container
+        default: ""
+        required: false
+      env:
+        type: map
+        description: Map for docker enviroment variables key-value dictionary
+        required: false
+      ports:
+        type: list
+        description: A list of port bindings for the docker container "exposed:internal" like "8081:8080"
+        required: true
+      exposed_ports:
+        type: list
+        description: Exposed ports of the container like "8081" 
+        required: true
+      volumes:
+        type: list
+        description: A list of mounted volumes for the docker container "host_path:container_path" like ""/tmp/docker:/tmp""
+        required: false
+      restart_policy:
+        type: string
+        description: Restart policy [no, on-failure, always, unless-stopped]
+        default: "no"
+        required: false 
+    interfaces:
+      Standard:
+        type: tosca.interfaces.node.lifecycle.Standard
+        create:
+          inputs:
+            registry_ip:    { default: { get_attribute: [ SELF, host, registry_ip ] } }
+            ansible_ip:     { default: { get_attribute: [ SELF, host, ansible_ip ] } }
+            image_name:     { default: { get_property: [ SELF, image_name ] } }
+            alias:          { default: { get_property: [ SELF, alias ] } }
+            command:        { default: { get_property: [ SELF, command ] } }
+            env:            { default: { get_property: [ SELF, env ] } }
+            ports:          { default: { get_property: [ SELF, ports ] } }
+            exposed_ports:  { default: { get_property: [ SELF, exposed_ports ] } }
+            volumes:        { default: { get_property: [ SELF, volumes ] } }
+            restart_policy: { default: { get_property: [ SELF, restart_policy ] } }            
+          implementation:
+            primary: playbooks/docker/dockerized_component_deploy.yml
+        delete:
+          inputs:
+            alias:          { default: { get_property: [ SELF, alias ] } }
+          implementation:
+            primary: playbooks/docker/dockerized_component_undeploy.yml
+    requirements:
+      - host:
+          capability: tosca.capabilities.Compute
+          node: sodalite.nodes.DockerHost
+          relationship: tosca.relationships.HostedOn
+
+  sodalite.nodes.software.Register2consul:
+    derived_from: tosca.nodes.SoftwareComponent
+    properties:
+      service_id:
+        type: string
+        description: Id of the registered service
+        required: true
+      service_name:
+        type: string
+        description: Service name of the registered service
+        required: false 
+        default: image_name
+      service_address:
+        type: string
+        description: Address of the registered service - if empty then ansible_ip_v4
+        default: ""
+        required: false
+      service_port: 
+        type: string
+        description: Port of the registered service
+        required: true
+      tags:
+        type: list
+        description: Tags for the service registration in consul 
+        required: true
+    interfaces:
+      Standard:
+        type: tosca.interfaces.node.lifecycle.Standard
+        create:
+          inputs:
+            service_id:       { default: { get_property: [ SELF, service_id ] } }
+            service_name:     { default: { get_property: [ SELF, service_name ] } }
+            service_address:  { default: { get_attribute: [ SELF, registers_service, host, ansible_ip ] } } 
+            service_port:     { default: { get_property: [ SELF, service_port ] } }
+            tags:             { default: { get_property: [ SELF, tags ] } }
+          implementation:
+            primary: playbooks/software/consul_register_add.yml
+        delete:
+          inputs:
+            service_id:     { default: { get_property: [ SELF, service_id ] } }
+          implementation:
+            primary: playbooks/software/consul_register_remove.yml
+    requirements:
+      - host:
+          capability: tosca.capabilities.Compute
+          node: tosca.nodes.Compute
+          relationship: tosca.relationships.HostedOn
+      - registers_service:
+          capability: tosca.nodes.SoftwareComponent
+          relationship: tosca.relationships.DependsOn
+      - requires_installation:
+          capability: tosca.nodes.SoftwareComponent
+          relationship: tosca.relationships.DependsOn
+
+  sodalite.nodes.software.PipPackagesSetup:
+    derived_from: tosca.nodes.SoftwareComponent
+    properties:
+      packages:
+        type: list
+        description: List of packages to install via pip 
+        default: null
+        required: true
+    interfaces:
+      Standard:
+        type: tosca.interfaces.node.lifecycle.Standard
+        create:
+          inputs:
+            packages:       { default: { get_property: [ SELF, packages ] } }
+          implementation:
+            primary: playbooks/software/pip_add.yml
+        delete:
+          inputs:
+            packages:       { default: { get_property: [ SELF, packages ] } }
+          implementation:
+            primary: playbooks/software/pip_remove.yml
+    requirements:
+      - host:
+          capability: tosca.capabilities.Compute
+          node: tosca.nodes.Compute
+          relationship: tosca.relationships.HostedOn
+
+  sodalite.nodes.OpenStack.SecurityRule: 
+    derived_from: tosca.nodes.Root
+    properties:  
+      protocol: 
+        type: string
+        required: true
+        default: tcp
+        constraints:
+          - valid_values: [ udp, tcp, icmp ]
+      port_range_min:  
+        type: PortDef
+        required: true
+      port_range_max:
+        type: PortDef
+        required: true
+      remote_ip_prefix:
+        type: string
+        required: true
+        default: "0.0.0.0/0"
+
+  sodalite.nodes.OpenStack.SecurityRules:
+    derived_from: tosca.nodes.Root
+    properties:
+      group_name:
+        type: string
+        description: Name of the security group in openstack.
+        required: true
+      group_description:
+        type: string
+        description: Description of the security group in openstack.
+        required: true
+      ports:
+        type: map
+        required: false
+        constraints:
+          - min_length: 1
+        entry_schema:
+          type: sodalite.nodes.OpenStack.SecurityRule   
+    interfaces:
+      Standard:
+        type: tosca.interfaces.node.lifecycle.Standard
+        create:
+          inputs:
+            group_name:           { default: { get_property: [ SELF, group_name         ] } }
+            group_description:    { default: { get_property: [ SELF, group_description  ] } }
+            ports:                { default: { get_property: [ SELF, ports  ] } } 
+          implementation: playbooks/openstack/security-rule/create.yml
+        delete:
+          inputs:
+            group_name:           { default: { get_property: [ SELF, group_name         ] } }
+          implementation: playbooks/openstack/security-rule/delete.yml
+
+  sodalite.nodes.OpenStack.VM:
+    derived_from: tosca.nodes.Compute
+    properties:
+      name:
+        type: string
+        description: Name that should be given to the VM in OpenStack
+      image:
+        type: string
+        description: OpenStack image id (image names are not accepted)
+      flavor:
+        type: string
+        description: OpenStack flavor id (flavor names are not accepted)
+      network:
+        type: string
+        description: OpenStack network id (network names are not accepted)
+      security_groups:
+        type: string
+        description: OpenStack names of the security groups to which the instance should be added.Comma separated string.
+    attributes:
+      id:
+        type: string
+        description: OpenStack id of the VM
+      private_address:
+        type: string
+        description: Private ipv4
+      public_address:
+        type: string
+        description: Public ipv4
+      ansible_ip:        
+        type: string
+        description: ansible ipv4
+    interfaces:
+      Standard:
+        type: tosca.interfaces.node.lifecycle.Standard
+        create:
+          inputs:
+            vm_name:  { default: { get_property: [ SELF, name     ] } }
+            image:    { default: { get_property: [ SELF, image    ] } }
+            flavor:   { default: { get_property: [ SELF, flavor   ] } }
+            network:  { default: { get_property: [ SELF, network  ] } }
+            security_groups:  { default: { get_property: [ SELF, security_groups ] } }
+            key_name: { default: { get_property: [ SELF, key_name ] } }
+          implementation: playbooks/openstack/vm/create.yml
+        delete:
+          inputs:
+            id: { default: { get_attribute: [ SELF, id ] } }
+          implementation: playbooks/openstack/vm/delete.yml
+    requirements:
+      - protected_by:
+          capability: sodalite.nodes.OpenStack.SecurityRules
+          relationship: tosca.relationships.DependsOn
+
+topology_template:
+  inputs:
+    # ssh key for OS access
+    ssh-key-name:
+      type: string
+
+    docker-registry-ip:
+      type: string
+
+  node_templates:
+
+    security-rules-vehicle-iot:
+      type: sodalite.nodes.OpenStack.SecurityRules
+      properties:
+        group_name: vehicle-iot-delete
+        group_description: "vehicle-iot security group"
+        ports:
+            rooter_port:
+              protocol: tcp
+              port_range_min: 7000
+              port_range_max: 7000
+              remote_ip_prefix: 0.0.0.0/0
+            target_ports:
+              protocol: tcp
+              port_range_min: 5678
+              port_range_max: 5680
+              remote_ip_prefix: 0.0.0.0/0
+
+    vm:
+      type: sodalite.nodes.OpenStack.VM
+      properties:
+        name: vehicle-demo-vm
+        image: centos7
+        flavor: m1.small
+        network: orchestrator-net
+        security_groups: default,vehicle-iot
+        key_name: { get_input: ssh-key-name }
+      requirements:
+        - protected_by: security-rules-vehicle-iot
+
+    pip-setup: 
+      type: sodalite.nodes.software.PipPackagesSetup
+      properties:
+        packages: 
+          - python-consul
+      requirements:
+        - host: vm
+
+    docker-host:
+      type: sodalite.nodes.DockerHost
+      properties:
+        registry_ip: { get_input: docker-registry-ip }
+      requirements:
+        - host: vm
+
+    notification-callback-server:
+      type: sodalite.nodes.DockerizedComponent
+      properties:
+        image_name: linvirt/echo-server
+        alias: notification-callback-server
+        command: "http-echo-server 8443"
+        ports: 8443:8443
+        exposed_ports: 8443
+      requirements:
+        - host: docker-host
+
+    http-echo-de:
+      type: sodalite.nodes.DockerizedComponent
+      properties:
+        image_name: hashicorp/http-echo
+        alias: http-echo-de
+        command: -text="hello from the DE endpoint"
+        ports: 5678:5678
+        exposed_ports: 5678
+      requirements:
+        - host: docker-host
+
+    http-echo-at:
+      type: sodalite.nodes.DockerizedComponent
+      properties:
+        image_name: hashicorp/http-echo
+        alias: http-echo-at
+        command: -text="hello from the AT endpoint"
+        ports: 5679:5678
+        exposed_ports: 5679
+      requirements:
+        - host: docker-host
+
+#    http-echo-it:
+#      type: sodalite.nodes.DockerizedComponent
+#      properties:
+#        image_name: hashicorp/http-echo
+#        alias: http-echo-it
+#        command: -text="hello from the IT endpoint"
+#        ports: 5680:5678
+#        exposed_ports: 5680
+#      requirements:
+#        - host: docker-host
+
+    consul-agent:
+      type: sodalite.nodes.DockerizedComponent
+      properties:
+        image_name: consul
+        alias: consul
+        ports: 
+          - 8500:8500
+        exposed_ports: 
+          - 8500
+      requirements:
+        - host: docker-host
+        
+    register-service-de:
+      type: sodalite.nodes.software.Register2consul
+      properties:
+        service_id: apigw0
+        service_name: api
+#        service_address: "{{ansible_default_ipv4.address}}"
+        service_port: 5678
+        tags:
+          - v1
+          - region-de
+      requirements:
+        - host: vm
+        - registers_service: http-echo-de
+        - requires_installation: pip-setup  
+
+    register-service-at:
+      type: sodalite.nodes.software.Register2consul
+      properties:
+        service_id: apigw1
+        service_name: api
+#        service_address: "{{ansible_default_ipv4.address}}"
+        service_port: 5679
+        tags:
+          - v1
+          - region-at
+      requirements:
+        - host: vm
+        - registers_service: http-echo-at
+        - requires_installation: pip-setup
+
+    #    register-service-it:
+#      type: sodalite.nodes.Register2consul
+#      properties:
+#        service_id: "apigw2"
+#        service_name: "api"
+##        service_address: "{{ansible_default_ipv4.address}}"
+#        service_port: 5680
+#        tags:
+#          - v1
+#          - region-it
+#      requirements:
+#        - host: vm        
+#        - registers_service: http-echo-it
+
+
+    reverse-geocoder:
+      type: sodalite.nodes.DockerizedComponent
+      properties:
+        image_name: adaptant/reverse-geocoding-service
+        alias: reverse-geocoding-service
+        command: "--consul-agent {{ansible_default_ipv4.address}}:8500"
+        ports: 
+          - 4041:4041
+        exposed_ports: 
+          - 4041
+      requirements:
+        - host: docker-host
+
+    notification-server:
+      type: sodalite.nodes.DockerizedComponent
+      properties:
+        image_name: linvirt/echo-server
+        alias: notification-callback-server
+        command: "http-echo-server 8443"
+        ports:  
+          - 8443:8443
+        exposed_ports: 
+          - 8443
+      requirements:
+        - host: docker-host
+
+    go-region-router:
+      type: sodalite.nodes.DockerizedComponent
+      properties:
+        image_name: adaptant/go-region-router:notifications
+        alias: go-region-router
+        command: "--consul-agent {{ansible_default_ipv4.address}}:8500"
+        restart_policy: "always"
+        env:
+          REVERSE_GEOCODING_SERVICE: "{{ansible_default_ipv4.address}}:4041"
+          REGION_ROUTER_NOTIFICATION_URL: "http://35.188.199.162:8080/rule-based-refactorer/v0.1/events/inputs"
+        ports: 
+          - 7000:7000
+        exposed_ports: 
+          - 7000
+      requirements:
+        - host: docker-host

@@ -6,11 +6,10 @@
     ],
     "input": "vehicle-iot-v1/input.yaml",
     "blueprint": {
-      "message": "Saved blueprint to database",
       "id": "vehicle_demo",
-      "blueprint_token": "a6442450-deb6-4b61-8c95-446bd095b8f0",
+      "blueprint_token": "ce1bb4ae-645b-4305-8249-7842ea265ccb",
       "version_id": 1,
-      "timestamp": "2020-01-24T10:43:20.993831"
+      "timestamp": "2020-02-04T15:24:16.112381"
     }
   },
   {
@@ -19,11 +18,10 @@
     ],
     "input": "vehicle-iot-v2/input.yaml",
     "blueprint":{
-      "message": "Saved blueprint to database",
       "id": "vehicle_demo",
-      "blueprint_token": "97241299-8de9-430b-a9b5-adf0f4437d23",
+      "blueprint_token": "59faeef4-a188-412f-984e-086e1e79f141",
       "version_id": 1,
-      "timestamp": "2020-01-24T10:43:21.089093"
+      "timestamp": "2020-02-04T15:15:11.845683"
     }
   }
 ]
