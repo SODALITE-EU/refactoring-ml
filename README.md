@@ -6,8 +6,10 @@ This component implements machine-learning and rule-based (knowledge-based) refa
 This module depends on the SODALITE sub-projects "refactoring-option-discoverer" and “semantic-reasoner”. Thus, first built them.
 
 The information about build processes can be found in the corresponding projects.
-‘https://github.com/SODALITE-EU/refactoring-option-discoverer’
-‘https://github.com/SODALITE-EU/semantic-reasoner’
+
+`https://github.com/SODALITE-EU/refactoring-option-discoverer`
+
+`https://github.com/SODALITE-EU/semantic-reasoner`
 
 ## Rule-based Refactoring
 "rule-based" sub-project includes the rule-based refactoring engine. To build it, you can use `maven`
