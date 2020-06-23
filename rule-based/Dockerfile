@@ -1,6 +1,6 @@
 FROM tomcat:8.0.51-jre8-alpine
 
-COPY ./api/target/rule-based-refactorer.war /usr/local/tomcat/webapps/rule-based-refactorer.war
+COPY ./target/rule-based-refactorer.war /usr/local/tomcat/webapps/rule-based-refactorer.war
 EXPOSE 8080
 
 # Add docker-compose-wait tool -------------------
