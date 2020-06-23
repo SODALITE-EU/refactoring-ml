@@ -1,0 +1,2 @@
+"Method","Name","Error","Occurrences"
+"POST","/PHP/SearchItemsByCategory.php?category=10&categoryName=Clothing+%26+Accessories+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1

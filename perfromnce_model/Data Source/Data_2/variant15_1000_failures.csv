@@ -1,0 +1,49 @@
+"Method","Name","Error","Occurrences"
+"POST","/PHP/SearchItemsByCategory.php?category=61&categoryName=Computers+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=16&categoryName=Books+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=70&categoryName=Books+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=28&categoryName=Antiques+%26+Art+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=40&categoryName=Clothing+%26+Accessories+","('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=13&categoryName=Clothing+%26+Accessories+","('Connection aborted.', ConnectionAbortedError(10053, 'An established connection was aborted by the software in your host machine', None, 10053, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=7&categoryName=Business%2C+Office+%26+Industrial+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=31&categoryName=Antiques+%26+Art+","('Connection aborted.', ConnectionAbortedError(10053, 'An established connection was aborted by the software in your host machine', None, 10053, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=4&categoryName=Coins+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",2
+"POST","/PHP/SearchItemsByCategory.php?category=22&categoryName=Clothing+%26+Accessories+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",2
+"POST","/PHP/SearchItemsByCategory.php?category=22&categoryName=Books+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=31&categoryName=Business%2C+Office+%26+Industrial+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=31&categoryName=Coins+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=37&categoryName=Clothing+%26+Accessories+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=64&categoryName=Coins+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",3
+"POST","/PHP/SearchItemsByCategory.php?category=16&categoryName=Coins+","('Connection aborted.', ConnectionAbortedError(10053, 'An established connection was aborted by the software in your host machine', None, 10053, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=31&categoryName=Computers+","('Connection aborted.', ConnectionAbortedError(10053, 'An established connection was aborted by the software in your host machine', None, 10053, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=37&categoryName=Coins+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=61&categoryName=Books+","('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=37&categoryName=Business%2C+Office+%26+Industrial+","('Connection aborted.', ConnectionAbortedError(10053, 'An established connection was aborted by the software in your host machine', None, 10053, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=4&categoryName=Books+","('Connection aborted.', ConnectionAbortedError(10053, 'An established connection was aborted by the software in your host machine', None, 10053, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=28&categoryName=Clothing+%26+Accessories+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=22&categoryName=Clothing+%26+Accessories+","('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=58&categoryName=Books+","('Connection aborted.', ConnectionAbortedError(10053, 'An established connection was aborted by the software in your host machine', None, 10053, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=10&categoryName=Clothing+%26+Accessories+","('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=64&categoryName=Books+","('Connection aborted.', ConnectionAbortedError(10053, 'An established connection was aborted by the software in your host machine', None, 10053, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=58&categoryName=Clothing+%26+Accessories+","('Connection aborted.', ConnectionAbortedError(10053, 'An established connection was aborted by the software in your host machine', None, 10053, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=37&categoryName=Business%2C+Office+%26+Industrial+","('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=40&categoryName=Business%2C+Office+%26+Industrial+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=13&categoryName=Business%2C+Office+%26+Industrial+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=64&categoryName=Coins+","('Connection aborted.', ConnectionAbortedError(10053, 'An established connection was aborted by the software in your host machine', None, 10053, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=19&categoryName=Business%2C+Office+%26+Industrial+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=25&categoryName=Business%2C+Office+%26+Industrial+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=22&categoryName=Computers+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",2
+"POST","/PHP/SearchItemsByCategory.php?category=40&categoryName=Clothing+%26+Accessories+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=61&categoryName=Coins+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=7&categoryName=Books+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",2
+"POST","/PHP/SearchItemsByCategory.php?category=61&categoryName=Coins+","('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=13&categoryName=Coins+","('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=31&categoryName=Antiques+%26+Art+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=37&categoryName=Computers+","('Connection aborted.', ConnectionAbortedError(10053, 'An established connection was aborted by the software in your host machine', None, 10053, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=4&categoryName=Computers+","('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=40&categoryName=Coins+","('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",2
+"POST","/PHP/SearchItemsByCategory.php?category=58&categoryName=Business%2C+Office+%26+Industrial+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=4&categoryName=Antiques+%26+Art+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",2
+"POST","/PHP/SearchItemsByCategory.php?category=40&categoryName=Books+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
+"POST","/PHP/SearchItemsByCategory.php?category=13&categoryName=Books+","('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",1
+"POST","/PHP/SearchItemsByCategory.php?category=70&categoryName=Business%2C+Office+%26+Industrial+","('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))",1
