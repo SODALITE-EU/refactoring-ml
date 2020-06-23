@@ -1,0 +1,8 @@
+version: '3'
+services:
+  tosca-smell:
+    # will build ./rule-based/Dockerfile
+    build:
+      context: ./rule-based
+    ports:
+     - "8080:8080"
