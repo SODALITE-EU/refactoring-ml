@@ -1,3 +1,0 @@
-"Method","Name","Error","Occurrences"
-"POST","/PHP/SearchItemsByCategory.php?category=58&categoryName=Books+","('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",1
-"POST","/PHP/SearchItemsByCategory.php?category=70&categoryName=Business%2C+Office+%26+Industrial+","('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))",1
