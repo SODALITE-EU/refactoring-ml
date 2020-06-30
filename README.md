@@ -41,7 +41,7 @@ sudo docker image ls
 
 ## REST API
 ```
-http://{ serverIP}:8080/refactorer-api/events/inputs
+http://{ serverIP}:8080/refactorer-api/v0.1/events/inputs
 ```
 Sample Requests
 
