@@ -39,3 +39,21 @@ sudo docker rmi sodalite/rule-based-refactorer
 sudo docker-compose up
 sudo docker image ls
 
+## REST API
+```
+http://{ serverIP}:8080/refactorer-api/events/inputs
+```
+Sample Requests
+
+```
+{
+	"new_location": "DE",
+	"event_type" : "DeploymentNeeded"
+}
+
+{
+	"new_location": "DE",
+	"previous_location": "DE",
+	"event_type" : "LocationChanged"
+}
+```
