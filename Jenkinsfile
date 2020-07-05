@@ -26,6 +26,26 @@ pipeline {
         archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
       }
     }
+	stage('Build docker images') {
+            steps {
+                sh "cd rule-based; docker build -t rule_based_refactorer -f Dockerfile ."                
+            }
+    }   
+    stage('Push Dockerfile to DockerHub') {
+            when {
+               branch "master"
+            }
+            steps {
+                withDockerRegistry(credentialsId: 'jenkins-sodalite.docker_token', url: '') {
+                    sh  """#!/bin/bash                       
+                            docker tag rule_based_refactorer sodaliteh2020/rule_based_refactorer:${BUILD_NUMBER}
+                            docker tag rule_based_refactorer sodaliteh2020/rule_based_refactorer
+                            docker push sodaliteh2020/rule_based_refactorer:${BUILD_NUMBER}
+                            docker push sodaliteh2020/rule_based_refactorer
+                        """
+                }
+            }
+    }
   }
   post {
     failure {
