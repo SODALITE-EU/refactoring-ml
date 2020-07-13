@@ -1,5 +1,6 @@
 package nl.jads.sodalite.api;
 
+import nl.jads.sodalite.dto.AlertsData;
 import nl.jads.sodalite.dto.InputEventData;
 import nl.jads.sodalite.events.*;
 import nl.jads.sodalite.rules.RefactoringManager;
@@ -50,6 +51,15 @@ public class RefactoringService {
         } else {
             return Response.serverError().entity("Unrecognized Event : " + inputEventData.getEventType()).build();
         }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/alerts")
+    public Response notifyAlerts(AlertsData alertsData) {
+        System.out.println("Received An Alert : " + alertsData.toString());
+        return Response.ok(alertsData.getVersion() + " Alert Received").build();
     }
 
     private Response executeRules(List<IEvent> iEventList, String eventType) {
