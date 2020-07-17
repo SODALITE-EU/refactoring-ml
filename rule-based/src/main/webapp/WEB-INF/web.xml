@@ -5,7 +5,7 @@
 <web-app>
 	<display-name>Refactorer REST API</display-name>
 	<servlet>
-		<servlet-name>refactorer-api</servlet-name>
+		<servlet-name>rule-based-refactorer</servlet-name>
 		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
 		<init-param>
 			<param-name>jersey.config.server.provider.packages</param-name>
@@ -23,16 +23,16 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>refactorer-api</servlet-name>
+		<servlet-name>rule-based-refactorer</servlet-name>
 		<url-pattern>/v0.1/*</url-pattern>
 	</servlet-mapping>
-<!--	<filter>-->
-<!--		<filter-name>CorsFilter</filter-name>-->
-<!--		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>-->
-<!--	</filter>-->
-<!--	<filter-mapping>-->
-<!--		<filter-name>CorsFilter</filter-name>-->
-<!--		<url-pattern>/*</url-pattern>-->
-<!--	</filter-mapping>-->
+	<filter>
+		<filter-name>CorsFilter</filter-name>
+		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CorsFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 
 </web-app>
