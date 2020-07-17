@@ -29,7 +29,7 @@ The benchmark client is available at performance-model/benchmark-clients. The da
 ## Docker Image Building and Usage
 ```
 sudo docker build -t sodalite/rule-based-refactorer .
-sudo docker run -p 5000:5000 -d --name=rule-based-refactorer sodalite/rule-based-refactorer
+sudo docker run -p 8080:8080 -d --name=rule-based-refactorer sodalite/rule-based-refactorer
 sudo docker start rule-based-refactorer
 sudo docker logs rule-based-refactorer
 sudo docker stop rule-based-refactorer
@@ -43,8 +43,9 @@ sudo docker image ls
 ```
 
 ## REST API
+# To send custom deployment events 
 ```
-http://{ serverIP}:8080/refactorer-api/v0.1/events/inputs
+POST http://{ip}:8080/rule-based-refactorer/v0.1/events/inputs
 ```
 Sample Requests
 
@@ -59,4 +60,50 @@ Sample Requests
 	"previous_location": "DE",
 	"event_type" : "LocationChanged"
 }
+```
+# To send Prometheus alerts
+```
+POST http://{ip}:8080/rule-based-refactorer/v0.1/events/alerts
+```
+Sample Requests
+
+```
+{
+   "receiver": "webhook",
+  "status": "firing",
+  "alerts": [
+    {
+      "status": "firing",
+      "labels": {
+        "alertname": "Test",
+        "dc": "eu-west-1",
+        "instance": "localhost:9090",
+        "job": "prometheus24"
+      },
+      "annotations": {
+        "description": "some description"
+      },
+      "startsAt": "2018-08-03T09:52:26.739266876+02:00",
+      "endsAt": "0001-01-01T00:00:00Z",
+      "generatorURL": "http://somestats_alloc_bytes+%3E+0\u0026g0.tab=1"                                                                                  
+    }
+  ],
+  "groupLabels": {
+    "alertname": "Test",
+    "job": "prometheus24"
+  },
+  "commonLabels": {
+    "alertname": "Test",
+    "dc": "eu-west-1",
+    "instance": "localhost:9090",
+    "job": "prometheus24"
+  },
+  "commonAnnotations": {
+    "description": "some description"
+  },
+  "externalURL": "http://simon-laptop:9093",
+  "version": "4",
+  "groupKey": "{}:{alertname=\"Test\", job=\"prometheus24\"}"
+}
+
 ```
