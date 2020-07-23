@@ -2,8 +2,7 @@ package nl.jads.sodalite.dto;
 
 public class BuleprintsData {
     private String[] target;
-    private BlueprintMetadata blueprint;
-    private String input;
+    private String bptoken;
 
     public String[] getTarget() {
         return target;
@@ -13,19 +12,11 @@ public class BuleprintsData {
         this.target = target;
     }
 
-    public BlueprintMetadata getBlueprint() {
-        return blueprint;
+    public String getBptoken() {
+        return bptoken;
     }
 
-    public void setBlueprint(BlueprintMetadata blueprint) {
-        this.blueprint = blueprint;
-    }
-
-    public String getInput() {
-        return input;
-    }
-
-    public void setInput(String input) {
-        this.input = input;
+    public void setBptoken(String bptoken) {
+        this.bptoken = bptoken;
     }
 }

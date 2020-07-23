@@ -162,4 +162,12 @@ public abstract class DroolsRules {
     public RegulationRule removeRegulationRule(String id) {
         return regulationRuleMap.remove(id);
     }
+
+    public void destroy() {
+        try {
+            kieContainer.dispose();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

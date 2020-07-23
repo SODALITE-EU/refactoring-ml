@@ -27,6 +27,7 @@ public class RefactoringPolicyExecutor extends DroolsRules {
     }
 
     public void cleanUp() {
+        super.destroy();
     }
 
     public RuleExecutionResult insertEvent(List<IEvent> events) throws RulesException {

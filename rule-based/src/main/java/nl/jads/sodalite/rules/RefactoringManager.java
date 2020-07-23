@@ -1,7 +1,7 @@
 package nl.jads.sodalite.rules;
 
-import nl.jads.sodalite.dto.BlueprintMetadata;
 import nl.jads.sodalite.dto.BuleprintsData;
+import nl.jads.sodalite.dto.BuleprintsDataSet;
 import nl.jads.sodalite.utils.POJOFactory;
 import nl.jads.sodalite.utils.ResourceUtil;
 import org.glassfish.jersey.client.ClientConfig;
@@ -24,11 +24,18 @@ import java.util.Set;
 public class RefactoringManager {
     private static final String BASE_REST_URI
             = "http://154.48.185.206:5000/";
-    private Map<String, BuleprintsData> mapBM = new HashMap();
+    private Map<String, BuleprintsData> mapBM = new HashMap<String, BuleprintsData>();
     private String currentBlueprintToken;
+    private String getBaseRestUri;
+    private String input;
 
     public RefactoringManager() {
-        loadConfig();
+        getBaseRestUri = System.getenv("xoperarest");
+        if (getBaseRestUri == null || "".equals(getBaseRestUri.trim())) {
+            getBaseRestUri = BASE_REST_URI;
+        }
+        BuleprintsDataSet buleprintsDatas = POJOFactory.fromJsonFile("blueprintdata.json");
+        configure(buleprintsDatas);
     }
 
     public void addDeploymentOption(String name, String vsnId, Map<String, String> parameters) {
@@ -71,19 +78,17 @@ public class RefactoringManager {
 
     public void deployDeploymentModel(String target) {
         BuleprintsData blueprintsData = mapBM.get(target);
-        BlueprintMetadata blueprintMetadata = blueprintsData.getBlueprint();
         Client client = ClientBuilder.newBuilder()
                 .register(MultiPartFeature.class).build();
-        WebTarget webTarget = client.target(BASE_REST_URI).path("deploy/" + blueprintMetadata.getBlueprintToken());
+        WebTarget webTarget = client.target(getBaseRestUri).path("deploy/" + blueprintsData.getBptoken());
 
         FormDataMultiPart multipart =
                 new FormDataMultiPart()
-                        .field("timestamp", blueprintMetadata.getTimestamp())
-                        .field("version_id", String.valueOf(blueprintMetadata.getVersionId()));
+                        .field("blueprint_token", blueprintsData.getBptoken());
 
         FileDataBodyPart fileDataBodyPart =
                 new FileDataBodyPart("inputs_file",
-                        ResourceUtil.getResourceAsFile(blueprintsData.getInput()),
+                        ResourceUtil.getStringAsFile(input),
                         MediaType.APPLICATION_OCTET_STREAM_TYPE);
 
         multipart.bodyPart(fileDataBodyPart);
@@ -95,29 +100,27 @@ public class RefactoringManager {
         System.out.println(message);
         System.out.println(response.getStatus() + " "
                 + response.getStatusInfo() + " " + response);
-        System.out.println(" Deployment Status for " + target + "," + blueprintMetadata.getBlueprintToken());
+        System.out.println(" Deployment Status for " + target + "," + blueprintsData.getBptoken());
         System.out.println(response.getStatus());
         System.out.println(message);
         System.out.println();
-        currentBlueprintToken = blueprintMetadata.getBlueprintToken();
+        currentBlueprintToken = blueprintsData.getBptoken();
     }
 
     public void undeployDeploymentModel(String target) {
         BuleprintsData blueprintsData = mapBM.get(target);
-        BlueprintMetadata blueprintMetadata = blueprintsData.getBlueprint();
         ClientConfig config = new ClientConfig((MultiPartFeature.class));
         config.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
         Client client = ClientBuilder.newClient(config);
-        WebTarget webTarget = client.target(BASE_REST_URI).path("deploy/" + blueprintMetadata.getBlueprintToken());
+        WebTarget webTarget = client.target(getBaseRestUri).path("deploy/" + blueprintsData.getBptoken());
 
         FormDataMultiPart multipart =
                 new FormDataMultiPart()
-                        .field("timestamp", blueprintMetadata.getTimestamp())
-                        .field("version_id", String.valueOf(blueprintMetadata.getVersionId()));
+                        .field("blueprint_token", blueprintsData.getBptoken());
 
         FileDataBodyPart fileDataBodyPart =
                 new FileDataBodyPart("inputs_file",
-                        ResourceUtil.getResourceAsFile(blueprintsData.getInput()),
+                        ResourceUtil.getStringAsFile(input),
                         MediaType.APPLICATION_OCTET_STREAM_TYPE);
 
         multipart.bodyPart(fileDataBodyPart);
@@ -129,14 +132,15 @@ public class RefactoringManager {
         response.close();
 
         System.out.println(message);
-        System.out.println(" Deployment Status for " + target + "," + blueprintMetadata.getBlueprintToken());
+        System.out.println(" Deployment Status for " + target + "," + blueprintsData.getBptoken());
         System.out.println(response);
         System.out.println();
     }
 
-    private void loadConfig() {
-        BuleprintsData[] buleprintsDatas = POJOFactory.fromJsonFile("blueprintdata.json");
-        for (BuleprintsData buleprintsData : buleprintsDatas) {
+    public void configure(BuleprintsDataSet buleprintsDatas) {
+        mapBM.clear();
+        input = buleprintsDatas.getInput();
+        for (BuleprintsData buleprintsData : buleprintsDatas.getBlueprints()) {
             String[] targets = buleprintsData.getTarget();
             for (String target : targets) {
                 mapBM.put(target, buleprintsData);
