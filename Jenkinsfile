@@ -28,7 +28,8 @@ pipeline {
     }
 	stage('Build docker images') {
             steps {
-                sh "cd rule-based; docker build -t rule_based_refactorer -f Dockerfile ."                
+                sh "cd rule-based; docker build -t rule_based_refactorer -f Dockerfile ."   
+		sh "cd perf-predictor-api; docker build -t fo_perf_predictor_api -f Dockerfile ."
             }
     }   
     stage('Push Dockerfile to DockerHub') {
@@ -42,6 +43,10 @@ pipeline {
                             docker tag rule_based_refactorer sodaliteh2020/rule_based_refactorer
                             docker push sodaliteh2020/rule_based_refactorer:${BUILD_NUMBER}
                             docker push sodaliteh2020/rule_based_refactorer
+			    docker tag rule_based_refactorer sodaliteh2020/fo_perf_predictor_api:${BUILD_NUMBER}
+                            docker tag rule_based_refactorer sodaliteh2020/fo_perf_predictor_api
+                            docker push sodaliteh2020/fo_perf_predictor_api:${BUILD_NUMBER}
+                            docker push sodaliteh2020/fo_perf_predictor_api
                         """
                 }
             }
