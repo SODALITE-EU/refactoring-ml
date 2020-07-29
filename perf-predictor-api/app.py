@@ -18,7 +18,7 @@ def get_table_name(model):
     return table_name
 
 
-@app.route('/per-predictor/{model}/features', methods=['POST'])
+@app.route('/per-predictor/<model>/features', methods=['POST'])
 def create_table(model):
     req_data = request.get_json()
     features = req_data['features']
@@ -28,13 +28,13 @@ def create_table(model):
     return json.dumps({'message': 'variant table is recorded'}, sort_keys=False, indent=4), 200
 
 
-@app.route('/per-predictor/{model}/features', methods=['DELETE'])
+@app.route('/per-predictor/<model>/features', methods=['DELETE'])
 def delete_table(model):
     drop_variant_table(get_table_name(model))
     return json.dumps({'message': 'variant data are dropped'}, sort_keys=False, indent=4), 200
 
 
-@app.route('/per-predictor/{model}/traindata', methods=['PUT'])
+@app.route('/per-predictor/<model>/traindata', methods=['PUT'])
 def update_data(model):
     content = request.get_json()
     data = pd.read_json(content, orient='records')
@@ -42,7 +42,7 @@ def update_data(model):
     return json.dumps({'message': 'variant data are updated'}, sort_keys=False, indent=4), 200
 
 
-@app.route('/per-predictor/{model}/train', methods=['POST'])
+@app.route('/per-predictor/<model>/train', methods=['POST'])
 def train_models(model):
     df = read_data_records(get_table_name(model))
     df = df.drop(columns=['id'])
@@ -58,7 +58,7 @@ def train_models(model):
     resp.headers['Access-Control-Max-Age'] = '1000'
 
 
-@app.route('/per-predictor/{model}/predict', methods=['POST'])
+@app.route('/per-predictor/<model>/predict', methods=['POST'])
 def predict_perf(model):
     content = request.get_json()
     df = pd.read_json(content, orient='records')
