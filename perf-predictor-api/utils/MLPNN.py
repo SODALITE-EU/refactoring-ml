@@ -4,6 +4,7 @@ import pickle
 import pandas as pd
 from keras.layers import Dense
 from keras.models import Sequential
+from keras.models import load_model
 from keras.optimizers import Adam
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from sklearn.model_selection import train_test_split
@@ -42,8 +43,7 @@ def train(structured_data):
     }
     json_out = json.dumps(text_out, sort_keys=False, indent=4)
 
-    with open('models/mlpnn.pkl', 'wb') as output_file:
-        pickle.dump(model_final, output_file)
+    model_final.save('models/mlpnn.h5')
 
     return json_out
 
@@ -96,11 +96,10 @@ def deep_layer_neurons(X, Y, sizes):
 
 
 def predict(variant):
-    with open('models/mlpnn.pkl', 'rb') as in_file:
-        clf2 = pickle.load(in_file)
+    clf2 = load_model('models/mlpnn.h5')
     value = clf2.predict(variant)
     text_out = {
-        "prediction": value[0]
+        "prediction": float(value[0][0])
     }
     json_out = json.dumps(text_out, sort_keys=False, indent=4)
     return json_out
