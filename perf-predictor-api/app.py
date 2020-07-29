@@ -37,8 +37,7 @@ def delete_table(model):
 @app.route('/per-predictor/<model>/traindata', methods=['PUT'])
 def update_data(model):
     content = request.get_json()
-    data = pd.read_json(content, orient='records')
-    add_data_records(get_table_name(model), data)
+    add_data_records(get_table_name(model), content)
     return json.dumps({'message': 'variant data are updated'}, sort_keys=False, indent=4), 200
 
 
@@ -56,12 +55,13 @@ def train_models(model):
     resp.headers['Access-Control-Allow-Origin'] = '*'
     resp.headers['Access-Control-Allow-Methods'] = 'POST'
     resp.headers['Access-Control-Max-Age'] = '1000'
+    return resp
 
 
 @app.route('/per-predictor/<model>/predict', methods=['POST'])
 def predict_perf(model):
     content = request.get_json()
-    df = pd.read_json(content, orient='records')
+    df = pd.read_json(json.dumps(content), orient='records')
     if model == "rtfr":
         js = rtfr_model.predict(df)
     elif model == "mlpnn":
@@ -72,6 +72,7 @@ def predict_perf(model):
     resp.headers['Access-Control-Allow-Origin'] = '*'
     resp.headers['Access-Control-Allow-Methods'] = 'POST'
     resp.headers['Access-Control-Max-Age'] = '1000'
+    return resp
 
 
 app.run(host='0.0.0.0', port=5000)
