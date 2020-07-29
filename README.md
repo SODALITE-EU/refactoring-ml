@@ -27,6 +27,7 @@ The performance modeling applies the benchmarking (at design time) and machine l
 The benchmark client is available at performance-model/benchmark-clients. The data collected from Google Cloud and RuBIS is at performance-model/benchmarkdata.
 
 ## Docker Image Building and Usage
+# Rule-based Refactoring API
 ```
 sudo docker build -t sodalite/rule-based-refactorer .
 sudo docker run -p 8080:8080 -d --name=rule-based-refactorer sodalite/rule-based-refactorer
@@ -36,6 +37,17 @@ sudo docker stop rule-based-refactorer
 sudo docker rm  rule-based-refactorer
 sudo docker rmi sodalite/rule-based-refactorer
 ```
+# Performance Prediction API
+```
+sudo docker build -t sodalite/performance-predictor-refactoring .
+sudo docker run -p 5000:5000 -d --name=perPredictAPI sodalite/performance-predictor-refactoring
+sudo docker start perPredictAPI
+sudo docker logs perPredictAPI
+sudo docker stop perPredictAPI
+sudo docker rm  perPredictAPI
+sudo docker rmi sodalite/performance-predictor-refactoring
+```
+
 ## Run Docker Compose
 ```
 sudo docker-compose up
