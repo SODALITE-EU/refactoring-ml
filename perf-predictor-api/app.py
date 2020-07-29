@@ -43,7 +43,7 @@ def update_data(model):
 
 
 @app.route('/per-predictor/{model}/train', methods=['POST'])
-def update_data(model):
+def train_models(model):
     df = read_data_records(get_table_name(model))
     df = df.drop(columns=['id'])
     if model == "rtfr":
