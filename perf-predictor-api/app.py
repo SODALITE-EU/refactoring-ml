@@ -10,33 +10,41 @@ app = Flask(__name__)
 app.config["DEBUG"] = True
 
 
-@app.route('/per-predictor/features', methods=['POST'])
-def create_table():
+def get_table_name(model):
+    if model == "mlpnn":
+        table_name = "variant_table_mlpnn"
+    else:
+        table_name = "variant_table"
+    return table_name
+
+
+@app.route('/per-predictor/{model}/features', methods=['POST'])
+def create_table(model):
     req_data = request.get_json()
     features = req_data['features']
     metrics = req_data['metrics']
     columns = features + metrics
-    create_variant_table(columns)
+    create_variant_table(get_table_name(model), columns)
     return json.dumps({'message': 'variant table is recorded'}, sort_keys=False, indent=4), 200
 
 
-@app.route('/per-predictor/features', methods=['DELETE'])
-def delete_table():
-    drop_variant_table()
+@app.route('/per-predictor/{model}/features', methods=['DELETE'])
+def delete_table(model):
+    drop_variant_table(get_table_name(model))
     return json.dumps({'message': 'variant data are dropped'}, sort_keys=False, indent=4), 200
 
 
-@app.route('/per-predictor/traindata', methods=['PUT'])
-def update_data():
+@app.route('/per-predictor/{model}/traindata', methods=['PUT'])
+def update_data(model):
     content = request.get_json()
     data = pd.read_json(content, orient='records')
-    add_data_records(data)
+    add_data_records(get_table_name(model), data)
     return json.dumps({'message': 'variant data are updated'}, sort_keys=False, indent=4), 200
 
 
 @app.route('/per-predictor/{model}/train', methods=['POST'])
 def update_data(model):
-    df = read_data_records()
+    df = read_data_records(get_table_name(model))
     df = df.drop(columns=['id'])
     if model == "rtfr":
         js = rtfr_model.train(df)

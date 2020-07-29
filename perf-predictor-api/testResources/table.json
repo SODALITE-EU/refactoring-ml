@@ -16,7 +16,6 @@
     "D16"
   ],
   "metrics": [
-    "mean_rt",
-    "cumulative_moving_avg_rt"
+    "mean_rt"
   ]
 }

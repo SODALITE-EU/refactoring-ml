@@ -33,11 +33,9 @@ def train(structured_data):
     model_final.compile(Adam(lr=0.001), 'mean_squared_error')
 
     model_final.fit(XX_train, yy_train, epochs=200, validation_split=0.2, shuffle=False, verbose=0, batch_size=100)
-    model_score = model_final.score(XX_train, yy_train)
     y_pred = model_final.predict(XX_test)
 
     text_out = {
-        "score:": round(model_score, 2),
         "R-squared": round(r2_score(yy_test, y_pred)),
         "MAE": round(mean_absolute_error(yy_test, y_pred), 3),
         "MSE": round(mean_squared_error(yy_test, y_pred), 3)
