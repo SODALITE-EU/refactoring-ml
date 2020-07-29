@@ -1,17 +1,16 @@
 import json
+import pickle
 
 import pandas as pd
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
-import pickle
 
 
 def train(structured_data):
     X = structured_data.iloc[:, 0:14]  # Feature Matrix
-    y = structured_data.iloc[:, -1]  # Target Variable
-    print(X)
-    print(y)
+    y = structured_data['mean_rt']  # Target Variable
+
     best_params, dept_df, depth = param_tuningDTR(X, y)
     size_score = trainsize_gridsearch(X, y, best_params)
     size_score = size_score.iloc[size_score['r2_score'].idxmax()]

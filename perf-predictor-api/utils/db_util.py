@@ -1,6 +1,6 @@
-from sqlalchemy import create_engine, Column, Float, Table, MetaData, String, Integer
-import sqlalchemy as db
 import pandas as pd
+import sqlalchemy as db
+from sqlalchemy import Column, Float, Table, MetaData, Integer
 
 engine = db.create_engine('sqlite:///data/traindata.db', echo=True)
 metadata = MetaData()
@@ -37,7 +37,7 @@ def read_data_records():
     connection = engine.connect()
     trans = connection.begin()
     query = db.select([v_table])
-    df = pd.read_sql_query(query, con = connection)
+    df = pd.read_sql_query(query, con=connection)
     # results = connection.execute().fetchall()
     # df = pd.DataFrame(results)
     trans.commit()

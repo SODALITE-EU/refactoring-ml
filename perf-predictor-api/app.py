@@ -2,6 +2,8 @@ import pandas as pd
 from flask import Flask, json, request, Response
 
 import utils.DTR as dtr_model
+import utils.MLPNN as mlpnn_model
+import utils.RTFR as rtfr_model
 from utils.db_util import create_variant_table, drop_variant_table, read_data_records, add_data_records
 
 app = Flask(__name__)
@@ -36,25 +38,32 @@ def update_data():
 def update_data(model):
     df = read_data_records()
     df = df.drop(columns=['id'])
-    if model == "dtr":
+    if model == "rtfr":
+        js = rtfr_model.train(df)
+    elif model == "mlpnn":
+        js = mlpnn_model.train(df)
+    else:
         js = dtr_model.train(df)
-        resp = Response(js, status=200, mimetype='application/json')
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        resp.headers['Access-Control-Allow-Methods'] = 'POST'
-        resp.headers['Access-Control-Max-Age'] = '1000'
+    resp = Response(js, status=200, mimetype='application/json')
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'POST'
+    resp.headers['Access-Control-Max-Age'] = '1000'
 
 
 @app.route('/per-predictor/{model}/predict', methods=['POST'])
 def predict_perf(model):
     content = request.get_json()
     df = pd.read_json(content, orient='records')
-    print(df)
-    if model == "dtr":
+    if model == "rtfr":
+        js = rtfr_model.predict(df)
+    elif model == "mlpnn":
+        js = mlpnn_model.predict(df)
+    else:
         js = dtr_model.predict(df)
-        resp = Response(js, status=200, mimetype='application/json')
-        resp.headers['Access-Control-Allow-Origin'] = '*'
-        resp.headers['Access-Control-Allow-Methods'] = 'POST'
-        resp.headers['Access-Control-Max-Age'] = '1000'
+    resp = Response(js, status=200, mimetype='application/json')
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'POST'
+    resp.headers['Access-Control-Max-Age'] = '1000'
 
 
 app.run(host='0.0.0.0', port=5000)

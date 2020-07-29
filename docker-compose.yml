@@ -1,8 +1,15 @@
 version: '3'
 services:
-  tosca-smell:
+  rule-based-refactorer:
     # will build ./rule-based/Dockerfile
     build:
       context: ./rule-based
     ports:
      - "8080:8080"
+   
+  performance-predictor:
+    # will build ./perf-predictor-api/Dockerfile
+    build:
+        ./perf-predictor-api
+    ports:
+      - "5000:5000"

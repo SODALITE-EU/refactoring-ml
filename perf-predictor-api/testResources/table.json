@@ -1,4 +1,22 @@
 {
-  "features": ["workload", "D1", "D3", "D4","D5","D6","D7","D8","D9","D10","D12","D14","D15","D16"],
-  "metrics": ["mean_rt"]
+  "features": [
+    "workload",
+    "D1",
+    "D3",
+    "D4",
+    "D5",
+    "D6",
+    "D7",
+    "D8",
+    "D9",
+    "D10",
+    "D12",
+    "D14",
+    "D15",
+    "D16"
+  ],
+  "metrics": [
+    "mean_rt",
+    "cumulative_moving_avg_rt"
+  ]
 }
