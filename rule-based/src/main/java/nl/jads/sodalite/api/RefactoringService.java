@@ -7,9 +7,12 @@ import nl.jads.sodalite.events.*;
 import nl.jads.sodalite.rules.RefactoringManager;
 import nl.jads.sodalite.rules.RefactoringPolicyExecutor;
 import nl.jads.sodalite.rules.RulesException;
+import nl.jads.sodalite.scheduler.MonitoringDataCollector;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
@@ -30,10 +33,12 @@ public class RefactoringService {
     ServletContext servletContext;
     private RefactoringPolicyExecutor policyExecutor;
     private RefactoringManager refactoringManager;
+    private MonitoringDataCollector monitoringDataCollector;
 
     public RefactoringService() {
         refactoringManager = new RefactoringManager();
         policyExecutor = new RefactoringPolicyExecutor("refactoring.drl", "rules/", refactoringManager);
+        monitoringDataCollector = new MonitoringDataCollector();
     }
 
     @POST
@@ -124,5 +129,20 @@ public class RefactoringService {
             return Response.status(404).entity("No repository for the template").build();
         }
 
+    }
+
+    @PostConstruct
+    public void init() {
+        try {
+            monitoringDataCollector.start();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @PreDestroy
+    public void destroy() {
+        policyExecutor.cleanUp();
+        monitoringDataCollector.shutdown();
     }
 }

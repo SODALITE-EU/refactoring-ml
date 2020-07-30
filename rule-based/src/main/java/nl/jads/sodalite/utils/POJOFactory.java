@@ -21,10 +21,13 @@ public class POJOFactory {
     }
 
     public static BuleprintsDataSet fromJsonFile(String path) {
+        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
+        if (in == null) {
+            return null;
+        }
         Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
-        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
         JsonReader jsonReader =
                 gson.newJsonReader(new BufferedReader(new InputStreamReader(in)));
         return gson.fromJson(jsonReader, BuleprintsDataSet.class);

@@ -23,7 +23,7 @@ import java.util.Set;
 
 public class RefactoringManager {
     private static final String BASE_REST_URI
-            = "http://154.48.185.206:5000/";
+            = "http://154.48.185.209:5000/";
     private Map<String, BuleprintsData> mapBM = new HashMap<String, BuleprintsData>();
     private String currentBlueprintToken;
     private String getBaseRestUri;
@@ -35,7 +35,9 @@ public class RefactoringManager {
             getBaseRestUri = BASE_REST_URI;
         }
         BuleprintsDataSet buleprintsDatas = POJOFactory.fromJsonFile("blueprintdata.json");
-        configure(buleprintsDatas);
+        if (buleprintsDatas != null) {
+            configure(buleprintsDatas);
+        }
     }
 
     public void addDeploymentOption(String name, String vsnId, Map<String, String> parameters) {
