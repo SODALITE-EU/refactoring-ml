@@ -144,7 +144,7 @@ public class RefactoringService {
                 return Response.status(500).entity(e.getMessage()).build();
             }
         } else {
-            monitoringDataCollector.shutdown();
+            monitoringDataCollector.cancelTask();
             return Response.status(200).entity("Monitoring Disabled/Stopped").build();
         }
 
