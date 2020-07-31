@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Path("/api")
@@ -71,6 +72,12 @@ public class RefactoringService {
     @Path("/alerts")
     public Response notifyAlerts(AlertsData alertsData) {
         System.out.println("Received An Alert : " + alertsData.toString());
+        try {
+            policyExecutor.insertEvent(Collections.singletonList(alertsData));
+        } catch (RulesException e) {
+            e.printStackTrace();
+            return Response.serverError().entity("Error Executing Refactoring Logic").build();
+        }
         return Response.ok(alertsData.getVersion() + " Alert Received").build();
     }
 

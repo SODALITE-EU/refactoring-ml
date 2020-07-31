@@ -4,8 +4,9 @@ package nl.jads.sodalite.dto;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import nl.jads.sodalite.events.IEvent;
 
-public class AlertsData {
+public class AlertsData implements IEvent {
     @JsonProperty("version")
     private String version;
     @JsonProperty("groupKey")

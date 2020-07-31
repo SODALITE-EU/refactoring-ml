@@ -4,6 +4,8 @@ import nl.jads.sodalite.events.LocationChangedEvent;
 import nl.jads.sodalite.events.DeploymentNeeded;
 import nl.jads.sodalite.events.DeploymentChanged;
 import nl.jads.sodalite.events.DeploymentRemove;
+import nl.jads.sodalite.dto.AlertsData
+import java.util.Arrays
 
 rule "de_to_it"
   when
@@ -55,4 +57,14 @@ rule "deploy_remove_it"
     System.out.println("deploy_remove_it rule triggered");
     refMgt.undeployDeploymentModel($f1.getPreLoc());
     System.out.println("deploy_remove_it rule executed");
+end
+
+rule "alert_test"
+  when
+    $f1 : AlertsData(status == "firing")
+  then
+    disabledSet.disable("alert_test");
+    System.out.println("alert_test rule triggered");
+    System.out.println(Arrays.toString($f1.getAlerts()));
+    System.out.println("alert_test rule executed");
 end
