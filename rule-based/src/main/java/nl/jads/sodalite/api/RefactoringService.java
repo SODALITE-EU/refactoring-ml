@@ -11,7 +11,6 @@ import nl.jads.sodalite.scheduler.MonitoringDataCollector;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 import javax.servlet.ServletContext;
@@ -131,13 +130,24 @@ public class RefactoringService {
 
     }
 
-    @PostConstruct
-    public void init() {
-        try {
-            monitoringDataCollector.start();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/monitoring/pull")
+    public Response enableDisableMonitoring(@DefaultValue("disabled") @QueryParam("state") String state) {
+        if ("enabled".equalsIgnoreCase(state)) {
+            try {
+                monitoringDataCollector.start();
+                return Response.status(200).entity("Monitoring Enabled").build();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return Response.status(500).entity(e.getMessage()).build();
+            }
+        } else {
+            monitoringDataCollector.shutdown();
+            return Response.status(200).entity("Monitoring Disabled/Stopped").build();
         }
+
     }
 
     @PreDestroy
