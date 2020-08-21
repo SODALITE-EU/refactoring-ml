@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Alert {
+public class AlertDTO {
     @JsonProperty("status")
     private String status;
     @JsonProperty("labels")

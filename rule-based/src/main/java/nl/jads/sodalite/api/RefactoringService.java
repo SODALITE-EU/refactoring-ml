@@ -1,5 +1,6 @@
 package nl.jads.sodalite.api;
 
+import nl.jads.sodalite.dto.AlertDTO;
 import nl.jads.sodalite.dto.AlertsData;
 import nl.jads.sodalite.dto.BuleprintsDataSet;
 import nl.jads.sodalite.dto.InputEventData;
@@ -23,8 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Path("/api")
 @Singleton
@@ -72,8 +73,21 @@ public class RefactoringService {
     @Path("/alerts")
     public Response notifyAlerts(AlertsData alertsData) {
         System.out.println("Received An Alert : " + alertsData.toString());
+        List<IEvent> iEvents = new ArrayList<>();
+        for (AlertDTO alertDTO : alertsData.getAlertDTOS()) {
+            Alert alert = new Alert();
+            alert.setStatus(alertDTO.getStatus());
+            Map map = (Map) alertDTO.getLabels();
+            String alertname = (String) map.get("alertname");
+            String instance = (String) map.get("instance");
+            String severity = (String) map.get("severity");
+            alert.setName(alertname);
+            alert.setInstance(instance);
+            alert.setSeverity(severity);
+            iEvents.add(alert);
+        }
         try {
-            policyExecutor.insertEvent(Collections.singletonList(alertsData));
+            policyExecutor.insertEvent(iEvents);
         } catch (RulesException e) {
             e.printStackTrace();
             return Response.serverError().entity("Error Executing Refactoring Logic").build();

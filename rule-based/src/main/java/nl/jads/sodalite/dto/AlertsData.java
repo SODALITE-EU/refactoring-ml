@@ -4,11 +4,10 @@ package nl.jads.sodalite.dto;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import nl.jads.sodalite.events.IEvent;
 
 import java.util.Arrays;
 
-public class AlertsData implements IEvent {
+public class AlertsData {
     @JsonProperty("version")
     private String version;
     @JsonProperty("groupKey")
@@ -28,7 +27,7 @@ public class AlertsData implements IEvent {
     @JsonProperty("externalURL")
     private String externalURL;
     @JsonProperty("alerts")
-    private Alert[] alerts;
+    private AlertDTO[] alertDTOS;
 
     public String getVersion() {
         return version;
@@ -108,12 +107,12 @@ public class AlertsData implements IEvent {
         this.externalURL = externalURL;
     }
 
-    public Alert[] getAlerts() {
-        return alerts;
+    public AlertDTO[] getAlertDTOS() {
+        return alertDTOS;
     }
 
-    public void setAlerts(Alert[] alerts) {
-        this.alerts = alerts;
+    public void setAlertDTOS(AlertDTO[] alertDTOS) {
+        this.alertDTOS = alertDTOS;
     }
 
     @Override
@@ -128,7 +127,7 @@ public class AlertsData implements IEvent {
                 ", commonLabels=" + commonLabels +
                 ", commonAnnotations=" + commonAnnotations +
                 ", externalURL='" + externalURL + '\'' +
-                ", alerts=" + Arrays.toString(alerts) +
+                ", alerts=" + Arrays.toString(alertDTOS) +
                 '}';
     }
 }

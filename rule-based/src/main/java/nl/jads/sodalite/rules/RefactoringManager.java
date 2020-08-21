@@ -80,17 +80,21 @@ public class RefactoringManager {
 
     public void deployDeploymentModel(String target) {
         BuleprintsData blueprintsData = mapBM.get(target);
+        deploy(blueprintsData.getBptoken(), input);
+    }
+
+    public void deploy(String bpToken, String inputFile) {
         Client client = ClientBuilder.newBuilder()
                 .register(MultiPartFeature.class).build();
-        WebTarget webTarget = client.target(getBaseRestUri).path("deploy/" + blueprintsData.getBptoken());
+        WebTarget webTarget = client.target(getBaseRestUri).path("deploy/" + bpToken);
 
         FormDataMultiPart multipart =
                 new FormDataMultiPart()
-                        .field("blueprint_token", blueprintsData.getBptoken());
+                        .field("blueprint_token", bpToken);
 
         FileDataBodyPart fileDataBodyPart =
                 new FileDataBodyPart("inputs_file",
-                        ResourceUtil.getStringAsFile(input),
+                        ResourceUtil.getStringAsFile(inputFile),
                         MediaType.APPLICATION_OCTET_STREAM_TYPE);
 
         multipart.bodyPart(fileDataBodyPart);
@@ -102,27 +106,30 @@ public class RefactoringManager {
         System.out.println(message);
         System.out.println(response.getStatus() + " "
                 + response.getStatusInfo() + " " + response);
-        System.out.println(" Deployment Status for " + target + "," + blueprintsData.getBptoken());
         System.out.println(response.getStatus());
         System.out.println(message);
         System.out.println();
-        currentBlueprintToken = blueprintsData.getBptoken();
+        currentBlueprintToken = bpToken;
     }
 
     public void undeployDeploymentModel(String target) {
         BuleprintsData blueprintsData = mapBM.get(target);
+        unDeploy(blueprintsData.getBptoken(), input);
+    }
+
+    public void unDeploy(String bpToken, String inputFile) {
         ClientConfig config = new ClientConfig((MultiPartFeature.class));
         config.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
         Client client = ClientBuilder.newClient(config);
-        WebTarget webTarget = client.target(getBaseRestUri).path("deploy/" + blueprintsData.getBptoken());
+        WebTarget webTarget = client.target(getBaseRestUri).path("deploy/" + bpToken);
 
         FormDataMultiPart multipart =
                 new FormDataMultiPart()
-                        .field("blueprint_token", blueprintsData.getBptoken());
+                        .field("blueprint_token", bpToken);
 
         FileDataBodyPart fileDataBodyPart =
                 new FileDataBodyPart("inputs_file",
-                        ResourceUtil.getStringAsFile(input),
+                        ResourceUtil.getStringAsFile(inputFile),
                         MediaType.APPLICATION_OCTET_STREAM_TYPE);
 
         multipart.bodyPart(fileDataBodyPart);
@@ -132,9 +139,7 @@ public class RefactoringManager {
                 .invoke();
         String message = response.readEntity(String.class);
         response.close();
-
         System.out.println(message);
-        System.out.println(" Deployment Status for " + target + "," + blueprintsData.getBptoken());
         System.out.println(response);
         System.out.println();
     }

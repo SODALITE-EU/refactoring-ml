@@ -4,7 +4,7 @@ import nl.jads.sodalite.events.LocationChangedEvent;
 import nl.jads.sodalite.events.DeploymentNeeded;
 import nl.jads.sodalite.events.DeploymentChanged;
 import nl.jads.sodalite.events.DeploymentRemove;
-import nl.jads.sodalite.dto.AlertsData
+import nl.jads.sodalite.events.Alert
 import java.util.Arrays
 
 rule "de_to_it"
@@ -59,12 +59,13 @@ rule "deploy_remove_it"
     System.out.println("deploy_remove_it rule executed");
 end
 
-rule "alert_test"
+rule "HostHighCpuLoad"
   when
-    $f1 : AlertsData(status == "firing")
+    $f1 : Alert(name == "HostHighCpuLoad")
   then
-    disabledSet.disable("alert_test");
-    System.out.println("alert_test rule triggered");
-    System.out.println(Arrays.toString($f1.getAlerts()));
-    System.out.println("alert_test rule executed");
+    disabledSet.disable("HostHighCpuLoad");
+    System.out.println("HostHighCpuLoad rule triggered");
+//    refMgt.unDeploy("");
+//    refMgt.deploy("");
+    System.out.println("HostHighCpuLoad rule executed");
 end
