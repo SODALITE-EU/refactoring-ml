@@ -1,0 +1,20 @@
+global:
+#  smtp_smarthost: email-smtp.amazonaws.com:587
+
+route:
+  receiver: 'default-receiver'
+  group_by: ['alertname']
+  group_wait: 30s
+  group_interval: 1m
+  repeat_interval: 5h
+  # All the above attributes are inherited by all child routes and can be overwritten on each.
+  routes:
+    - match_re:
+        service: ^.*
+      receiver: 'default-receiver'
+      continue: true
+receivers:
+  - name: 'default-receiver'
+    webhook_configs:
+      - url: "http://34.91.145.189:8080/rule-based-refactorer/v0.1/api/alerts"
+        send_resolved: true

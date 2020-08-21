@@ -17,6 +17,8 @@ public class Alert {
     private String endsAt;
     @JsonProperty("generatorURL")
     private String generatorURL;
+    @JsonProperty("fingerprint")
+    private String fingerprint;
 
     public String getStatus() {
         return status;
@@ -68,5 +70,26 @@ public class Alert {
 
     public void setGeneratorURL(String generatorURL) {
         this.generatorURL = generatorURL;
+    }
+
+    public String getFingerprint() {
+        return fingerprint;
+    }
+
+    public void setFingerprint(String fingerprint) {
+        this.fingerprint = fingerprint;
+    }
+
+    @Override
+    public String toString() {
+        return "Alert{" +
+                "status='" + status + '\'' +
+                ", labels=" + labels +
+                ", annotations=" + annotations +
+                ", startsAt='" + startsAt + '\'' +
+                ", endsAt='" + endsAt + '\'' +
+                ", generatorURL='" + generatorURL + '\'' +
+                ", fingerprint='" + fingerprint + '\'' +
+                '}';
     }
 }

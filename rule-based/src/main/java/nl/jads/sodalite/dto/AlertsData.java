@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.jads.sodalite.events.IEvent;
 
+import java.util.Arrays;
+
 public class AlertsData implements IEvent {
     @JsonProperty("version")
     private String version;
@@ -112,5 +114,21 @@ public class AlertsData implements IEvent {
 
     public void setAlerts(Alert[] alerts) {
         this.alerts = alerts;
+    }
+
+    @Override
+    public String toString() {
+        return "AlertsData{" +
+                "version='" + version + '\'' +
+                ", groupKey='" + groupKey + '\'' +
+                ", truncatedAlerts=" + truncatedAlerts +
+                ", status='" + status + '\'' +
+                ", receiver='" + receiver + '\'' +
+                ", groupLabels=" + groupLabels +
+                ", commonLabels=" + commonLabels +
+                ", commonAnnotations=" + commonAnnotations +
+                ", externalURL='" + externalURL + '\'' +
+                ", alerts=" + Arrays.toString(alerts) +
+                '}';
     }
 }
