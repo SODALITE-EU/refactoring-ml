@@ -22,7 +22,7 @@ public class PrometheusClient {
     private String baseRestUri;
 
     public PrometheusClient() {
-        baseRestUri = System.getenv("prometheusrest");
+        baseRestUri = System.getenv("prometheus");
         if (baseRestUri == null || "".equals(baseRestUri.trim())) {
             baseRestUri = "http://154.48.185.213:9090/";
         }

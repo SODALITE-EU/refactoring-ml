@@ -30,7 +30,7 @@ public class RefactoringManager {
     private String input;
 
     public RefactoringManager() {
-        getBaseRestUri = System.getenv("xoperarest");
+        getBaseRestUri = System.getenv("xopera");
         if (getBaseRestUri == null || "".equals(getBaseRestUri.trim())) {
             getBaseRestUri = BASE_REST_URI;
         }
