@@ -85,7 +85,7 @@ public class RefactoringService {
             alert.setName(alertname);
             alert.setInstance(instance);
             alert.setSeverity(severity);
-            alert.setSeverity(os_id);
+            alert.setVariant(os_id);
             iEvents.add(alert);
         }
         try {
