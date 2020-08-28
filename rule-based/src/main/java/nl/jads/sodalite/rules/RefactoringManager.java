@@ -84,6 +84,7 @@ public class RefactoringManager {
     }
 
     public void deploy(String bpToken, String inputFile) {
+        System.out.println("Deploying : " + bpToken);
         Client client = ClientBuilder.newBuilder()
                 .register(MultiPartFeature.class).build();
         WebTarget webTarget = client.target(getBaseRestUri).path("deploy/" + bpToken);
@@ -118,6 +119,7 @@ public class RefactoringManager {
     }
 
     public void unDeploy(String bpToken, String inputFile) {
+        System.out.println("Undeploying : " + bpToken);
         ClientConfig config = new ClientConfig((MultiPartFeature.class));
         config.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
         Client client = ClientBuilder.newClient(config);
