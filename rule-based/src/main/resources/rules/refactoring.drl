@@ -69,3 +69,14 @@ rule "HostHighCpuLoad"
 //    refMgt.deploy("");
     System.out.println("HostHighCpuLoad rule executed");
 end
+
+rule "HostLowCpuLoad"
+  when
+    $f1 : Alert(name == "HostLowCpuLoad")
+  then
+    disabledSet.disable("HostLowCpuLoad");
+    System.out.println("HostLowCpuLoad rule triggered");
+//    refMgt.unDeploy("");
+//    refMgt.deploy("");
+    System.out.println("HostLowCpuLoad rule executed");
+end
