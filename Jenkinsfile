@@ -43,8 +43,8 @@ pipeline {
                             docker tag rule_based_refactorer sodaliteh2020/rule_based_refactorer
                             docker push sodaliteh2020/rule_based_refactorer:${BUILD_NUMBER}
                             docker push sodaliteh2020/rule_based_refactorer
-			    docker tag rule_based_refactorer sodaliteh2020/fo_perf_predictor_api:${BUILD_NUMBER}
-                            docker tag rule_based_refactorer sodaliteh2020/fo_perf_predictor_api
+			    docker tag fo_perf_predictor_api sodaliteh2020/fo_perf_predictor_api:${BUILD_NUMBER}
+                            docker tag fo_perf_predictor_api sodaliteh2020/fo_perf_predictor_api
                             docker push sodaliteh2020/fo_perf_predictor_api:${BUILD_NUMBER}
                             docker push sodaliteh2020/fo_perf_predictor_api
                         """
