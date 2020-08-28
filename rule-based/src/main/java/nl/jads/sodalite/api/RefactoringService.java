@@ -81,9 +81,11 @@ public class RefactoringService {
             String alertname = (String) map.get("alertname");
             String instance = (String) map.get("instance");
             String severity = (String) map.get("severity");
+            String os_id = (String) map.get("os_id");
             alert.setName(alertname);
             alert.setInstance(instance);
             alert.setSeverity(severity);
+            alert.setSeverity(os_id);
             iEvents.add(alert);
         }
         try {
