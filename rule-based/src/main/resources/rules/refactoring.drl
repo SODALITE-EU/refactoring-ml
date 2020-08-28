@@ -61,7 +61,7 @@ end
 
 rule "HostHighCpuLoad"
   when
-    $f1 : Alert(name == "HostHighCpuLoad", variant="vehicle-iot-demo-v1")
+    $f1 : Alert(name == "HostHighCpuLoad", variant=="vehicle-iot-demo-v1")
   then
     disabledSet.disable("HostHighCpuLoad");
     System.out.println("HostHighCpuLoad rule triggered");
@@ -72,7 +72,7 @@ end
 
 rule "HostLowCpuLoad"
   when
-    $f1 : Alert(name == "HostLowCpuLoad", variant="vehicle-iot-demo-v2")
+    $f1 : Alert(name == "HostLowCpuLoad", variant=="vehicle-iot-demo-v2")
   then
     disabledSet.disable("HostLowCpuLoad");
     System.out.println("HostLowCpuLoad rule triggered");
