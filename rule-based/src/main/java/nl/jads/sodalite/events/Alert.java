@@ -5,7 +5,7 @@ public class Alert implements IEvent{
     private String name;
     private String instance;
     private String severity;
-    private String os_id;
+    private String variant;
 
     public String getStatus() {
         return status;
@@ -39,11 +39,11 @@ public class Alert implements IEvent{
         this.severity = severity;
     }
 
-    public String getOs_id() {
-        return os_id;
+    public String getVariant() {
+        return variant;
     }
 
-    public void setOs_id(String os_id) {
-        this.os_id = os_id;
+    public void setVariant(String variant) {
+        this.variant = variant;
     }
 }
