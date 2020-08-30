@@ -278,4 +278,4 @@ A sample request
 ```
 DELETE http://ip:5000/per-predictor/<model_type>/features
 ```
- 
+  
