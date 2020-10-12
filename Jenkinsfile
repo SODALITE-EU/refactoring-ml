@@ -26,6 +26,19 @@ pipeline {
         archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
       }
     }
+	stage('SonarQube analysis'){
+        environment {
+          scannerHome = tool 'SonarQubeScanner'
+        }
+        steps {
+            withSonarQubeEnv('SonarCloud') {
+                sh  """ #!/bin/bash
+                        cd "rule-based"
+                        ${scannerHome}/bin/sonar-scanner
+                    """
+            }
+        }
+    }
 	stage('Build docker images') {
             steps {
                 sh "cd rule-based; docker build -t rule_based_refactorer -f Dockerfile ."   
