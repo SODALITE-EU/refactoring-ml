@@ -26,6 +26,17 @@ pipeline {
         archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
       }
     }
+	stage ('Test perf-predictor-api') {
+      steps {
+        sh  """ #!/bin/bash
+		        cd perf-predictor-api
+                pip3 install -r requirements.txt
+				pip3 install . 
+				python3 -m unittest discover -s . -p "*_Test.py"
+            """
+      }
+    }
+	
 	stage('SonarQube analysis'){
         environment {
           scannerHome = tool 'SonarQubeScanner'
