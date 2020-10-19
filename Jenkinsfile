@@ -30,8 +30,8 @@ pipeline {
       steps {
         sh  """ #!/bin/bash
 		        cd perf-predictor-api
-                pip3 install -r requirements.txt
-				pip3 install . 
+                pip3 install --upgrade -r requirements.txt
+				pip3 install --upgrade . 
 				python3 -m unittest discover -s . -p "*_Test.py"
             """
       }
