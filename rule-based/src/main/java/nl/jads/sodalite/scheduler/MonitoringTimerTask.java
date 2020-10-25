@@ -30,8 +30,8 @@ public class MonitoringTimerTask extends TimerTask {
                 + LocalDateTime.ofInstant(Instant.ofEpochMilli(scheduledExecutionTime()),
                 ZoneId.systemDefault()));
         try {
-            Thread.sleep(1000 * 60);
-        } catch (InterruptedException e) {
+            Thread.sleep(60000);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

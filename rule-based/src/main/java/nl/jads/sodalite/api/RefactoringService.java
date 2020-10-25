@@ -128,15 +128,13 @@ public class RefactoringService {
         String actualPath = servletContext.getRealPath("/WEB-INF/classes");
         System.out.println("Received a File :" + fileLocation);
 //        saving file
-        try {
-            FileOutputStream out = new FileOutputStream(new File(actualPath + "/rules/refactoring.drl"));
+        try (FileOutputStream out = new FileOutputStream(new File(actualPath + "/rules/refactoring.drl"))) {
             int read = 0;
             byte[] bytes = new byte[1024];
             while ((read = uploadedInputStream.read(bytes)) != -1) {
                 out.write(bytes, 0, read);
             }
             out.flush();
-            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -162,7 +160,7 @@ public class RefactoringService {
             try {
                 monitoringDataCollector.start();
                 return Response.status(200).entity("Monitoring Enabled").build();
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return Response.status(500).entity(e.getMessage()).build();
             }
