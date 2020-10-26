@@ -21,8 +21,10 @@ pipeline {
         steps {
             sh  """ #!/bin/bash
 			        cd perf-predictor-api
-                    pip3 install -r requirements.txt
-                    python3 -m pytest --pyargs -s ./tests --junitxml="results.xml" --cov=components --cov=models --cov-report xml tests/
+					python3 -mvenv .venv
+					. .venv/bin/activate
+					pip install -r requirements.txt			        
+                    python -m pytest --pyargs -s ./tests --junitxml="results.xml" --cov=components --cov=models --cov-report xml tests/
                 """
             junit 'results.xml'
         }
