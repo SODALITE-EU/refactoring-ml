@@ -17,6 +17,17 @@ pipeline {
         build 'refactoring-option-discoverer/master'
       }
     }
+	stage('Test perf-predictor-api') {
+        steps {
+            sh  """ #!/bin/bash
+			        cd perf-predictor-api
+                    pip3 install -r requirements.txt
+                    pip3 install -e .
+                    python3 -m pytest --pyargs -s ${WORKSPACE}/tests --junitxml="results.xml" --cov=components --cov=models --cov-report xml tests/
+                """
+            junit 'results.xml'
+        }
+    }
     stage ('Build rule-based refactorer') {
       steps {
         sh  """ #!/bin/bash
@@ -26,17 +37,20 @@ pipeline {
         archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
       }
     }
-	stage ('Test perf-predictor-api') {
-      steps {
-        sh  """ #!/bin/bash
-		        cd perf-predictor-api
-                pip3 install -vvv -r requirements.txt
-				pip3 install -vvv . 
-				python3 -m unittest discover -s . -p "*_Test.py"
-            """
-      }
-    }
 	
+	stage('SonarQube analysis perf-predictor-api'){
+        environment {
+          scannerHome = tool 'SonarQubeScanner'
+        }
+        steps {
+            withSonarQubeEnv('SonarCloud') {
+                sh  """ #!/bin/bash
+                        cd "perf-predictor-api"
+                        ${scannerHome}/bin/sonar-scanner
+                    """
+            }
+        }
+    }
 	stage('SonarQube analysis'){
         environment {
           scannerHome = tool 'SonarQubeScanner'
