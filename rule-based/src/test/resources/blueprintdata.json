@@ -1,27 +1,18 @@
-[
-  {
-    "target": [
-      "de",
-      "at"
-    ],
-    "input": "vehicle-iot-v1/input.yaml",
-    "blueprint": {
-      "id": "vehicle_demo",
-      "blueprint_token": "ce1bb4ae-645b-4305-8249-7842ea265ccb",
-      "version_id": 1,
-      "timestamp": "2020-02-04T15:24:16.112381"
+{
+  "input": "ssh-key-name: alexander_maslennikov\nimage-name: \"centos-7 x86_64\"\nopenstack-network-name: xlab\nsecurity-groups: default,remote_access\nflavor-name: m1.medium\ndocker-network: knowgo_net\ndockerhub-user: \ndockerhub-pass: \ndocker-registry-url: registry.hub.docker.com\ndocker-registry-cert-country-name: SI\ndocker-registry-cert-organization-name: XLAB\ndocker-registry-cert-email-address: ",
+  "blueprints": [
+    {
+      "target": [
+        "de",
+        "at"
+      ],
+      "bptoken": "3d6dc7a8-6cfa-4675-ab12-e6b0d0a4c9e0"
+    },
+    {
+      "target": [
+        "it"
+      ],
+      "bptoken": "3d6dc7a8-6cfa-4675-ab12-e6b0d0a4c9e0"
     }
-  },
-  {
-    "target": [
-      "it"
-    ],
-    "input": "vehicle-iot-v2/input.yaml",
-    "blueprint":{
-      "id": "vehicle_demo",
-      "blueprint_token": "59faeef4-a188-412f-984e-086e1e79f141",
-      "version_id": 1,
-      "timestamp": "2020-02-04T15:15:11.845683"
-    }
-  }
-]
+  ]
+}
