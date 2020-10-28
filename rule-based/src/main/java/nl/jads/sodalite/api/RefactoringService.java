@@ -1,5 +1,6 @@
 package nl.jads.sodalite.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import nl.jads.sodalite.dto.AlertDTO;
 import nl.jads.sodalite.dto.AlertsData;
 import nl.jads.sodalite.dto.BuleprintsDataSet;
@@ -95,6 +96,15 @@ public class RefactoringService {
             return Response.serverError().entity("Error Executing Refactoring Logic").build();
         }
         return Response.ok(alertsData.getVersion() + " Alert Received").build();
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/anyalerts")
+    public Response notifyAnyAlerts(JsonNode jsonNode) {
+        System.out.println("Received An Alert : " + jsonNode.toString());
+        return Response.ok("Alert Received").build();
     }
 
     private Response executeRules(List<IEvent> iEventList, String eventType) {
