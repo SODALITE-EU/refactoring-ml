@@ -80,3 +80,25 @@ rule "HostLowCpuLoad"
 //    refMgt.deploy("");
     System.out.println("HostLowCpuLoad rule executed");
 end
+
+rule "edgetpu_temp_warning"
+  when
+    $f1 : Alert(name == "edgetpu_temp_warning", variant=="vehicle-iot-demo-v1")
+  then
+    disabledSet.disable("edgetpu_temp_warning");
+    System.out.println("edgetpu_temp_warning rule triggered");
+//    refMgt.unDeploy("");
+//    refMgt.deploy("");
+    System.out.println("edgetpu_temp_warning rule executed");
+end
+
+rule "edgetpu_temp_critical"
+  when
+    $f1 : Alert(name == "edgetpu_temp_critical", variant=="vehicle-iot-demo-v1")
+  then
+    disabledSet.disable("edgetpu_temp_critical");
+    System.out.println("edgetpu_temp_critical rule triggered");
+//    refMgt.unDeploy("");
+//    refMgt.deploy("");
+    System.out.println("edgetpu_temp_critical rule executed");
+end
