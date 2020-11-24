@@ -1,4 +1,4 @@
-FROM tomcat:8.0.51-jre8-alpine
+FROM tomcat:9.0.40-jdk11
 
 COPY ./target/rule-based-refactorer.war /usr/local/tomcat/webapps/rule-based-refactorer.war
 EXPOSE 8080
