@@ -1,7 +1,5 @@
 package nl.jads.sodalite.rules;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.kie.api.KieServices;
 import org.kie.api.builder.*;
 import org.kie.api.definition.KiePackage;
@@ -14,13 +12,14 @@ import javax.activation.DataHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * TODO documentation
  */
 public abstract class DroolsRules {
 
-    private static final Logger log = LogManager.getLogger();
+    private static final java.util.logging.Logger log = Logger.getLogger(DroolsRules.class.getName());
     protected KieContainer kieContainer;
     protected String ruleDir;
     private String ruleFile1;
@@ -38,7 +37,7 @@ public abstract class DroolsRules {
         try {
             addRulesFromBinary(ruleFileBinary);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
         }
     }
 
@@ -63,9 +62,7 @@ public abstract class DroolsRules {
     }
 
     private boolean addRule1(String ruleFile) {
-        if (log.isInfoEnabled()) {
-            log.info("Reading KB from " + ruleFile);
-        }
+        log.info("Reading KB from " + ruleFile);
         KieServices ks = KieServices.Factory.get();
         KieRepository kr = ks.getRepository();
         KieFileSystem kfs = ks.newKieFileSystem();
@@ -99,7 +96,7 @@ public abstract class DroolsRules {
         kbuilder.buildAll();
         // Check for errors
         if (kbuilder.getResults().hasMessages(Message.Level.ERROR)) {
-            log.error("Error found in rule file: " + ruleFile
+            log.severe("Error found in rule file: " + ruleFile
                     + " Errors found: " + kbuilder.getResults().getMessages());
             return new ArrayList<RegulationRule>();
         }
@@ -166,8 +163,7 @@ public abstract class DroolsRules {
     public void destroy() {
         try {
             kieContainer.dispose();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
     }
 }

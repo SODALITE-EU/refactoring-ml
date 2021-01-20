@@ -27,10 +27,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Path("/api")
 @Singleton
 public class RefactoringService {
+    private static final Logger log = Logger.getLogger(RefactoringService.class.getName());
     @Context
     ServletContext servletContext;
     private RefactoringPolicyExecutor policyExecutor;
@@ -92,7 +94,7 @@ public class RefactoringService {
         try {
             policyExecutor.insertEvent(iEvents);
         } catch (RulesException e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
             return Response.serverError().entity("Error Executing Refactoring Logic").build();
         }
         return Response.ok(alertsData.getVersion() + " Alert Received").build();
@@ -111,7 +113,7 @@ public class RefactoringService {
         try {
             policyExecutor.insertEvent(iEventList);
         } catch (RulesException e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
             return Response.serverError().entity("Error Executing Refactoring Logic").build();
         }
         return Response.ok(eventType + " Event Received").build();
@@ -137,7 +139,7 @@ public class RefactoringService {
         String fileLocation = "e://" + fileDetail.getFileName();
         String actualPath = servletContext.getRealPath("/WEB-INF/classes");
         System.out.println("Received a File :" + fileLocation);
-//        saving file
+
         try (FileOutputStream out = new FileOutputStream(new File(actualPath + "/rules/refactoring.drl"))) {
             int read = 0;
             byte[] bytes = new byte[1024];
@@ -146,7 +148,7 @@ public class RefactoringService {
             }
             out.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
         }
         try {
             policyExecutor.cleanUp();
@@ -171,7 +173,7 @@ public class RefactoringService {
                 monitoringDataCollector.start();
                 return Response.status(200).entity("Monitoring Enabled").build();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.warning(e.getMessage());
                 return Response.status(500).entity(e.getMessage()).build();
             }
         } else {

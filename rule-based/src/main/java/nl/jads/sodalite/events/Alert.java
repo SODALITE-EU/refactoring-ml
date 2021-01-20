@@ -1,6 +1,6 @@
 package nl.jads.sodalite.events;
 
-public class Alert implements IEvent{
+public class Alert implements IEvent {
     private String status;
     private String name;
     private String instance;

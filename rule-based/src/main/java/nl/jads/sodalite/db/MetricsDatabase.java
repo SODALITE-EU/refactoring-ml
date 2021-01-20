@@ -47,11 +47,7 @@ public class MetricsDatabase {
     }
 
     private static void createTable() {
-        Connection connection = null;
-        Statement stmt = null;
-        try {
-            connection = ds.getConnection();
-            stmt = connection.createStatement();
+        try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             String sql = "CREATE TABLE IF NOT EXISTS METRICS " +
                     "(ID INT PRIMARY KEY NOT NULL," +
                     " LABEL varchar(255) NOT NULL," +
@@ -64,30 +60,12 @@ public class MetricsDatabase {
                 log.info("Metrics table was created successfully");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             log.error(e.getMessage());
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException ignored) {
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException ignored) {
-                }
-            }
         }
     }
 
     private static void createRawMetricTable() {
-        Connection connection = null;
-        Statement stmt = null;
-        try {
-            connection = ds.getConnection();
-            stmt = connection.createStatement();
+        try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             String sql = "CREATE TABLE IF NOT EXISTS RAWMETRICS " +
                     "(ID INT PRIMARY KEY NOT NULL," +
                     " LABEL varchar(255) NOT NULL," +
@@ -99,21 +77,7 @@ public class MetricsDatabase {
                 log.info("Metrics table was created successfully");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             log.error(e.getMessage());
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException ignored) {
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException ignored) {
-                }
-            }
         }
     }
 
@@ -123,72 +87,34 @@ public class MetricsDatabase {
      * @param dataRecord a record of monitoring data
      */
     public void addDataRecord(DataRecord dataRecord) {
-        Connection connection = null;
-        Statement stmt = null;
-        try {
-            connection = ds.getConnection();
-            stmt = connection.createStatement();
+        try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             String sql =
                     String.format("INSERT INTO METRICS (ID, LABEL, WORKLOAD, " +
                                     "MEMORY, CPU, THERMAL) VALUES ( %d,'%s', %d, %f, %f, %f );",
                             dataRecord.getId(), dataRecord.getLabel(), dataRecord.getWorkload(),
                             dataRecord.getMemory(), dataRecord.getCpu(), dataRecord.getThermal());
-            System.out.println(sql);
             stmt.executeUpdate(sql);
             if (log.isInfoEnabled()) {
                 log.info("Add data to the metrics table was created successfully");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             log.error(e.getMessage());
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException ignored) {
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException ignored) {
-                }
-            }
         }
     }
 
     public void addMetricRecord(MetricRecord metricRecord) {
-        Connection connection = null;
-        Statement stmt = null;
-        try {
-            connection = ds.getConnection();
-            stmt = connection.createStatement();
+        try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             String sql =
                     String.format("INSERT INTO RAWMETRICS (ID, LABEL, METRIC, VALUETYPE, " +
                                     "VALUE) VALUES ( %d,'%s','%s', '%s', '%s');",
                             System.currentTimeMillis(), metricRecord.getLabel(), metricRecord.getName(),
                             metricRecord.getValueType(), metricRecord.getValue().toJSONString());
-            System.out.println(sql);
             stmt.executeUpdate(sql);
             if (log.isInfoEnabled()) {
                 log.info("Add data to the raw metrics table was created successfully");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             log.error(e.getMessage());
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException ignored) {
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException ignored) {
-                }
-            }
         }
     }
 
@@ -200,11 +126,7 @@ public class MetricsDatabase {
      */
     public List<DataRecord> getDataRecord(String label) {
         List<DataRecord> dataRecords = new ArrayList<>();
-        Connection connection = null;
-        Statement stmt = null;
-        try {
-            connection = ds.getConnection();
-            stmt = connection.createStatement();
+        try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             ResultSet rs =
                     stmt.executeQuery(String.format("SELECT * FROM METRICS WHERE LABEL='%s';", label));
 
@@ -220,21 +142,7 @@ public class MetricsDatabase {
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
             log.error(e.getMessage());
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException ignored) {
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException ignored) {
-                }
-            }
         }
         return dataRecords;
     }
@@ -247,11 +155,7 @@ public class MetricsDatabase {
      */
     public List<MetricRecord> getMetricRecord(String label) {
         List<MetricRecord> dataRecords = new ArrayList<>();
-        Connection connection = null;
-        Statement stmt = null;
-        try {
-            connection = ds.getConnection();
-            stmt = connection.createStatement();
+        try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             ResultSet rs =
                     stmt.executeQuery(String.format("SELECT * FROM RAWMETRICS WHERE LABEL='%s';", label));
 
@@ -265,27 +169,13 @@ public class MetricsDatabase {
                 try {
                     dataRecord.setValue((JSONArray) parser.parse(rs.getString("value")));
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage());
                 }
                 dataRecords.add(dataRecord);
             }
             rs.close();
         } catch (SQLException e) {
-            e.printStackTrace();
             log.error(e.getMessage());
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException ignored) {
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException ignored) {
-                }
-            }
         }
         return dataRecords;
     }

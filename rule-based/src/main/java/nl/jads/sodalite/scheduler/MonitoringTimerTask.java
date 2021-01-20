@@ -10,8 +10,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
 public class MonitoringTimerTask extends TimerTask {
+    private static final java.util.logging.Logger log = Logger.getLogger(MonitoringTimerTask.class.getName());
     MetricsDatabase database = MetricsDatabase.getInstance();
     PrometheusClient prometheusClient = new PrometheusClient();
 
@@ -24,7 +26,7 @@ public class MonitoringTimerTask extends TimerTask {
                 database.addMetricRecord(mr);
             }
         } catch (ParseException e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
         }
         System.out.println("Data Collected at: "
                 + LocalDateTime.ofInstant(Instant.ofEpochMilli(scheduledExecutionTime()),
@@ -32,7 +34,7 @@ public class MonitoringTimerTask extends TimerTask {
         try {
             Thread.sleep(60000);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warning(e.getMessage());
         }
     }
 }
