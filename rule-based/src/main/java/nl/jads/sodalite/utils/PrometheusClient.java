@@ -17,9 +17,11 @@ import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class PrometheusClient {
     private String baseRestUri;
+    private static final Logger log = Logger.getLogger(PrometheusClient.class.getName());
 
     public PrometheusClient() {
         baseRestUri = System.getenv("prometheus");
@@ -43,7 +45,7 @@ public class PrometheusClient {
         JSONObject result = (JSONObject) jsonParser.parse(response);
         List<MetricRecord> metricRecords = new ArrayList<>();
         if ("success".equalsIgnoreCase(String.valueOf(result.get("status")))) {
-            System.out.println("Successful collected data: " + query);
+            log.info("Successful collected data: " + query);
             JSONObject dataObject = ((JSONObject) result.get("data"));
             String resultType = String.valueOf(dataObject.get("resultType"));
             JSONArray jsonArray = (JSONArray) dataObject.get("result");
@@ -60,7 +62,7 @@ public class PrometheusClient {
                 metricRecords.add(metricRecord);
             }
         } else {
-            System.out.println("Error collecting data: " + query);
+            log.info("Error collecting data: " + query);
         }
         return metricRecords;
     }
