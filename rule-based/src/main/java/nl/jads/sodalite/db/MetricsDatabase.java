@@ -82,7 +82,6 @@ public class MetricsDatabase {
                                     "MEMORY, CPU, THERMAL) VALUES ( %d,'%s', %d, %f, %f, %f );",
                             dataRecord.getId(), dataRecord.getLabel(), dataRecord.getWorkload(),
                             dataRecord.getMemory(), dataRecord.getCpu(), dataRecord.getThermal());
-            System.out.println(sql);
             stmt.executeUpdate(sql);
         }
     }
