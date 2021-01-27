@@ -1,5 +1,5 @@
 import pandas as pd
-import utils.DTR as dtr_model
+import mlalgo.DTR as dtr_model
 
 
 class TestPredictors:

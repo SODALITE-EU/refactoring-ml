@@ -1,7 +1,7 @@
 import json
 
-import utils.DTR as dtr_model
-import utils.MLPNN as mlp_model
+import mlalgo.DTR as dtr_model
+import mlalgo.MLPNN as mlp_model
 from utils.db_util import create_variant_table, add_data_records, read_data_records, drop_variant_table
 
 with open('testResources/table.json') as json_file:

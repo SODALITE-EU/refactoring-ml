@@ -1,9 +1,9 @@
 import pandas as pd
 from flask import Flask, json, request, Response
 
-import utils.DTR as dtr_model
-import utils.MLPNN as mlpnn_model
-import utils.RTFR as rtfr_model
+import mlalgo.DTR as dtr_model
+import mlalgo.MLPNN as mlpnn_model
+import mlalgo.RTFR as rtfr_model
 from utils.db_util import create_variant_table, drop_variant_table, read_data_records, add_data_records
 
 app = Flask(__name__)
