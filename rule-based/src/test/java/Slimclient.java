@@ -15,6 +15,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.sql.SQLException;
 import java.util.List;
 
 public class Slimclient {
@@ -41,7 +42,7 @@ public class Slimclient {
         response.close();
     }
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws ParseException, SQLException {
         PrometheusClient prometheusClient = new PrometheusClient();
         List<MetricRecord> metricRecords =
                 prometheusClient.readMetric("http_requests_total");

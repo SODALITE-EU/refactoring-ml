@@ -5,6 +5,7 @@ import nl.jads.sodalite.dto.MetricRecord;
 import nl.jads.sodalite.utils.PrometheusClient;
 import org.json.simple.parser.ParseException;
 
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -25,7 +26,7 @@ public class MonitoringTimerTask extends TimerTask {
             for (MetricRecord mr : metricRecords) {
                 database.addMetricRecord(mr);
             }
-        } catch (ParseException e) {
+        } catch (ParseException | SQLException e) {
             log.warning(e.getMessage());
         }
         System.out.println("Data Collected at: "

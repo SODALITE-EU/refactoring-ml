@@ -26,12 +26,11 @@ public class MetricsDatabase {
 
     private MetricsDatabase() {
         createDataSource();
-        createTable();
-        createRawMetricTable();
-    }
-
-    private static Connection getConnection() throws SQLException {
-        return ds.getConnection();
+        try {
+            createTable();
+            createRawMetricTable();
+        } catch (SQLException ignored) {
+        }
     }
 
     public static MetricsDatabase getInstance() {
@@ -46,7 +45,7 @@ public class MetricsDatabase {
         ds.setMaxOpenPreparedStatements(100);
     }
 
-    private static void createTable() {
+    private static void createTable() throws SQLException {
         try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             String sql = "CREATE TABLE IF NOT EXISTS METRICS " +
                     "(ID INT PRIMARY KEY NOT NULL," +
@@ -56,15 +55,10 @@ public class MetricsDatabase {
                     " CPU        DOUBLE, " +
                     " THERMAL         DOUBLE )";
             stmt.executeUpdate(sql);
-            if (log.isInfoEnabled()) {
-                log.info("Metrics table was created successfully");
-            }
-        } catch (SQLException e) {
-            log.error(e.getMessage());
         }
     }
 
-    private static void createRawMetricTable() {
+    private static void createRawMetricTable() throws SQLException {
         try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             String sql = "CREATE TABLE IF NOT EXISTS RAWMETRICS " +
                     "(ID INT PRIMARY KEY NOT NULL," +
@@ -73,11 +67,6 @@ public class MetricsDatabase {
                     " VAlUETYPE           varchar(255), " +
                     " VALUE            TEXT)";
             stmt.executeUpdate(sql);
-            if (log.isInfoEnabled()) {
-                log.info("Metrics table was created successfully");
-            }
-        } catch (SQLException e) {
-            log.error(e.getMessage());
         }
     }
 
@@ -86,23 +75,19 @@ public class MetricsDatabase {
      *
      * @param dataRecord a record of monitoring data
      */
-    public void addDataRecord(DataRecord dataRecord) {
+    public void addDataRecord(DataRecord dataRecord) throws SQLException {
         try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             String sql =
                     String.format("INSERT INTO METRICS (ID, LABEL, WORKLOAD, " +
                                     "MEMORY, CPU, THERMAL) VALUES ( %d,'%s', %d, %f, %f, %f );",
                             dataRecord.getId(), dataRecord.getLabel(), dataRecord.getWorkload(),
                             dataRecord.getMemory(), dataRecord.getCpu(), dataRecord.getThermal());
+            System.out.println(sql);
             stmt.executeUpdate(sql);
-            if (log.isInfoEnabled()) {
-                log.info("Add data to the metrics table was created successfully");
-            }
-        } catch (SQLException e) {
-            log.error(e.getMessage());
         }
     }
 
-    public void addMetricRecord(MetricRecord metricRecord) {
+    public void addMetricRecord(MetricRecord metricRecord) throws SQLException {
         try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             String sql =
                     String.format("INSERT INTO RAWMETRICS (ID, LABEL, METRIC, VALUETYPE, " +
@@ -110,11 +95,6 @@ public class MetricsDatabase {
                             System.currentTimeMillis(), metricRecord.getLabel(), metricRecord.getName(),
                             metricRecord.getValueType(), metricRecord.getValue().toJSONString());
             stmt.executeUpdate(sql);
-            if (log.isInfoEnabled()) {
-                log.info("Add data to the raw metrics table was created successfully");
-            }
-        } catch (SQLException e) {
-            log.error(e.getMessage());
         }
     }
 
@@ -124,7 +104,7 @@ public class MetricsDatabase {
      * @param label the label of a node
      * @return a record of monitoring data
      */
-    public List<DataRecord> getDataRecord(String label) {
+    public List<DataRecord> getDataRecord(String label) throws SQLException {
         List<DataRecord> dataRecords = new ArrayList<>();
         try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             ResultSet rs =
@@ -141,8 +121,6 @@ public class MetricsDatabase {
                 dataRecords.add(dataRecord);
             }
             rs.close();
-        } catch (SQLException e) {
-            log.error(e.getMessage());
         }
         return dataRecords;
     }
@@ -153,7 +131,7 @@ public class MetricsDatabase {
      * @param label the label of a node
      * @return a record of monitoring data
      */
-    public List<MetricRecord> getMetricRecord(String label) {
+    public List<MetricRecord> getMetricRecord(String label) throws SQLException {
         List<MetricRecord> dataRecords = new ArrayList<>();
         try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             ResultSet rs =
@@ -174,8 +152,6 @@ public class MetricsDatabase {
                 dataRecords.add(dataRecord);
             }
             rs.close();
-        } catch (SQLException e) {
-            log.error(e.getMessage());
         }
         return dataRecords;
     }
