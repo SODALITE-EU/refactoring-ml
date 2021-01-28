@@ -37,7 +37,6 @@ pipeline {
                 cd rule-based
                 mvn clean install
             """
-        archiveArtifacts artifacts: '**/*.war, **/*.jar', onlyIfSuccessful: true
       }
     }
 	
