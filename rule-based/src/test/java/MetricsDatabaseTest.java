@@ -3,6 +3,7 @@ import nl.jads.sodalite.dto.DataRecord;
 import nl.jads.sodalite.dto.MetricRecord;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
@@ -13,7 +14,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class MetricsDatabaseTest {
     @Test
-    public void testMetricDB() throws SQLException {
+    public void testMetricDB() throws SQLException, ParseException {
         MetricsDatabase database = MetricsDatabase.getInstance();
         DataRecord record = new DataRecord();
         record.setLabel("Node1");

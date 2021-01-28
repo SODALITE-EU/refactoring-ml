@@ -130,7 +130,7 @@ public class MetricsDatabase {
      * @param label the label of a node
      * @return a record of monitoring data
      */
-    public List<MetricRecord> getMetricRecord(String label) throws SQLException {
+    public List<MetricRecord> getMetricRecord(String label) throws SQLException, ParseException {
         List<MetricRecord> dataRecords = new ArrayList<>();
         try (Connection connection = ds.getConnection(); Statement stmt = connection.createStatement()) {
             ResultSet rs =
@@ -143,11 +143,7 @@ public class MetricsDatabase {
                 dataRecord.setName(rs.getString("metric"));
                 dataRecord.setValueType(rs.getString("valuetype"));
                 JSONParser parser = new JSONParser();
-                try {
-                    dataRecord.setValue((JSONArray) parser.parse(rs.getString("value")));
-                } catch (ParseException e) {
-                    log.error(e.getMessage());
-                }
+                dataRecord.setValue((JSONArray) parser.parse(rs.getString("value")));
                 dataRecords.add(dataRecord);
             }
             rs.close();
