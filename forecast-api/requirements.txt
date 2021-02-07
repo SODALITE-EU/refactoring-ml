@@ -1,0 +1,5 @@
+flask
+statsmodels
+pmdarima
+pystan==2.18
+fbprophet==0.7.1
