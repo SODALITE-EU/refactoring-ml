@@ -53,7 +53,7 @@ def evaluate_models(dataset, p_values, d_values, q_values):
 
 
 def save_model(dataset, m_name):
-    model_fit, predicion = fit_forcast_next(dataset)
+    model_fit, predicion = fit_forecast_next(dataset)
     model_fit.save(m_name + '.pkl', True)
 
 
