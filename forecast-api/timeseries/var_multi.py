@@ -44,7 +44,7 @@ def remove_stationary(ds_train):
         return ds_train, 0
 
 
-def fit_forecast_next(dataset):
+def fit_forecast(dataset):
     cols = dataset.columns
     # creating the train and validation set
     train = dataset[:int(0.8 * (len(dataset)))]
@@ -64,6 +64,21 @@ def fit_forecast_next(dataset):
         rmses[i + '_RMSE'] = sqrt(mean_squared_error(forecast[i], valid[i]))
 
     return forecast, valid, rmses
+
+
+def fit_forecast_next(dataset):
+    cols = dataset.columns
+    dataset_differenced, round_no = remove_stationary(dataset)
+    model = VAR(dataset_differenced)
+    model_fit = model.fit()
+    # make prediction on validation
+    prediction = model_fit.forecast(model_fit.endog, steps=1)
+    # converting predictions to dataframe
+    forecast = pd.DataFrame(prediction, index=dataset.index[-1:], columns=cols)
+    if round_no != 0:
+        forecast = invert_transformation(dataset, forecast, (round_no == 2))
+    # check rmse
+    return forecast
 
 
 # Inverting the Differencing Transformation

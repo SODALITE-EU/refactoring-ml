@@ -2,6 +2,7 @@ import pandas as pd
 from flask import Flask, json, request, Response
 
 import timeseries.arima_grid as armia
+import timeseries.var_multi as var_multi
 from regression import linear
 
 app = Flask(__name__)
@@ -16,7 +17,8 @@ def forecast_next(model, x):
     series = pd.Series(df['Y'].values, index=df['X'])
     if model == "arima":
         model_fit, prediction = armia.fit_forecast_next(series.values)
-
+    elif model == "var":
+        prediction = var_multi.fit_forecast_next(df)
     elif model == "linear":
         prediction = linear.fit_forecast_next(df, test_x)
     else:
