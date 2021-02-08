@@ -5,8 +5,6 @@ import pandas as pd
 from pandas import read_json, to_numeric
 
 import timeseries.arima_grid as armia
-
-
 # load dataset
 def parser(x):
     return datetime.strptime('190' + x, '%Y-%m')
