@@ -57,7 +57,7 @@ def save_model(dataset, m_name):
     model_fit.save(m_name + '.pkl', True)
 
 
-def fit_forcast_next(dataset):
+def fit_forecast_next(dataset):
     p_values = [0, 1, 2, 4, 6, 8, 10]
     d_values = range(0, 3)
     q_values = range(0, 3)
@@ -70,6 +70,6 @@ def fit_forcast_next(dataset):
     return model_fit, model_fit.forecast()
 
 
-def forcast_next(m_name):
+def forecast_next(m_name):
     loaded = ARIMAResults.load(m_name + '.pkl')
     return loaded.predict()

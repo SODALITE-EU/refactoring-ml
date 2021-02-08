@@ -15,6 +15,6 @@ class TestPredictors:
         series = read_csv('testResources/shampoo.csv', header=0, index_col=0, parse_dates=True, squeeze=True,
                           date_parser=parser)
         # evaluate parameters
-        print(series)
-        model_fit, prediction = armia.fit_forcast_next(series.values)
-        print(prediction)
+        model_fit, prediction = armia.fit_forecast_next(series.values)
+        assert model_fit is not None
+        assert prediction is not None

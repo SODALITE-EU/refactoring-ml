@@ -8,16 +8,17 @@ app = Flask(__name__)
 app.config["DEBUG"] = True
 
 
-@app.route('/forecast-api/<model>/forecast', methods=['POST'])
-def forecast_next(model):
+@app.route('/forecast-api/<model>/forecast/<x>', methods=['POST'])
+def forecast_next(model, x):
+    test_x = float(x)
     content = request.get_json()
     df = pd.read_json(json.dumps(content), orient='records')
     series = pd.Series(df['Y'].values, index=df['X'])
     if model == "arima":
-        model_fit, prediction = armia.fit_forcast_next(series.values)
+        model_fit, prediction = armia.fit_forecast_next(series.values)
 
     elif model == "linear":
-        prediction = linear.fit_forcast_next(df)
+        prediction = linear.fit_forecast_next(df, test_x)
     else:
         prediction = -1
     text_out = {

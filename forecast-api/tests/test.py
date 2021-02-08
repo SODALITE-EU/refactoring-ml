@@ -24,5 +24,5 @@ print(series)
 # evaluate parameters
 # print(series)
 warnings.filterwarnings("ignore")
-model_fit, prediction = armia.fit_forcast_next(series.values)
+model_fit, prediction = armia.fit_forecast_next(series.values)
 print(prediction)
