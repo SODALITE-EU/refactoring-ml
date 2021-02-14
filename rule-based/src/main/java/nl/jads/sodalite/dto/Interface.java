@@ -1,4 +1,4 @@
 package nl.jads.sodalite.dto;
 
-public class Interface {
+public class Interface extends NamedElement {
 }

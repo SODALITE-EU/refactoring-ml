@@ -1,12 +1,13 @@
 package nl.jads.sodalite.dto;
 
+import nl.jads.sodalite.events.IEvent;
 import org.json.simple.JSONArray;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DeploymentModel {
+public class DeploymentModel implements IEvent {
     private String id;
     private String namespace;
     private String createdBy;

@@ -17,9 +17,9 @@ public class DeploymentModelBuilderTest {
         DeploymentModel deploymentModel = DeploymentModelBuilder.fromJsonFile("aadm.json");
         assert deploymentModel != null;
         assertEquals(deploymentModel.getVersion(), "1");
-        for (Node node: deploymentModel.getNodes()){
-            System.out.println(node.getName());
+        for (Node node : deploymentModel.getNodes()) {
             assertNotNull(node);
+            assertNotNull(node.getName());
         }
     }
 }

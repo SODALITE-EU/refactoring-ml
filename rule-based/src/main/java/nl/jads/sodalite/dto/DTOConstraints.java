@@ -13,18 +13,19 @@ public class DTOConstraints {
     public static String PROPERTIES = "properties";
     public static String property = "property";
     public static String IS_NODE_TEMPLATE = "isNodeTemplate";
-    public static String specification = "specification";
+    public static String SPEC = "specification";
     public static String get_input = "get_input";
-    public static String requirements = "requirements";
+    public static String REQS = "requirements";
     public static String NODE = "node";
-    public static String label = "label";
-    public static String value = "value";
+    public static String LABEL = "label";
+    public static String DESC = "description";
+    public static String VALUE = "value";
     public static String get_property = "get_property";
     public static String entity = "entity";
     public static String req_cap = "req_cap";
-    public static String capabilities = "capabilities";
+    public static String CAPABILITIES = "capabilities";
     public static String capability = "capability";
-    public static String interfaces = "interfaces";
+    public static String INTERFACES = "interfaces";
     public static String operations = "operations";
     public static String operation = "operation";
     public static String create = "create";
@@ -35,7 +36,7 @@ public class DTOConstraints {
     public static String inputs = "inputs";
     public static String attribute = "attribute";
     public static String get_attribute = "get_attribute";
-    public static String attributes = "attributes";
+    public static String ATTRIBUTES = "attributes";
     public static String required = "required";
 
 }
