@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Property extends NamedElement {
-    private String description;
     private String label;
     private List<String> values = new ArrayList<>();
 
@@ -24,11 +23,4 @@ public class Property extends NamedElement {
         this.label = label;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

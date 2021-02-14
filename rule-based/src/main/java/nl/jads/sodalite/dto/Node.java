@@ -7,11 +7,12 @@ import java.util.Map;
 public class Node {
     private String name;
     private String type;
-    private Map<String, Requirement> requirements = new HashMap<>();
+    private boolean isNodeTemplate;
+    private Map<String, NamedElement> requirements = new HashMap<>();
     private Map<String, Property> properties = new HashMap<>();
-    private Map<String, Attribute> attributes = new HashMap<>();
-    private Map<String, Capability> capabilities = new HashMap<>();
-    private Map<String, Interface> interfaces = new HashMap<>();
+    private Map<String, NamedElement> attributes = new HashMap<>();
+    private Map<String, NamedElement> capabilities = new HashMap<>();
+    private Map<String, NamedElement> interfaces = new HashMap<>();
 
     public String getName() {
         return name;
@@ -25,11 +26,11 @@ public class Node {
         requirements.putIfAbsent(requirement.getName(), requirement);
     }
 
-    public Requirement getRequirement(String pName) {
+    public NamedElement getRequirement(String pName) {
         return requirements.get(pName);
     }
 
-    public Collection<Requirement> getRequirements() {
+    public Collection<NamedElement> getRequirements() {
         return requirements.values();
     }
 
@@ -49,11 +50,11 @@ public class Node {
         attributes.putIfAbsent(property.getName(), property);
     }
 
-    public Attribute getAttribute(String pName) {
+    public NamedElement getAttribute(String pName) {
         return attributes.get(pName);
     }
 
-    public Collection<Attribute> getAttributes() {
+    public Collection<NamedElement> getAttributes() {
         return attributes.values();
     }
 
@@ -61,11 +62,11 @@ public class Node {
         capabilities.putIfAbsent(capability.getName(), capability);
     }
 
-    public Capability getCapability(String pName) {
+    public NamedElement getCapability(String pName) {
         return capabilities.get(pName);
     }
 
-    public Collection<Capability> getCapabilities() {
+    public Collection<NamedElement> getCapabilities() {
         return capabilities.values();
     }
 
@@ -73,11 +74,11 @@ public class Node {
         interfaces.putIfAbsent(anInterface.getName(), anInterface);
     }
 
-    public Interface getInterface(String pName) {
+    public NamedElement getInterface(String pName) {
         return interfaces.get(pName);
     }
 
-    public Collection<Interface> getInterfaces() {
+    public Collection<NamedElement> getInterfaces() {
         return interfaces.values();
     }
 
@@ -87,5 +88,13 @@ public class Node {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public boolean isNodeTemplate() {
+        return isNodeTemplate;
+    }
+
+    public void setNodeTemplate(boolean nodeTemplate) {
+        isNodeTemplate = nodeTemplate;
     }
 }

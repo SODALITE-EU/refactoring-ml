@@ -1,15 +1,18 @@
 import nl.jads.sodalite.dto.DeploymentModel;
 import nl.jads.sodalite.dto.Node;
 import nl.jads.sodalite.utils.DeploymentModelBuilder;
+import nl.jads.sodalite.utils.DeploymentModelSerializer;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileWriter;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class DeploymentModelBuilderTest {
+public class DeploymentModelBuilderSerializerTest {
 
 
     @Test
@@ -21,5 +24,10 @@ public class DeploymentModelBuilderTest {
             assertNotNull(node);
             assertNotNull(node.getName());
         }
+        JSONObject dmJson = DeploymentModelSerializer.toJson(deploymentModel);
+        //Write JSON file
+        FileWriter file = new FileWriter("aadm_produced.json");
+        file.write(dmJson.toJSONString().replace("\\/","/"));
+        file.close();
     }
 }

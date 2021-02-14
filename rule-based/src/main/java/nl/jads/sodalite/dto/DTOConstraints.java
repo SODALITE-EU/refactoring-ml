@@ -33,7 +33,7 @@ public class DTOConstraints {
     public static String primary = "primary";
     public static String dependencies = "dependencies";
     public static String files = "files";
-    public static String inputs = "inputs";
+    public static String INPUTS = "inputs";
     public static String attribute = "attribute";
     public static String get_attribute = "get_attribute";
     public static String ATTRIBUTES = "attributes";

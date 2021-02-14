@@ -37,10 +37,13 @@ public class DeploymentModelBuilder {
                 continue;
             }
             Object isNodeTemplate = jsonObject.get(DTOConstraints.IS_NODE_TEMPLATE);
-            if (isNodeTemplate != null && (Boolean) isNodeTemplate) {
+            if (isNodeTemplate != null) {
                 buildNode(jsonObject, dm, key);
             }
-
+            Object inputs = jsonObject.get(DTOConstraints.INPUTS);
+            if (inputs != null) {
+                buildDMInputs(jsonObject, dm, key);
+            }
         }
         return dm;
     }
@@ -54,10 +57,27 @@ public class DeploymentModelBuilder {
         dm.setParticipants((JSONArray) jsonObject.get(DTOConstraints.PARTICIPANTS));
     }
 
+    private static void buildDMInputs(JSONObject jsonObject, DeploymentModel dm, String key) {
+        dm.setInputKey(key);
+        JSONArray inputsArray = (JSONArray) jsonObject.get(DTOConstraints.INPUTS);
+        if (inputsArray != null) {
+            for (Iterator it = inputsArray.iterator(); it.hasNext(); ) {
+                JSONObject req = (JSONObject) it.next();
+                String pName = (String) req.keySet().toArray()[0];
+                JSONObject jObj = (JSONObject) req.get(pName);
+                Input input = new Input();
+                input.setName(pName);
+                input.setSpecification((JSONObject) jObj.get(DTOConstraints.SPEC));
+                dm.addInput(input);
+            }
+        }
+    }
+
     private static void buildNode(JSONObject jsonObject, DeploymentModel dm, String key) {
         Node node = new Node();
         node.setName(key);
         node.setType((String) jsonObject.get(DTOConstraints.TYPE));
+        node.setNodeTemplate((Boolean) jsonObject.get(DTOConstraints.IS_NODE_TEMPLATE));
         JSONArray jsonArray = (JSONArray) jsonObject.get(DTOConstraints.PROPERTIES);
         if (jsonArray != null) {
             for (Iterator it = jsonArray.iterator(); it.hasNext(); ) {
@@ -70,13 +90,15 @@ public class DeploymentModelBuilder {
                 property.setLabel((String) jObj.get(DTOConstraints.LABEL));
                 property.setDescription((String) jObj.get(DTOConstraints.DESC));
                 Object values = jObj.get(DTOConstraints.VALUE);
-                if (values instanceof JSONArray) {
-                    JSONArray pAry = (JSONArray) values;
-                    for (Iterator it2 = pAry.iterator(); it2.hasNext(); ) {
-                        property.addValue((String) it2.next());
+                if (values != null) {
+                    if (values instanceof JSONArray) {
+                        JSONArray pAry = (JSONArray) values;
+                        for (Iterator it2 = pAry.iterator(); it2.hasNext(); ) {
+                            property.addValue((String) it2.next());
+                        }
+                    } else {
+                        property.addValue((String) values);
                     }
-                } else {
-                    property.addValue((String) values);
                 }
                 node.addProperty(property);
             }
@@ -93,16 +115,16 @@ public class DeploymentModelBuilder {
                 node.addRequirement(requirement);
             }
         }
-
         JSONArray jsonArrayAttr = (JSONArray) jsonObject.get(DTOConstraints.ATTRIBUTES);
         if (jsonArrayAttr != null) {
             for (Iterator it = jsonArrayAttr.iterator(); it.hasNext(); ) {
-                JSONObject req = (JSONObject) it.next();
-                String pName = (String) req.keySet().toArray()[0];
-                JSONObject jObj = (JSONObject) req.get(pName);
+                JSONObject attri = (JSONObject) it.next();
+                String pName = (String) attri.keySet().toArray()[0];
+                JSONObject jObj = (JSONObject) attri.get(pName);
                 Attribute attribute = new Attribute();
                 attribute.setName(pName);
                 attribute.setSpecification((JSONObject) jObj.get(DTOConstraints.SPEC));
+                attribute.setDescription((String) jObj.get(DTOConstraints.DESC));
                 node.addAttribute(attribute);
             }
         }

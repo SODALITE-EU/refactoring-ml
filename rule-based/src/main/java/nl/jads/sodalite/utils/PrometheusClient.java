@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 public class PrometheusClient {
-    private String baseRestUri;
     private static final Logger log = Logger.getLogger(PrometheusClient.class.getName());
+    private String baseRestUri;
 
     public PrometheusClient() {
         baseRestUri = System.getenv("prometheus");
