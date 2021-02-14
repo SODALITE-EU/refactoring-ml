@@ -10,7 +10,7 @@ public class DTOConstraints {
     public static String VERSION = "version";
     public static String PARTICIPANTS = "participants";
     public static String ABSTRACT_APPLICATION_DEPLOYMENT_MODEL = "AbstractApplicationDeploymentModel";
-    public static String properties = "properties";
+    public static String PROPERTIES = "properties";
     public static String property = "property";
     public static String IS_NODE_TEMPLATE = "isNodeTemplate";
     public static String specification = "specification";

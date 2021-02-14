@@ -59,6 +59,16 @@ public class DeploymentModelBuilder {
     private static void buildNode(JSONObject jsonObject, DeploymentModel dm, String key) {
         Node node = new Node();
         node.setName(key);
+        node.setType((String)jsonObject.get(DTOConstraints.TYPE));
+        JSONArray jsonArray = (JSONArray) jsonObject.get(DTOConstraints.PARTICIPANTS);
+        if(jsonArray!=null){
+            for (Iterator it = jsonArray.iterator(); it.hasNext(); ) {
+                Map.Entry pair = (Map.Entry) it.next();
+//                String key = (String) pair.getKey();
+//                JSONObject jsonObject = (JSONObject) pair.getValue();
+//                Property property = new Property()
+            }
+        }
         dm.addNode(node);
     }
 }
