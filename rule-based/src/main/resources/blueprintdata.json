@@ -6,13 +6,15 @@
         "de",
         "at"
       ],
-      "bptoken": "3d6dc7a8-6cfa-4675-ab12-e6b0d0a4c9e0"
+      "bptoken": "3d6dc7a8-6cfa-4675-ab12-e6b0d0a4c9e0",
+      "dpid": "3d6dc7a8-6cfa-4675-ab12-e6b0d0a4c9e0"
     },
     {
       "target": [
         "it"
       ],
-      "bptoken": "3d6dc7a8-6cfa-4675-ab12-e6b0d0a4c9e0"
+      "bptoken": "3d6dc7a8-6cfa-4675-ab12-e6b0d0a4c9e0",
+      "dpid": "3d6dc7a8-6cfa-4675-ab12-e6b0d0a4c9e0"
     }
   ]
 }

@@ -6,7 +6,14 @@ ENV prometheus  http://prometheus:9090
 ENV xopera  http://xopera-nginx:5000
 ENV refacopdiscoverer  http://refactoring_option_discoverer:8080
 ENV perfpredictor  http://fo_perf_predictor_api:5000
-ENV perfpredictor  http://fo_perf_predictor_api:5000
+ENV forecaster  http://forecast-api:5000
+ENV reasoner  http://reasoner-api:5000
+ENV authapi  http://authapi:5000
+ENV iacbuilder  http://iacbuilder-api:5000
+ENV username  indika
+ENV client_id  client_id
+ENV client_secret  client_secret
+ENV apikey  test
 
 # Add docker-compose-wait tool -------------------
 ENV WAIT_VERSION 2.7.3
