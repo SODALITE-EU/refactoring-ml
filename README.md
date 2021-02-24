@@ -47,6 +47,16 @@ sudo docker stop perPredictAPI
 sudo docker rm  perPredictAPI
 sudo docker rmi sodalite/performance-predictor-refactoring
 ```
+# Forecasting API
+```
+sudo docker build -t sodalite/forecast-api .
+sudo docker run -p 5001:5000 -d --name=forecastAPI sodalite/forecast-api
+sudo docker start forecastAPI
+sudo docker logs forecastAPI
+sudo docker stop forecastAPI
+sudo docker rm  forecastAPI
+sudo docker rmi sodalite/forecast-api
+```
 
 ## Run Docker Compose
 ```
