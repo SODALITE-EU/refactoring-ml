@@ -2,6 +2,7 @@ package nl.jads.sodalite.rules;
 
 import nl.jads.sodalite.dto.BuleprintsData;
 import nl.jads.sodalite.dto.BuleprintsDataSet;
+import nl.jads.sodalite.dto.DeploymentModel;
 import nl.jads.sodalite.utils.POJOFactory;
 import nl.jads.sodalite.utils.ResourceUtil;
 import org.glassfish.jersey.client.ClientConfig;
@@ -27,13 +28,29 @@ public class RefactoringManager {
     private Map<String, BuleprintsData> mapBM = new HashMap<String, BuleprintsData>();
     private String currentBlueprintToken;
     private String getBaseRestUri;
+    private String reasonerUri;
+    private String iacBuilderUri;
+    private String authUri;
+    private String username;
+    private String password;
+    private String clientId;
+    private String clientSecret;
     private String input;
+    private DeploymentModel deploymentModel;
 
     public RefactoringManager() {
         getBaseRestUri = System.getenv("xopera");
         if (getBaseRestUri == null || "".equals(getBaseRestUri.trim())) {
             getBaseRestUri = BASE_REST_URI;
         }
+        reasonerUri = System.getenv("reasoner");
+        iacBuilderUri = System.getenv("iacbuilder");
+        authUri = System.getenv("authUri");
+        username = System.getenv("username");
+        password = System.getenv("password");
+        clientId = System.getenv("client_id");
+        clientSecret = System.getenv("client_secret");
+
         BuleprintsDataSet buleprintsDatas = POJOFactory.fromJsonFile("blueprintdata.json");
         if (buleprintsDatas != null) {
             configure(buleprintsDatas);
@@ -155,6 +172,78 @@ public class RefactoringManager {
                 mapBM.put(target, buleprintsData);
             }
         }
+    }
+
+    public DeploymentModel getDeploymentModel() {
+        return deploymentModel;
+    }
+
+    public void setDeploymentModel(DeploymentModel deploymentModel) {
+        this.deploymentModel = deploymentModel;
+    }
+
+    public String getReasonerUri() {
+        return reasonerUri;
+    }
+
+    public void setReasonerUri(String reasonerUri) {
+        this.reasonerUri = reasonerUri;
+    }
+
+    public String getIacBuilderUri() {
+        return iacBuilderUri;
+    }
+
+    public void setIacBuilderUri(String iacBuilderUri) {
+        this.iacBuilderUri = iacBuilderUri;
+    }
+
+    public String getAuthUri() {
+        return authUri;
+    }
+
+    public void setAuthUri(String authUri) {
+        this.authUri = authUri;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
+    public String getInput() {
+        return input;
+    }
+
+    public void setInput(String input) {
+        this.input = input;
     }
 }
 
