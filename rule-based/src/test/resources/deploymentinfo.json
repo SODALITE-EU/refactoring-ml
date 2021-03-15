@@ -1,0 +1,9 @@
+{
+  "aadm_id": "value",
+  "deployment_id": "value",
+  "blueprint_token": "value",
+  "input": {
+    "key1": "value1",
+    "key2": "value2"
+  }
+}

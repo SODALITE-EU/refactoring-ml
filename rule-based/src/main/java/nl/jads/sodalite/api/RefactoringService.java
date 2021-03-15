@@ -1,10 +1,7 @@
 package nl.jads.sodalite.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import nl.jads.sodalite.dto.AlertDTO;
-import nl.jads.sodalite.dto.AlertsData;
-import nl.jads.sodalite.dto.BuleprintsDataSet;
-import nl.jads.sodalite.dto.InputEventData;
+import nl.jads.sodalite.dto.*;
 import nl.jads.sodalite.events.*;
 import nl.jads.sodalite.rules.RefactoringManager;
 import nl.jads.sodalite.rules.RefactoringPolicyExecutor;
@@ -98,6 +95,17 @@ public class RefactoringService {
             return Response.serverError().entity("Error Executing Refactoring Logic").build();
         }
         return Response.ok(alertsData.getVersion() + " Alert Received").build();
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/deployments")
+    public Response createDeployment(DeploymentInfo deploymentInfo) {
+        System.out.println("Received the Information about the deployment  : " + deploymentInfo.getAadm_id());
+        refactoringManager.setCurrentDeploymentInfo(deploymentInfo);
+        return Response.ok("Information about the deployment with id " +
+                deploymentInfo.getAadm_id() + " received").build();
     }
 
     @POST

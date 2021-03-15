@@ -2,6 +2,7 @@ package nl.jads.sodalite.rules;
 
 import nl.jads.sodalite.dto.BuleprintsData;
 import nl.jads.sodalite.dto.BuleprintsDataSet;
+import nl.jads.sodalite.dto.DeploymentInfo;
 import nl.jads.sodalite.dto.DeploymentModel;
 import nl.jads.sodalite.utils.POJOFactory;
 import nl.jads.sodalite.utils.ResourceUtil;
@@ -35,6 +36,8 @@ public class RefactoringManager {
     private String input;
     private String apikey;
     private DeploymentModel deploymentModel;
+    private DeploymentInfo currentDeploymentInfo;
+    private DeploymentInfo nextDeploymentInfo;
 
     public RefactoringManager() {
         xopera = System.getenv("xopera");
@@ -290,6 +293,22 @@ public class RefactoringManager {
 
     public void setApikey(String apikey) {
         this.apikey = apikey;
+    }
+
+    public DeploymentInfo getCurrentDeploymentInfo() {
+        return currentDeploymentInfo;
+    }
+
+    public void setCurrentDeploymentInfo(DeploymentInfo currentDeploymentInfo) {
+        this.currentDeploymentInfo = currentDeploymentInfo;
+    }
+
+    public DeploymentInfo getNextDeploymentInfo() {
+        return nextDeploymentInfo;
+    }
+
+    public void setNextDeploymentInfo(DeploymentInfo nextDeploymentInfo) {
+        this.nextDeploymentInfo = nextDeploymentInfo;
     }
 }
 
