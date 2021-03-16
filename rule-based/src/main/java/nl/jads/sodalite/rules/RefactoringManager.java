@@ -4,8 +4,11 @@ import nl.jads.sodalite.dto.BuleprintsData;
 import nl.jads.sodalite.dto.BuleprintsDataSet;
 import nl.jads.sodalite.dto.DeploymentInfo;
 import nl.jads.sodalite.dto.DeploymentModel;
+import nl.jads.sodalite.utils.DeploymentModelBuilder;
 import nl.jads.sodalite.utils.POJOFactory;
 import nl.jads.sodalite.utils.ResourceUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -38,6 +41,7 @@ public class RefactoringManager {
     private DeploymentModel deploymentModel;
     private DeploymentInfo currentDeploymentInfo;
     private DeploymentInfo nextDeploymentInfo;
+    private static final Logger log = LogManager.getLogger();
 
     public RefactoringManager() {
         xopera = System.getenv("xopera");
@@ -100,6 +104,25 @@ public class RefactoringManager {
     public void deployDeploymentModel(String target) {
         BuleprintsData blueprintsData = mapBM.get(target);
         deploy(blueprintsData.getBptoken(), input);
+    }
+
+    public void loadDeployment(String aadmId) throws  Exception{
+        Client client = ClientBuilder.newClient();
+        WebTarget webTarget =
+                client.target(reasonerUri).path("aadm").queryParam("aadmIRI", aadmId);
+        Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
+        if (apikey != null) {
+            builder.header("X-API-Key", apikey);
+        }
+        Invocation invocation =
+                builder.buildGet();
+        Response response = invocation.invoke();
+        System.out.println(response.getStatus());
+        String aadmJson = response.readEntity(String.class);
+        response.close();
+        deploymentModel = DeploymentModelBuilder.fromJsonText(aadmJson);
+        System.out.println("AADM runtime model was loaded: " + deploymentModel.getId());
+
     }
 
     public void deploy(String bpToken, String inputFile) {

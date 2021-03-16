@@ -104,6 +104,15 @@ public class RefactoringService {
     public Response createDeployment(DeploymentInfo deploymentInfo) {
         System.out.println("Received the Information about the deployment  : " + deploymentInfo.getAadm_id());
         refactoringManager.setCurrentDeploymentInfo(deploymentInfo);
+        try {
+            refactoringManager.loadDeployment(deploymentInfo.getAadm_id());
+            log.info("Blueprint ID : " + deploymentInfo.getBlueprint_token());
+            log.info("Deployment ID : " + deploymentInfo.getDeployment_id());
+            log.info("Inputs : " + deploymentInfo.getInput().asText());
+        } catch (Exception e) {
+            return Response.serverError().entity("Error loading the AADM with id " +
+                    deploymentInfo.getAadm_id() + "Error is " + e.getMessage()).build();
+        }
         return Response.ok("Information about the deployment with id " +
                 deploymentInfo.getAadm_id() + " received").build();
     }

@@ -16,6 +16,12 @@ import java.util.Set;
 
 public class DeploymentModelBuilder {
 
+    public static DeploymentModel fromJsonText(String jsonString) throws ParseException {
+        JSONParser parser = new JSONParser();
+        JSONObject json = (JSONObject) parser.parse(jsonString);
+        return fromJsonObject(json);
+    }
+
     public static DeploymentModel fromJsonFile(String path) throws IOException, ParseException {
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
         if (in == null) {
@@ -24,7 +30,10 @@ public class DeploymentModelBuilder {
         Object obj = new JSONParser().parse(new InputStreamReader(in));
 
         // typecasting obj to JSONObject
-        JSONObject jo = (JSONObject) obj;
+        return fromJsonObject((JSONObject) obj);
+    }
+
+    private static DeploymentModel fromJsonObject(JSONObject jo) {
         DeploymentModel dm = new DeploymentModel();
         Set<Map.Entry> elements = jo.entrySet();
         for (Iterator it = elements.iterator(); it.hasNext(); ) {
