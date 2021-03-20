@@ -16,13 +16,13 @@ import java.util.Set;
 
 public class DeploymentModelBuilder {
 
-    public static DeploymentModel fromJsonText(String jsonString) throws ParseException {
+    public static DeploymentModelJSON fromJsonText(String jsonString) throws ParseException {
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(jsonString);
         return fromJsonObject(json);
     }
 
-    public static DeploymentModel fromJsonFile(String path) throws IOException, ParseException {
+    public static DeploymentModelJSON fromJsonFile(String path) throws IOException, ParseException {
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
         if (in == null) {
             return null;
@@ -33,8 +33,8 @@ public class DeploymentModelBuilder {
         return fromJsonObject((JSONObject) obj);
     }
 
-    private static DeploymentModel fromJsonObject(JSONObject jo) {
-        DeploymentModel dm = new DeploymentModel();
+    private static DeploymentModelJSON fromJsonObject(JSONObject jo) {
+        DeploymentModelJSON dm = new DeploymentModelJSON();
         Set<Map.Entry> elements = jo.entrySet();
         for (Iterator it = elements.iterator(); it.hasNext(); ) {
             Map.Entry pair = (Map.Entry) it.next();
@@ -57,7 +57,7 @@ public class DeploymentModelBuilder {
         return dm;
     }
 
-    private static void buildDMRoot(JSONObject jsonObject, DeploymentModel dm) {
+    private static void buildDMRoot(JSONObject jsonObject, DeploymentModelJSON dm) {
         dm.setVersion((String) jsonObject.get(DTOConstraints.VERSION));
         dm.setCreatedAt((String) jsonObject.get(DTOConstraints.CREATED_AT));
         dm.setCreatedBy((String) jsonObject.get(DTOConstraints.CREATED_BY));
@@ -66,7 +66,7 @@ public class DeploymentModelBuilder {
         dm.setParticipants((JSONArray) jsonObject.get(DTOConstraints.PARTICIPANTS));
     }
 
-    private static void buildDMInputs(JSONObject jsonObject, DeploymentModel dm, String key) {
+    private static void buildDMInputs(JSONObject jsonObject, DeploymentModelJSON dm, String key) {
         dm.setInputKey(key);
         JSONArray inputsArray = (JSONArray) jsonObject.get(DTOConstraints.INPUTS);
         if (inputsArray != null) {
@@ -82,7 +82,7 @@ public class DeploymentModelBuilder {
         }
     }
 
-    private static void buildNode(JSONObject jsonObject, DeploymentModel dm, String key) {
+    private static void buildNode(JSONObject jsonObject, DeploymentModelJSON dm, String key) {
         Node node = new Node();
         node.setName(key);
         node.setType((String) jsonObject.get(DTOConstraints.TYPE));

@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DeploymentModel implements IEvent {
+public class DeploymentModelJSON implements IEvent {
     private String id;
     private String namespace;
     private String createdBy;

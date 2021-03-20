@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 public class ResourceUtil {
@@ -20,5 +21,10 @@ public class ResourceUtil {
             log.warning(e.getMessage());
             return null;
         }
+    }
+
+    public static String readTextFileAsString(String textFile) throws IOException {
+        File file = new File(textFile);
+        return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
     }
 }

@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class DeploymentModelSerializer {
-    public static JSONObject toJson(DeploymentModel dm) {
+    public static JSONObject toJson(DeploymentModelJSON dm) {
         JSONObject dmJson = new JSONObject();
         JSONObject aadmMeta = new JSONObject();
         dmJson.put(dm.getId(), aadmMeta);

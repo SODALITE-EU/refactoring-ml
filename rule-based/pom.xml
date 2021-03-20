@@ -87,6 +87,11 @@
             <version>2.13.3</version>
         </dependency>
         <dependency>
+            <groupId>gr.iti.sodalite</groupId>
+            <artifactId>tosca-mapper</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>jads.sodalite</groupId>
             <artifactId>refactoring-option-discoverer-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>

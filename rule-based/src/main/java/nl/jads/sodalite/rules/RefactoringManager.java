@@ -3,7 +3,7 @@ package nl.jads.sodalite.rules;
 import nl.jads.sodalite.dto.BuleprintsData;
 import nl.jads.sodalite.dto.BuleprintsDataSet;
 import nl.jads.sodalite.dto.DeploymentInfo;
-import nl.jads.sodalite.dto.DeploymentModel;
+import nl.jads.sodalite.dto.DeploymentModelJSON;
 import nl.jads.sodalite.utils.DeploymentModelBuilder;
 import nl.jads.sodalite.utils.POJOFactory;
 import nl.jads.sodalite.utils.ResourceUtil;
@@ -26,6 +26,7 @@ import java.util.Set;
 public class RefactoringManager {
     private static final String BASE_REST_URI
             = "http://154.48.185.209:5000/";
+    private static final Logger log = LogManager.getLogger();
     private Map<String, BuleprintsData> mapBM = new HashMap<String, BuleprintsData>();
     private String currentBlueprintToken;
     private String xopera;
@@ -38,10 +39,9 @@ public class RefactoringManager {
     private String clientSecret;
     private String input;
     private String apikey;
-    private DeploymentModel deploymentModel;
+    private DeploymentModelJSON deploymentModelJSON;
     private DeploymentInfo currentDeploymentInfo;
     private DeploymentInfo nextDeploymentInfo;
-    private static final Logger log = LogManager.getLogger();
 
     public RefactoringManager() {
         xopera = System.getenv("xopera");
@@ -106,7 +106,7 @@ public class RefactoringManager {
         deploy(blueprintsData.getBptoken(), input);
     }
 
-    public void loadDeployment(String aadmId) throws  Exception{
+    public void loadDeployment(String aadmId) throws Exception {
         Client client = ClientBuilder.newClient();
         WebTarget webTarget =
                 client.target(reasonerUri).path("aadm").queryParam("aadmIRI", aadmId);
@@ -120,8 +120,8 @@ public class RefactoringManager {
         System.out.println(response.getStatus());
         String aadmJson = response.readEntity(String.class);
         response.close();
-        deploymentModel = DeploymentModelBuilder.fromJsonText(aadmJson);
-        System.out.println("AADM runtime model was loaded: " + deploymentModel.getId());
+        deploymentModelJSON = DeploymentModelBuilder.fromJsonText(aadmJson);
+        System.out.println("AADM runtime model was loaded: " + deploymentModelJSON.getId());
 
     }
 
@@ -238,12 +238,12 @@ public class RefactoringManager {
         }
     }
 
-    public DeploymentModel getDeploymentModel() {
-        return deploymentModel;
+    public DeploymentModelJSON getDeploymentModelJSON() {
+        return deploymentModelJSON;
     }
 
-    public void setDeploymentModel(DeploymentModel deploymentModel) {
-        this.deploymentModel = deploymentModel;
+    public void setDeploymentModelJSON(DeploymentModelJSON deploymentModelJSON) {
+        this.deploymentModelJSON = deploymentModelJSON;
     }
 
     public String getReasonerUri() {
