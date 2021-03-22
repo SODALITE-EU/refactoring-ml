@@ -28,9 +28,10 @@ public class DeploymentModelBuilder {
             return null;
         }
         Object obj = new JSONParser().parse(new InputStreamReader(in));
-
+        in.close();
         // typecasting obj to JSONObject
         return fromJsonObject((JSONObject) obj);
+
     }
 
     private static DeploymentModelJSON fromJsonObject(JSONObject jo) {

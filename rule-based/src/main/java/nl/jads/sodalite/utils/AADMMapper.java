@@ -21,6 +21,7 @@ public class AADMMapper {
     Set<Node> nodeTemplates = new HashSet<>();
     Set<Property> inputs = new HashSet<>();
     Set<String> imports = new HashSet<>();
+
     public AADMMapper(String inputModel) {
         yaml = new Yaml();
         this.inputModel = inputModel;

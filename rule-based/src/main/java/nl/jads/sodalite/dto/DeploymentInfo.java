@@ -1,7 +1,6 @@
 package nl.jads.sodalite.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 
 public class DeploymentInfo {
     @JsonProperty("aadm_id")
@@ -11,7 +10,7 @@ public class DeploymentInfo {
     @JsonProperty("blueprint_token")
     private String blueprint_token;
     @JsonProperty("input")
-    private JsonNode input;
+    private String input;
 
     public String getAadm_id() {
         return aadm_id;
@@ -37,11 +36,11 @@ public class DeploymentInfo {
         this.blueprint_token = blueprint_token;
     }
 
-    public JsonNode getInput() {
+    public String getInput() {
         return input;
     }
 
-    public void setInput(JsonNode input) {
+    public void setInput(String input) {
         this.input = input;
     }
 }

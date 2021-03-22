@@ -1,10 +1,9 @@
 package nl.jads.sodalite.rules;
 
-import nl.jads.sodalite.dto.BuleprintsData;
-import nl.jads.sodalite.dto.BuleprintsDataSet;
-import nl.jads.sodalite.dto.DeploymentInfo;
-import nl.jads.sodalite.dto.DeploymentModelJSON;
-import nl.jads.sodalite.utils.DeploymentModelBuilder;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import nl.jads.sodalite.dto.*;
+import nl.jads.sodalite.utils.AADMModelBuilder;
 import nl.jads.sodalite.utils.POJOFactory;
 import nl.jads.sodalite.utils.ResourceUtil;
 import org.apache.logging.log4j.LogManager;
@@ -14,8 +13,11 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.ws.rs.client.*;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Collection;
@@ -39,9 +41,10 @@ public class RefactoringManager {
     private String clientSecret;
     private String input;
     private String apikey;
-    private DeploymentModelJSON deploymentModelJSON;
+    private AADMModel aadm;
     private DeploymentInfo currentDeploymentInfo;
     private DeploymentInfo nextDeploymentInfo;
+    private String token;
 
     public RefactoringManager() {
         xopera = System.getenv("xopera");
@@ -109,6 +112,27 @@ public class RefactoringManager {
     public void loadDeployment(String aadmId) throws Exception {
         Client client = ClientBuilder.newClient();
         WebTarget webTarget =
+                client.target(reasonerUri).path("aadm").queryParam("aadmIRI", aadmId)
+                        .queryParam("refactorer", true);
+        Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
+        if (apikey != null) {
+            builder.header("X-API-Key", apikey);
+        }
+        Invocation invocation =
+                builder.buildGet();
+        Response response = invocation.invoke();
+        System.out.println(response.getStatus());
+        String aadmJson = response.readEntity(String.class);
+        response.close();
+        aadm = AADMModelBuilder.fromJsonText(aadmJson);
+        aadm.setId(aadmId);
+        System.out.println("AADM runtime model was loaded : " + aadmId);
+
+    }
+
+    public JsonObject getCompleteDeploymentModel(String aadmId) throws Exception {
+        Client client = ClientBuilder.newClient();
+        WebTarget webTarget =
                 client.target(reasonerUri).path("aadm").queryParam("aadmIRI", aadmId);
         Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
         if (apikey != null) {
@@ -120,33 +144,111 @@ public class RefactoringManager {
         System.out.println(response.getStatus());
         String aadmJson = response.readEntity(String.class);
         response.close();
-        deploymentModelJSON = DeploymentModelBuilder.fromJsonText(aadmJson);
-        System.out.println("AADM runtime model was loaded: " + deploymentModelJSON.getId());
+        System.out.println("AADM runtime model was loaded : " + aadmId);
+        return new Gson().fromJson(aadmJson, JsonObject.class);
+    }
 
+    public void saveDeploymentModelInKB() throws Exception {
+        if (token == null) {
+            refreshSecurityToken();
+        }
+        Client client = ClientBuilder.newClient();
+        String aadmURI = aadm.getId();
+        if (!aadmURI.endsWith("refac")) {
+            aadmURI = aadmURI + "refac";
+            aadm.setId(aadmURI);
+        }
+        WebTarget webTarget =
+                client.target(reasonerUri).path("saveAADM");
+        Form form = new Form();
+        form.param("aadmTTL", aadm.getExchangeAADM());
+        form.param("token", token);
+        form.param("aadmURI", aadmURI);
+        form.param("namespace", aadm.getNamespace());
+
+        Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
+        if (apikey != null) {
+            builder.header("X-API-Key", apikey);
+        }
+        Invocation invocation =
+                builder.buildPost(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+        try {
+            Response response = invocation.invoke();
+            System.out.println(response.getStatus());
+            String result = response.readEntity(String.class);
+            System.out.println(result);
+            response.close();
+            JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
+            String aadmuri = jsonObject.get("aadmuri").getAsString();
+            aadm.setId(aadmuri);
+            System.out.println("AADM was saved : " + aadmuri);
+        } catch (HttpClientErrorException ex) {
+            if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                refreshSecurityToken();
+            } else {
+                throw ex;
+            }
+        }
+    }
+
+    public String buildIaC(String aadmId, String nameSpace) throws Exception {
+        JsonObject data = getCompleteDeploymentModel(aadmId);
+        IaCBuilderInput input = new IaCBuilderInput();
+        input.setName(nameSpace);
+        input.setData(data);
+        Gson gson = new Gson();
+        String jsonInput = gson.toJson(input);
+        Client client = ClientBuilder.newClient();
+        WebTarget webTarget =
+                client.target(iacBuilderUri).path("parse");
+        Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
+        if (apikey != null) {
+            builder.header("X-API-Key", apikey);
+        }
+        Invocation invocation =
+                builder.buildPost(Entity.entity(jsonInput, MediaType.APPLICATION_JSON_TYPE));
+        try {
+            Response response = invocation.invoke();
+            System.out.println(response.getStatus());
+            String result = response.readEntity(String.class);
+            System.out.println(result);
+            response.close();
+            JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
+            return jsonObject.get("blueprint_id").getAsString();
+        } catch (HttpClientErrorException ex) {
+            if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                refreshSecurityToken();
+            } else {
+                throw ex;
+            }
+        }
+        return null;
     }
 
     public void deploy(String bpToken, String inputFile) {
         System.out.println("Deploying : " + bpToken);
         Client client = ClientBuilder.newBuilder()
                 .register(MultiPartFeature.class).build();
-        WebTarget webTarget = client.target(xopera).path("deployment/deploy");
+        WebTarget webTarget = client.target(xopera).path("deployment/deploy")
+                .queryParam("blueprint_id", bpToken);
 
         FormDataMultiPart multipart =
-                new FormDataMultiPart()
-                        .field("blueprint_id", bpToken);
-
+                new FormDataMultiPart();
         FileDataBodyPart fileDataBodyPart =
                 new FileDataBodyPart("inputs_file",
                         ResourceUtil.getStringAsFile(inputFile),
                         MediaType.APPLICATION_OCTET_STREAM_TYPE);
 
         multipart.bodyPart(fileDataBodyPart);
-        Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
+        Invocation.Builder builder = webTarget.request(MediaType.MULTIPART_FORM_DATA_TYPE);
         if (apikey != null) {
             builder.header("X-API-Key", apikey);
         }
-        Response response =
-                builder.post(Entity.entity(multipart, multipart.getMediaType()));
+        Response response = builder.buildPost(
+                Entity.entity(multipart, multipart.getMediaType())).invoke();
+
+//        Response response =
+//                builder.buildPost(Entity.entity(multipart, multipart.getMediaType())).invoke();
         String message = response.readEntity(String.class);
         response.close();
 
@@ -156,6 +258,8 @@ public class RefactoringManager {
         System.out.println(response.getStatus());
         System.out.println(message);
         System.out.println();
+        JsonObject jsonObject = new Gson().fromJson(message, JsonObject.class);
+        currentDeploymentInfo.setDeployment_id(jsonObject.get("deployment_id").getAsString());
         currentBlueprintToken = bpToken;
     }
 
@@ -163,11 +267,10 @@ public class RefactoringManager {
         System.out.println("Updating : " + dpId + " to :" + bpToken);
         Client client = ClientBuilder.newBuilder()
                 .register(MultiPartFeature.class).build();
-        WebTarget webTarget = client.target(xopera).path("deployment/" + dpId + "/update");
+        WebTarget webTarget = client.target(xopera).path("deployment/" + dpId + "/update")
+                .queryParam("blueprint_id", bpToken);
 
-        FormDataMultiPart multipart =
-                new FormDataMultiPart()
-                        .field("blueprint_id", bpToken);
+        FormDataMultiPart multipart = new FormDataMultiPart();
 
         FileDataBodyPart fileDataBodyPart =
                 new FileDataBodyPart("inputs_file",
@@ -180,7 +283,7 @@ public class RefactoringManager {
             builder.header("X-API-Key", apikey);
         }
         Response response =
-                builder.post(Entity.entity(multipart, multipart.getMediaType()));
+                builder.buildPost(Entity.entity(multipart, multipart.getMediaType())).invoke();
         String message = response.readEntity(String.class);
         response.close();
 
@@ -190,6 +293,8 @@ public class RefactoringManager {
         System.out.println(response.getStatus());
         System.out.println(message);
         System.out.println();
+        JsonObject jsonObject = new Gson().fromJson(message, JsonObject.class);
+        currentDeploymentInfo.setDeployment_id(jsonObject.get("deployment_id").getAsString());
         currentBlueprintToken = bpToken;
     }
 
@@ -238,12 +343,12 @@ public class RefactoringManager {
         }
     }
 
-    public DeploymentModelJSON getDeploymentModelJSON() {
-        return deploymentModelJSON;
+    public AADMModel getAadm() {
+        return aadm;
     }
 
-    public void setDeploymentModelJSON(DeploymentModelJSON deploymentModelJSON) {
-        this.deploymentModelJSON = deploymentModelJSON;
+    public void setAadm(AADMModel aadm) {
+        this.aadm = aadm;
     }
 
     public String getReasonerUri() {
@@ -333,5 +438,39 @@ public class RefactoringManager {
     public void setNextDeploymentInfo(DeploymentInfo nextDeploymentInfo) {
         this.nextDeploymentInfo = nextDeploymentInfo;
     }
+
+    private void refreshSecurityToken() throws Exception {
+        Client client = ClientBuilder.newClient();
+        WebTarget webTarget =
+                client.target(authUri).path("auth/realms/SODALITE/protocol/openid-connect/token");
+        Form form = new Form();
+        form.param("grant_type", "password");
+        form.param("client_id", clientId);
+        form.param("client_secret", clientSecret);
+        form.param("password", password);
+        form.param("username", username);
+
+        Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
+        if (apikey != null) {
+            builder.header("X-API-Key", apikey);
+        }
+        Invocation invocation =
+                builder.buildPost(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+        Response response = invocation.invoke();
+        System.out.println(response.getStatus());
+        String result = response.readEntity(String.class);
+        System.out.println(result);
+        JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
+        token = jsonObject.get("access_token").getAsString();
+    }
+
+    public String getXopera() {
+        return xopera;
+    }
+
+    public void setXopera(String xopera) {
+        this.xopera = xopera;
+    }
+
 }
 

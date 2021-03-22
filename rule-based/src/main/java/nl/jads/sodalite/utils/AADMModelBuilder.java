@@ -31,7 +31,7 @@ public class AADMModelBuilder {
             return null;
         }
         Object obj = new JSONParser().parse(new InputStreamReader(in));
-
+        in.close();
         // typecasting obj to JSONObject
         return fromJsonObject((JSONObject) obj);
     }
@@ -44,7 +44,10 @@ public class AADMModelBuilder {
             String key = (String) pair.getKey();
             JSONObject jsonObject = (JSONObject) pair.getValue();
             String type = (String) jsonObject.get(DTOConstraints.TYPE);
-
+            if (type != null && type.equals(DTOConstraints.ABSTRACT_APPLICATION_DEPLOYMENT_MODEL)) {
+                buildDMRoot(jsonObject, dm);
+                continue;
+            }
             Object isNodeTemplate = jsonObject.get(DTOConstraints.IS_NODE_TEMPLATE);
             if (isNodeTemplate != null) {
                 buildNode(jsonObject, dm, key);
@@ -57,11 +60,23 @@ public class AADMModelBuilder {
         return dm;
     }
 
+    private static void buildDMRoot(JSONObject jsonObject, AADMModel dm) {
+        dm.setVersion((String) jsonObject.get(DTOConstraints.VERSION));
+        dm.setId((String) jsonObject.get(DTOConstraints.ID));
+        String nameSpace = (String) jsonObject.get(DTOConstraints.NAME_SPACE);
+        if (!nameSpace.endsWith("refac")) {
+            nameSpace = nameSpace + "refac";
+        }
+        dm.setNamespace(nameSpace);
+    }
+
 
     private static void buildNode(JSONObject jsonObject, AADMModel dm, String key) {
         Node node = new Node(key.substring(key.lastIndexOf("/") + 1));
         String type = (String) jsonObject.get(DTOConstraints.TYPE);
-        node.setOfType(type.substring(type.lastIndexOf("/") + 1));
+        String context = type.substring(0, type.lastIndexOf("/"));
+        context = context.substring(context.lastIndexOf("/") + 1);
+        node.setOfType(context + "/" + type.substring(type.lastIndexOf("/") + 1));
         JSONArray jsonArray = (JSONArray) jsonObject.get(DTOConstraints.PROPERTIES);
         if (jsonArray != null) {
             node.setProperties(createProperties(jsonArray));
