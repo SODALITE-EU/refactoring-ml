@@ -2,6 +2,7 @@ package nl.jads.sodalite.dto;
 
 import tosca.mapper.dto.Node;
 import tosca.mapper.dto.Property;
+import tosca.mapper.dto.Requirement;
 import tosca.mapper.exchange.generator.AADMGenerator;
 
 import java.util.HashMap;
@@ -23,7 +24,9 @@ public class AADMModel {
     public Node getNode(String name) {
         return nodes.get(name);
     }
-
+    public void removeNode(String name) {
+        nodes.remove(name);
+    }
     public void addInput(Property input) {
         inputs.putIfAbsent(input.getName(), input);
     }
@@ -78,10 +81,34 @@ public class AADMModel {
         for (Node node : getNodes()) {
 //            node.setName(namespace +"/"+ node.getName())
             for (tosca.mapper.dto.Requirement requirement : node.getRequirements()) {
-                requirement.setValue(namespace + "/" + requirement.getValue());
+                if (!(requirement.getValue().contains(DTOConstraints.KUBE)
+                        | requirement.getValue().contains(DTOConstraints.DOCKER)
+                        | requirement.getValue().contains(DTOConstraints.OPENSTACK))) {
+                    requirement.setValue(namespace + "/" + requirement.getValue());
+                }
             }
             for (tosca.mapper.dto.Capability capability : node.getCapabilities()) {
-                capability.setValue(namespace + "/" + capability.getValue());
+                if (!(capability.getValue().contains(DTOConstraints.KUBE)
+                        | capability.getValue().contains(DTOConstraints.DOCKER)
+                        | capability.getValue().contains(DTOConstraints.OPENSTACK))) {
+                    capability.setValue(namespace + "/" + capability.getValue());
+                }
+            }
+        }
+    }
+
+
+    public void updateProperty(String nodeName, String name, String value) {
+        for (Property p : getNode(nodeName).getProperties()) {
+            if (p.getName().equals(name)) {
+                p.setValue(value);
+            }
+        }
+    }
+    public void updateRequirement(String nodeName, String name, String value) {
+        for (Requirement p : getNode(nodeName).getRequirements()) {
+            if (p.getName().equals(name)) {
+                p.setValue(value);
             }
         }
     }

@@ -1,6 +1,10 @@
 package nl.jads.sodalite.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.StringWriter;
+import java.util.Map;
 
 public class DeploymentInfo {
     @JsonProperty("aadm_id")
@@ -9,8 +13,9 @@ public class DeploymentInfo {
     private String deployment_id;
     @JsonProperty("blueprint_token")
     private String blueprint_token;
-    @JsonProperty("input")
-    private String input;
+    @JsonProperty("inputs")
+    private String inputs;
+    private Map<String, Object> inputMap;
 
     public String getAadm_id() {
         return aadm_id;
@@ -36,11 +41,28 @@ public class DeploymentInfo {
         this.blueprint_token = blueprint_token;
     }
 
-    public String getInput() {
-        return input;
+    public String getInputs() {
+        return inputs;
     }
 
-    public void setInput(String input) {
-        this.input = input;
+    public void setInput(String inputs) {
+        this.inputs = inputs;
+        toYaml();
+    }
+
+    private void toYaml() {
+        Yaml yaml = new Yaml();
+        inputMap = yaml.load(inputs);
+    }
+
+    public void updateInput(String key, String value) {
+        inputMap.put(key, value);
+    }
+
+    public String getUpdatedInput() {
+        Yaml yaml = new Yaml();
+        StringWriter writer = new StringWriter();
+        yaml.dump(inputMap, writer);
+        return writer.toString();
     }
 }

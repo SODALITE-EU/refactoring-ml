@@ -7,10 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import tosca.mapper.dto.Node;
-import tosca.mapper.dto.Parameter;
-import tosca.mapper.dto.Property;
-import tosca.mapper.dto.Requirement;
+import tosca.mapper.dto.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -81,42 +78,14 @@ public class AADMModelBuilder {
         if (jsonArray != null) {
             node.setProperties(createProperties(jsonArray));
         }
-
         JSONArray jsonArrayReqs = (JSONArray) jsonObject.get(DTOConstraints.REQS);
         if (jsonArrayReqs != null) {
-            Set<Requirement> requirements = new HashSet<>();
-            for (Iterator it = jsonArrayReqs.iterator(); it.hasNext(); ) {
-                JSONObject req = (JSONObject) it.next();
-                String pName = (String) req.keySet().toArray()[0];
-                JSONObject jObj = (JSONObject) req.get(pName);
-
-                JSONObject spec = (JSONObject) jObj.get(DTOConstraints.SPEC);
-                if (spec != null) {
-                    Requirement requirement = new Requirement(pName.substring(pName.lastIndexOf("/") + 1));
-                    Object nodeR = spec.get(DTOConstraints.NODE);
-                    if (nodeR != null) {
-                        JSONObject nodeO = (JSONObject) nodeR;
-                        String nodeKey = (String) nodeO.keySet().toArray()[0];
-                        requirement.setValue(nodeKey.substring(nodeKey.lastIndexOf("/") + 1));
-                    }
-                    requirements.add(requirement);
-                }
-            }
-            node.setRequirements(requirements);
+            node.setRequirements(createRequirements(jsonArrayReqs, type));
         }
-//        JSONArray jsonArrayAttr = (JSONArray) jsonObject.get(DTOConstraints.ATTRIBUTES);
-//        if (jsonArrayAttr != null) {
-//            Set<Attribute> attributes = new HashSet<>();
-//            for (Iterator it = jsonArrayAttr.iterator(); it.hasNext(); ) {
-//                JSONObject attri = (JSONObject) it.next();
-//                String pName = (String) attri.keySet().toArray()[0];
-//                JSONObject jObj = (JSONObject) attri.get(pName);
-//                Attribute attribute = new Attribute(pName.substring(pName.lastIndexOf("/" )+1));
-//                attribute.setDescription((String) jObj.get(DTOConstraints.DESC));
-//                attributes.add(attribute);
-//            }
-//            node.setAttributes(attributes);
-//        }
+        JSONArray jsonArrayAttr = (JSONArray) jsonObject.get(DTOConstraints.ATTRIBUTES);
+        if (jsonArrayAttr != null) {
+            node.setAttributes(createAttributes(jsonArrayAttr));
+        }
 //
 //        JSONArray jsonArrayCaps = (JSONArray) jsonObject.get(DTOConstraints.CAPABILITIES);
 //        if (jsonArrayCaps != null) {
@@ -147,8 +116,58 @@ public class AADMModelBuilder {
 
     private static Parameter createParameter(JSONObject o, String key) {
         Parameter parameter = new Parameter(key);
-        parameter.setValue((String) o.get(key));
+        Object value = o.get(key);
+        if (value == null && !o.keySet().isEmpty()) {
+            Set<Parameter> parameters = new HashSet<>();
+            for (Object p : o.keySet()) {
+                Parameter para = new Parameter((String) p);
+                para.setValue(String.valueOf(o.get(p)));
+                parameters.add(para);
+            }
+            parameter.setParameters(parameters);
+        } else {
+            parameter.setValue(String.valueOf(value));
+        }
         return parameter;
+    }
+
+    private static Set<Requirement> createRequirements(JSONArray jsonArrayReqs, String type) {
+        Set<Requirement> requirements = new HashSet<>();
+        for (Iterator it = jsonArrayReqs.iterator(); it.hasNext(); ) {
+            JSONObject req = (JSONObject) it.next();
+            String pName = (String) req.keySet().toArray()[0];
+            JSONObject jObj = (JSONObject) req.get(pName);
+
+            JSONObject spec = (JSONObject) jObj.get(DTOConstraints.SPEC);
+            if (spec != null) {
+                Object nodeR = spec.get(DTOConstraints.NODE);
+                if (nodeR != null) {
+                    JSONObject nodeO = (JSONObject) nodeR;
+                    requirements.add(processReqNode(nodeO, type, pName));
+                }
+            } else {
+                Object value = jObj.get(DTOConstraints.VALUE);
+                if (value != null) {
+                    JSONObject nodeO = (JSONObject) value;
+                    requirements.add(processReqNode(nodeO, type, pName));
+                }
+            }
+        }
+        return requirements;
+    }
+
+    private static Requirement processReqNode(JSONObject nodeO, String type, String pName) {
+        Requirement requirement = new Requirement(pName.substring(pName.lastIndexOf("/") + 1));
+        String nodeKey = (String) nodeO.keySet().toArray()[0];
+        String contextReq = nodeKey.substring(0, type.lastIndexOf("/"));
+        contextReq = contextReq.substring(contextReq.lastIndexOf("/") + 1);
+        if (DTOConstraints.KUBE.equals(contextReq) | DTOConstraints.OPENSTACK.equals(contextReq)
+                | DTOConstraints.DOCKER.equals(contextReq)) {
+            requirement.setValue(contextReq + "/" + nodeKey.substring(nodeKey.lastIndexOf("/") + 1));
+        } else {
+            requirement.setValue(nodeKey.substring(nodeKey.lastIndexOf("/") + 1));
+        }
+        return requirement;
     }
 
     private static Set<Property> createProperties(JSONArray jsonArray) {
@@ -177,7 +196,79 @@ public class AADMModelBuilder {
                     }
                     property.setValues(list);
                 } else {
-                    property.setValue((String) values);
+                    property.setValue(String.valueOf(values));
+                }
+            }
+            JSONObject spec = (JSONObject) jObj.get(DTOConstraints.SPEC);
+            if (spec != null) {
+                Set<Parameter> parameters = new HashSet<>();
+                for (Object keyP : spec.keySet()) {
+                    Object specChild = spec.get(keyP);
+                    String name = (String) keyP;
+                    if (DTOConstraints.GET_INPUT.equals(name)) {
+                        Parameter parameter = new Parameter(DTOConstraints.GET_INPUT);
+                        if (specChild instanceof JSONArray) {
+                            JSONArray pAry = (JSONArray) specChild;
+                            parameter.setValue((String) pAry.get(0));
+                        } else {
+                            parameter.setValue(String.valueOf(specChild));
+                        }
+                        parameters.add(parameter);
+                    } else if (DTOConstraints.GET_PROPERTY.equals(name)) {
+                        Parameter parameter = new Parameter(DTOConstraints.GET_PROPERTY);
+                        Set<Parameter> children = new HashSet<>();
+                        children.add(createParameter((JSONObject) specChild, DTOConstraints.PROPERTY));
+                        children.add(createParameter((JSONObject) specChild, DTOConstraints.ENTITY));
+                        children.add(createParameter((JSONObject) specChild, DTOConstraints.REQ_CAP));
+                        parameter.setParameters(children);
+                        parameters.add(parameter);
+                    } else {
+                        if (specChild instanceof JSONObject) {
+                            parameters.add(createParameter((JSONObject) specChild, name));
+                        } else {
+                            Parameter parameter = new Parameter(name);
+                            parameter.setValue(String.valueOf(specChild));
+                            parameters.add(parameter);
+                        }
+                    }
+                }
+                property.setParameters(parameters);
+            }
+            if (property.getParameters() == null) {
+                property.setParameters(new HashSet<Parameter>());
+            }
+            properties.add(property);
+        }
+        return properties;
+    }
+
+    private static Set<Attribute> createAttributes(JSONArray jsonArray) {
+        Set<Attribute> attributes = new HashSet<>();
+        for (Iterator it = jsonArray.iterator(); it.hasNext(); ) {
+            JSONObject prop = (JSONObject) it.next();
+            String pName = (String) prop.keySet().toArray()[0];
+            Object o = prop.get(pName);
+            if (o == null) {
+                continue;
+            }
+            JSONObject jObj = ((JSONObject) o);
+            Attribute attribute = new Attribute(pName.substring(pName.lastIndexOf("/") + 1));
+            Object desc = jObj.get(DTOConstraints.DESC);
+            if (desc != null) {
+                attribute.setDescription((String) desc);
+            }
+
+            Object values = jObj.get(DTOConstraints.VALUE);
+            if (values != null) {
+                if (values instanceof JSONArray) {
+                    JSONArray pAry = (JSONArray) values;
+                    ArrayList<String> list = new ArrayList<>();
+                    for (Iterator it2 = pAry.iterator(); it2.hasNext(); ) {
+                        list.add((String) it2.next());
+                    }
+                    attribute.setValues(list);
+                } else {
+                    attribute.setValue(String.valueOf(values));
                 }
             }
             JSONObject spec = (JSONObject) jObj.get(DTOConstraints.SPEC);
@@ -191,7 +282,7 @@ public class AADMModelBuilder {
                         JSONArray pAry = (JSONArray) getInput;
                         parameter.setValue((String) pAry.get(0));
                     } else {
-                        parameter.setValue((String) getInput);
+                        parameter.setValue(String.valueOf(getInput));
                     }
                     parameters.add(parameter);
                 }
@@ -205,10 +296,13 @@ public class AADMModelBuilder {
                     parameter.setParameters(children);
                     parameters.add(parameter);
                 }
-                property.setParameters(parameters);
+                attribute.setParameters(parameters);
             }
-            properties.add(property);
+            if (attribute.getParameters() == null) {
+                attribute.setParameters(new HashSet<Parameter>());
+            }
+            attributes.add(attribute);
         }
-        return properties;
+        return attributes;
     }
 }

@@ -5,6 +5,7 @@ public class DTOConstraints {
     public static String ID = "id";
     public static String DOCKER = "docker";
     public static String OPENSTACK = "openstack";
+    public static String KUBE = "kube";
     public static String NAME_SPACE = "namespace";
     public static String TYPE = "type";
     public static String CREATED_BY = "createdBy";

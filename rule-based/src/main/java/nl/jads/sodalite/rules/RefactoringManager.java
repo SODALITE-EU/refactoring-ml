@@ -30,7 +30,6 @@ public class RefactoringManager {
             = "http://154.48.185.209:5000/";
     private static final Logger log = LogManager.getLogger();
     private Map<String, BuleprintsData> mapBM = new HashMap<String, BuleprintsData>();
-    private String currentBlueprintToken;
     private String xopera;
     private String reasonerUri;
     private String iacBuilderUri;
@@ -88,14 +87,6 @@ public class RefactoringManager {
         //  opMgt.updateRegulationUnitsOfProcessRegulationPolicy()
     }
 
-    public String getCurrentBlueprintToken() {
-        return currentBlueprintToken;
-    }
-
-    public void setCurrentBlueprintToken(String currentBlueprintToken) {
-        this.currentBlueprintToken = currentBlueprintToken;
-    }
-
     public Collection<BuleprintsData> getAllBlueprintMetadata() {
         return mapBM.values();
     }
@@ -107,6 +98,10 @@ public class RefactoringManager {
     public void deployDeploymentModel(String target) {
         BuleprintsData blueprintsData = mapBM.get(target);
         deploy(blueprintsData.getBptoken(), input);
+    }
+
+    public void loadCurrentDeployment() throws Exception {
+        loadDeployment(currentDeploymentInfo.getAadm_id());
     }
 
     public void loadDeployment(String aadmId) throws Exception {
@@ -123,9 +118,11 @@ public class RefactoringManager {
         Response response = invocation.invoke();
         System.out.println(response.getStatus());
         String aadmJson = response.readEntity(String.class);
+        System.out.println(aadmJson);
         response.close();
         aadm = AADMModelBuilder.fromJsonText(aadmJson);
         aadm.setId(aadmId);
+        aadm.updateNodeTypes();
         System.out.println("AADM runtime model was loaded : " + aadmId);
 
     }
@@ -143,8 +140,9 @@ public class RefactoringManager {
         Response response = invocation.invoke();
         System.out.println(response.getStatus());
         String aadmJson = response.readEntity(String.class);
+        System.out.println(aadmJson);
         response.close();
-        System.out.println("AADM runtime model was loaded : " + aadmId);
+        System.out.println("AADM JSON was retrieved : " + aadmId);
         return new Gson().fromJson(aadmJson, JsonObject.class);
     }
 
@@ -157,6 +155,7 @@ public class RefactoringManager {
         if (!aadmURI.endsWith("refac")) {
             aadmURI = aadmURI + "refac";
             aadm.setId(aadmURI);
+            currentDeploymentInfo.setAadm_id(aadmURI);
         }
         WebTarget webTarget =
                 client.target(reasonerUri).path("saveAADM");
@@ -181,6 +180,7 @@ public class RefactoringManager {
             JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
             String aadmuri = jsonObject.get("aadmuri").getAsString();
             aadm.setId(aadmuri);
+            currentDeploymentInfo.setAadm_id(aadmURI);
             System.out.println("AADM was saved : " + aadmuri);
         } catch (HttpClientErrorException ex) {
             if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
@@ -191,7 +191,11 @@ public class RefactoringManager {
         }
     }
 
-    public String buildIaC(String aadmId, String nameSpace) throws Exception {
+    public void buildIaCForCurrentDeployment() throws Exception {
+        buildIaC(aadm.getId(), aadm.getNamespace());
+    }
+
+    public void buildIaC(String aadmId, String nameSpace) throws Exception {
         JsonObject data = getCompleteDeploymentModel(aadmId);
         IaCBuilderInput input = new IaCBuilderInput();
         input.setName(nameSpace);
@@ -214,7 +218,8 @@ public class RefactoringManager {
             System.out.println(result);
             response.close();
             JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
-            return jsonObject.get("blueprint_id").getAsString();
+            currentDeploymentInfo.setBlueprint_token
+                    (jsonObject.get("blueprint_id").getAsString());
         } catch (HttpClientErrorException ex) {
             if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                 refreshSecurityToken();
@@ -222,7 +227,10 @@ public class RefactoringManager {
                 throw ex;
             }
         }
-        return null;
+    }
+
+    public void deployCurrentDeployment() {
+        deploy(currentDeploymentInfo.getBlueprint_token(), currentDeploymentInfo.getUpdatedInput());
     }
 
     public void deploy(String bpToken, String inputFile) {
@@ -246,9 +254,6 @@ public class RefactoringManager {
         }
         Response response = builder.buildPost(
                 Entity.entity(multipart, multipart.getMediaType())).invoke();
-
-//        Response response =
-//                builder.buildPost(Entity.entity(multipart, multipart.getMediaType())).invoke();
         String message = response.readEntity(String.class);
         response.close();
 
@@ -260,7 +265,6 @@ public class RefactoringManager {
         System.out.println();
         JsonObject jsonObject = new Gson().fromJson(message, JsonObject.class);
         currentDeploymentInfo.setDeployment_id(jsonObject.get("deployment_id").getAsString());
-        currentBlueprintToken = bpToken;
     }
 
     public void update(String dpId, String bpToken, String inputFile) {
@@ -295,7 +299,6 @@ public class RefactoringManager {
         System.out.println();
         JsonObject jsonObject = new Gson().fromJson(message, JsonObject.class);
         currentDeploymentInfo.setDeployment_id(jsonObject.get("deployment_id").getAsString());
-        currentBlueprintToken = bpToken;
     }
 
     public void undeployDeploymentModel(String target) {
