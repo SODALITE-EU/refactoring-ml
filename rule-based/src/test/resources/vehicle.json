@@ -1,0 +1,122 @@
+{
+  "https://www.sodalite.eu/ontologies/workspace/1/7ke93c8pgi7piknhgaat0q1n00/AADM_9gfoiqlpkkuh4thirvufqr2kl2": {
+    "id": "https://www.sodalite.eu/ontologies/workspace/1/7ke93c8pgi7piknhgaat0q1n00/AADM_9gfoiqlpkkuh4thirvufqr2kl2",
+    "namespace": "vehicleiot",
+    "type": "AbstractApplicationDeploymentModel",
+    "createdBy": "https://www.sodalite.eu/ontologies/workspace/1/7ke93c8pgi7piknhgaat0q1n00/27827d44-0f6c-11ea-8d71-362b9e155667",
+    "createdAt": "2021-03-23T15:54:56.446+02:00",
+    "version": "1",
+    "participants": [
+      "https://www.sodalite.eu/ontologies/workspace/1/vehicleiot/mysql-deployment-via-helm",
+      "https://www.sodalite.eu/ontologies/workspace/1/vehicleiot/kube-master-remote-vm"
+    ]
+  },
+  "https://www.sodalite.eu/ontologies/workspace/1/vehicleiot/mysql-deployment-via-helm": {
+    "type": "https://www.sodalite.eu/ontologies/workspace/1/kube/sodalite.nodes.Kubernetes.Definition.Helm.Node",
+    "isNodeTemplate": true,
+    "properties": [
+      {
+        "https://www.sodalite.eu/ontologies/workspace/1/kube/chart_version": {
+          "value": "latest",
+          "label": "chart_version"
+        }
+      },
+      {
+        "https://www.sodalite.eu/ontologies/workspace/1/kube/values": {
+          "specification": {
+            "persistence": {
+              "enabled": false
+            },
+            "replicas": 1
+          }
+        }
+      },
+      {
+        "https://www.sodalite.eu/ontologies/workspace/1/kube/keep_repo": {
+          "value": false,
+          "label": "keep_repo"
+        }
+      },
+      {
+        "https://www.sodalite.eu/ontologies/workspace/1/kube/repo_url": {
+          "value": "https://charts.helm.sh/stable",
+          "label": "repo_url"
+        }
+      },
+      {
+        "https://www.sodalite.eu/ontologies/tosca/name": {
+          "value": "mysql-release-1-from-helm",
+          "label": "name"
+        }
+      },
+      {
+        "https://www.sodalite.eu/ontologies/workspace/1/kube/repo_name": {
+          "value": "stable",
+          "label": "repo_name"
+        }
+      },
+      {
+        "https://www.sodalite.eu/ontologies/workspace/1/kube/chart": {
+          "value": "stable/mysql",
+          "label": "chart"
+        }
+      },
+      {
+        "https://www.sodalite.eu/ontologies/workspace/1/kube/namespace": {
+          "value": "default",
+          "label": "namespace"
+        }
+      }
+    ],
+    "requirements": [
+      {
+        "https://www.sodalite.eu/ontologies/workspace/1/kube/kube_node": {
+          "specification": {
+            "node": {
+              "https://www.sodalite.eu/ontologies/workspace/1/kube/node-filesrv": {
+                "label": "node-filesrv"
+              }
+            }
+          }
+        }
+      },
+      {
+        "https://www.sodalite.eu/ontologies/tosca/host": {
+          "specification": {
+            "node": {
+              "https://www.sodalite.eu/ontologies/workspace/1/vehicleiot/kube-master-remote-vm": {
+                "label": "kube-master-remote-vm"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "https://www.sodalite.eu/ontologies/workspace/1/vehicleiot/kube-master-remote-vm": {
+    "type": "https://www.sodalite.eu/ontologies/workspace/1/kube/sodalite.nodes.Kubernetes.Cluster",
+    "isNodeTemplate": true,
+    "properties": [
+      {
+        "https://www.sodalite.eu/ontologies/workspace/1/kube/kubeconfig": {
+          "value": "~/.kube/config",
+          "label": "kubeconfig"
+        }
+      },
+      {
+        "https://www.sodalite.eu/ontologies/workspace/1/openstack/username": {
+          "value": "centos",
+          "label": "username"
+        }
+      }
+    ],
+    "attributes": [
+      {
+        "https://www.sodalite.eu/ontologies/tosca/public_address": {
+          "value": "192.168.2.56",
+          "label": "public_address"
+        }
+      }
+    ]
+  }
+}

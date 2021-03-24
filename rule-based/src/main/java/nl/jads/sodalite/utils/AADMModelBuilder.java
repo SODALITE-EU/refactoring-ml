@@ -143,31 +143,44 @@ public class AADMModelBuilder {
                 Object nodeR = spec.get(DTOConstraints.NODE);
                 if (nodeR != null) {
                     JSONObject nodeO = (JSONObject) nodeR;
-                    requirements.add(processReqNode(nodeO, type, pName));
+                    Requirement requirement = new Requirement(pName.substring(pName.lastIndexOf("/") + 1));
+                    Set<Parameter> children = new HashSet<>();
+                    children.add(processReqNode((String) nodeO.keySet().toArray()[0], type, pName));
+                    requirement.setParameters(children);
+                    requirements.add(requirement);
                 }
             } else {
                 Object value = jObj.get(DTOConstraints.VALUE);
                 if (value != null) {
                     JSONObject nodeO = (JSONObject) value;
-                    requirements.add(processReqNode(nodeO, type, pName));
+                    for (Object o3 : nodeO.keySet()) {
+                        if (!DTOConstraints.LABEL.equals(o3)) {
+                            Requirement requirement = new Requirement(pName.substring(pName.lastIndexOf("/") + 1));
+                            Set<Parameter> children = new HashSet<>();
+                            children.add((processReqNode((String) o3, type, pName)));
+                            requirement.setParameters(children);
+                            requirements.add(requirement);
+                        }
+                    }
                 }
             }
         }
         return requirements;
     }
 
-    private static Requirement processReqNode(JSONObject nodeO, String type, String pName) {
-        Requirement requirement = new Requirement(pName.substring(pName.lastIndexOf("/") + 1));
-        String nodeKey = (String) nodeO.keySet().toArray()[0];
+    private static Parameter processReqNode(String nodeKey, String type, String pName) {
+        Parameter parameter = new Parameter(DTOConstraints.NODE);
+        System.out.println(nodeKey);
         String contextReq = nodeKey.substring(0, type.lastIndexOf("/"));
         contextReq = contextReq.substring(contextReq.lastIndexOf("/") + 1);
         if (DTOConstraints.KUBE.equals(contextReq) | DTOConstraints.OPENSTACK.equals(contextReq)
                 | DTOConstraints.DOCKER.equals(contextReq)) {
-            requirement.setValue(contextReq + "/" + nodeKey.substring(nodeKey.lastIndexOf("/") + 1));
+            parameter.setValue(contextReq + "/" + nodeKey.substring(nodeKey.lastIndexOf("/") + 1));
         } else {
-            requirement.setValue(nodeKey.substring(nodeKey.lastIndexOf("/") + 1));
+            parameter.setValue(nodeKey.substring(nodeKey.lastIndexOf("/") + 1));
         }
-        return requirement;
+//        parameter.setParameters(new HashSet<>());
+        return parameter;
     }
 
     private static Set<Property> createProperties(JSONArray jsonArray) {

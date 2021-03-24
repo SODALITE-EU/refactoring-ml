@@ -4,6 +4,8 @@ import nl.jads.sodalite.rules.RefactoringManager;
 import tosca.mapper.dto.Node;
 import tosca.mapper.dto.Property;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,24 +23,39 @@ public class RefactoringManagerVehicleIoTTest {
         manager.setUsername("...");
         manager.setPassword("...");
 //        deploy(manager);
-        update(manager);
+//        update(manager);
     }
 
     private static void deploy(RefactoringManager manager) {
         DeploymentInfo deploymentInfo = new DeploymentInfo();
-        deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/7ke93c8pgi7piknhgaat0q1n00/AADM_9gfoiqlpkkuh4thirvufqr2kl2refac");
+        deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/7ke93c8pgi7piknhgaat0q1n00/AADM_9gfoiqlpkkuh4thirvufqr2kl2");
         deploymentInfo.setInput("");
-        deploymentInfo.setBlueprint_token("19ff5810-93f0-47e3-b117-86c0a1482cea");
+
+//        saveAsFile("vehicle.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
+//        deploymentInfo.setBlueprint_token("19ff5810-93f0-47e3-b117-86c0a1482cea");
         manager.setCurrentDeploymentInfo(deploymentInfo);
         try {
-//            manager.loadCurrentDeployment();
-//            manager.saveDeploymentModelInKB();
+            manager.loadCurrentDeployment();
+            manager.saveDeploymentModelInKB();
 //            manager.buildIaCForCurrentDeployment();
-            manager.deployCurrentDeployment();
+//            manager.deployCurrentDeployment();
+            saveAsFile("vehicleref.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
             System.out.println(deploymentInfo.getAadm_id());
             System.out.println(deploymentInfo.getBlueprint_token());
             System.out.println(deploymentInfo.getDeployment_id());
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveAsFile(String filename, String value) {
+        try {
+            FileWriter myWriter = new FileWriter(filename);
+            myWriter.write(value);
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
             e.printStackTrace();
         }
     }

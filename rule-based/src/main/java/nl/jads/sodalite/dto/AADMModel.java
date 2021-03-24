@@ -1,6 +1,7 @@
 package nl.jads.sodalite.dto;
 
 import tosca.mapper.dto.Node;
+import tosca.mapper.dto.Parameter;
 import tosca.mapper.dto.Property;
 import tosca.mapper.dto.Requirement;
 import tosca.mapper.exchange.generator.AADMGenerator;
@@ -24,9 +25,11 @@ public class AADMModel {
     public Node getNode(String name) {
         return nodes.get(name);
     }
+
     public void removeNode(String name) {
         nodes.remove(name);
     }
+
     public void addInput(Property input) {
         inputs.putIfAbsent(input.getName(), input);
     }
@@ -81,10 +84,13 @@ public class AADMModel {
         for (Node node : getNodes()) {
 //            node.setName(namespace +"/"+ node.getName())
             for (tosca.mapper.dto.Requirement requirement : node.getRequirements()) {
-                if (!(requirement.getValue().contains(DTOConstraints.KUBE)
-                        | requirement.getValue().contains(DTOConstraints.DOCKER)
-                        | requirement.getValue().contains(DTOConstraints.OPENSTACK))) {
-                    requirement.setValue(namespace + "/" + requirement.getValue());
+                for (Parameter parameter : requirement.getParameters()) {
+                    String pValue = parameter.getValue();
+                    if (!(pValue.contains(DTOConstraints.KUBE)
+                            | pValue.contains(DTOConstraints.DOCKER)
+                            | pValue.contains(DTOConstraints.OPENSTACK))) {
+                        parameter.setValue(namespace + "/" + parameter.getValue());
+                    }
                 }
             }
             for (tosca.mapper.dto.Capability capability : node.getCapabilities()) {
@@ -105,10 +111,19 @@ public class AADMModel {
             }
         }
     }
+
     public void updateRequirement(String nodeName, String name, String value) {
-        for (Requirement p : getNode(nodeName).getRequirements()) {
-            if (p.getName().equals(name)) {
-                p.setValue(value);
+        for (Requirement requirement : getNode(nodeName).getRequirements()) {
+            if (requirement.getName().equals(name)) {
+                for (Parameter parameter : requirement.getParameters()) {
+                    if (value.contains(DTOConstraints.KUBE)
+                            | value.contains(DTOConstraints.DOCKER)
+                            | value.contains(DTOConstraints.OPENSTACK)) {
+                        parameter.setValue(value);
+                    } else {
+                        parameter.setValue(namespace + "/" + value);
+                    }
+                }
             }
         }
     }

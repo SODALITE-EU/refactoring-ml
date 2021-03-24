@@ -1,6 +1,9 @@
 import nl.jads.sodalite.dto.DeploymentInfo;
 import nl.jads.sodalite.rules.RefactoringManager;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class RefactoringManagerTest {
 
     public static void main(String[] args) {
@@ -17,15 +20,18 @@ public class RefactoringManagerTest {
         DeploymentInfo deploymentInfo = new DeploymentInfo();
         deploymentInfo.setInput("... ");
         manager.setCurrentDeploymentInfo(deploymentInfo);
-        deploy(manager);
+//        deploy(manager);
     }
 
     private static void deploy(RefactoringManager manager) {
         try {
             DeploymentInfo deploymentInfo = manager.getCurrentDeploymentInfo();
-            deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/vbeit9auui3d3j0tdekbljfndl/AADM_92aj0uo7t6l6u8mv5tmh99pjnb");
+            deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/opgr7qto1uv6n96i4eqkfv4k8o/AADM_3kmq0iknmsd0s89rnba0hhr88e");
+//            saveAsFile("snow.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
             manager.loadCurrentDeployment();
+//              manager.getAadm().getExchangeAADM();
             manager.saveDeploymentModelInKB();
+//            saveAsFile("snowrefac.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
             manager.buildIaCForCurrentDeployment();
             manager.deployCurrentDeployment();
             System.out.println(deploymentInfo.getAadm_id());
@@ -39,8 +45,8 @@ public class RefactoringManagerTest {
     private static void update(RefactoringManager manager) {
         try {
             DeploymentInfo deploymentInfo = manager.getCurrentDeploymentInfo();
-            deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/vbeit9auui3d3j0tdekbljfndl/AADM_92aj0uo7t6l6u8mv5tmh99pjnbrefac");
-            deploymentInfo.setDeployment_id("...");
+            deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/opgr7qto1uv6n96i4eqkfv4k8o/AADM_3kmq0iknmsd0s89rnba0hhr88erefac");
+            deploymentInfo.setDeployment_id("511d8a5d-1198-49b6-8d7f-4741df893dad");
             manager.loadCurrentDeployment();
 
             manager.getAadm().updateProperty("snow-daily-median-aggregator", "restart_policy", "on-failure");
@@ -54,6 +60,18 @@ public class RefactoringManagerTest {
             System.out.println(deploymentInfo.getBlueprint_token());
             System.out.println(deploymentInfo.getDeployment_id());
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveAsFile(String filename, String value) {
+        try {
+            FileWriter myWriter = new FileWriter(filename);
+            myWriter.write(value);
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
             e.printStackTrace();
         }
     }

@@ -105,6 +105,14 @@ public class RefactoringManager {
     }
 
     public void loadDeployment(String aadmId) throws Exception {
+        aadm = AADMModelBuilder.fromJsonText(getDeploymentSimple(aadmId));
+        aadm.setId(aadmId);
+        aadm.updateNodeTypes();
+        System.out.println("AADM runtime model was loaded : " + aadmId);
+
+    }
+
+    public String getDeploymentSimple(String aadmId) {
         Client client = ClientBuilder.newClient();
         WebTarget webTarget =
                 client.target(reasonerUri).path("aadm").queryParam("aadmIRI", aadmId)
@@ -120,11 +128,7 @@ public class RefactoringManager {
         String aadmJson = response.readEntity(String.class);
         System.out.println(aadmJson);
         response.close();
-        aadm = AADMModelBuilder.fromJsonText(aadmJson);
-        aadm.setId(aadmId);
-        aadm.updateNodeTypes();
-        System.out.println("AADM runtime model was loaded : " + aadmId);
-
+        return aadmJson;
     }
 
     public JsonObject getCompleteDeploymentModel(String aadmId) throws Exception {
