@@ -30,7 +30,7 @@ public class RefactoringManagerTest {
 //            saveAsFile("snow.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
             manager.loadCurrentDeployment();
 //              manager.getAadm().getExchangeAADM();
-            manager.saveDeploymentModelInKB();
+//            manager.saveDeploymentModelInKB();
 //            saveAsFile("snowrefac.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
             manager.buildIaCForCurrentDeployment();
             manager.deployCurrentDeployment();
@@ -56,6 +56,19 @@ public class RefactoringManagerTest {
             manager.buildIaCForCurrentDeployment();
 
             manager.update(deploymentInfo.getDeployment_id(), deploymentInfo.getBlueprint_token(), deploymentInfo.getUpdatedInput());
+            System.out.println(deploymentInfo.getAadm_id());
+            System.out.println(deploymentInfo.getBlueprint_token());
+            System.out.println(deploymentInfo.getDeployment_id());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void delete(RefactoringManager manager) {
+        try {
+            DeploymentInfo deploymentInfo = manager.getCurrentDeploymentInfo();
+            deploymentInfo.setDeployment_id("056d14c9-83e8-47cc-983c-1b93fe858214");
+            manager.unDeployCurrentDeployment();
             System.out.println(deploymentInfo.getAadm_id());
             System.out.println(deploymentInfo.getBlueprint_token());
             System.out.println(deploymentInfo.getDeployment_id());

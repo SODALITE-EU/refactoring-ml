@@ -126,7 +126,6 @@ public class RefactoringManager {
         Response response = invocation.invoke();
         System.out.println(response.getStatus());
         String aadmJson = response.readEntity(String.class);
-        System.out.println(aadmJson);
         response.close();
         return aadmJson;
     }
@@ -144,7 +143,6 @@ public class RefactoringManager {
         Response response = invocation.invoke();
         System.out.println(response.getStatus());
         String aadmJson = response.readEntity(String.class);
-        System.out.println(aadmJson);
         response.close();
         System.out.println("AADM JSON was retrieved : " + aadmId);
         return new Gson().fromJson(aadmJson, JsonObject.class);
@@ -156,11 +154,11 @@ public class RefactoringManager {
         }
         Client client = ClientBuilder.newClient();
         String aadmURI = aadm.getId();
-        if (!aadmURI.endsWith("refac")) {
-            aadmURI = aadmURI + "refac";
-            aadm.setId(aadmURI);
-            currentDeploymentInfo.setAadm_id(aadmURI);
-        }
+//        if (!aadmURI.endsWith("refac")) {
+//            aadmURI = aadmURI + "refac";
+//            aadm.setId(aadmURI);
+//            currentDeploymentInfo.setAadm_id(aadmURI);
+//        }
         WebTarget webTarget =
                 client.target(reasonerUri).path("saveAADM");
         Form form = new Form();
@@ -179,7 +177,6 @@ public class RefactoringManager {
             Response response = invocation.invoke();
             System.out.println(response.getStatus());
             String result = response.readEntity(String.class);
-            System.out.println(result);
             response.close();
             JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
             String aadmuri = jsonObject.get("aadmuri").getAsString();
@@ -219,7 +216,6 @@ public class RefactoringManager {
             Response response = invocation.invoke();
             System.out.println(response.getStatus());
             String result = response.readEntity(String.class);
-            System.out.println(result);
             response.close();
             JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
             currentDeploymentInfo.setBlueprint_token
@@ -242,7 +238,7 @@ public class RefactoringManager {
         Client client = ClientBuilder.newBuilder()
                 .register(MultiPartFeature.class).build();
         WebTarget webTarget = client.target(xopera).path("deployment/deploy")
-                .queryParam("blueprint_id", bpToken);
+                .queryParam("blueprint_id", bpToken).queryParam("workers", 15);
 
         FormDataMultiPart multipart =
                 new FormDataMultiPart();
@@ -260,13 +256,9 @@ public class RefactoringManager {
                 Entity.entity(multipart, multipart.getMediaType())).invoke();
         String message = response.readEntity(String.class);
         response.close();
-
-        System.out.println(message);
         System.out.println(response.getStatus() + " "
                 + response.getStatusInfo() + " " + response);
-        System.out.println(response.getStatus());
         System.out.println(message);
-        System.out.println();
         JsonObject jsonObject = new Gson().fromJson(message, JsonObject.class);
         currentDeploymentInfo.setDeployment_id(jsonObject.get("deployment_id").getAsString());
     }
@@ -276,7 +268,8 @@ public class RefactoringManager {
         Client client = ClientBuilder.newBuilder()
                 .register(MultiPartFeature.class).build();
         WebTarget webTarget = client.target(xopera).path("deployment/" + dpId + "/update")
-                .queryParam("blueprint_id", bpToken);
+                .queryParam("blueprint_id", bpToken).queryParam("workers", 15);
+        ;
 
         FormDataMultiPart multipart = new FormDataMultiPart();
 
@@ -295,12 +288,9 @@ public class RefactoringManager {
         String message = response.readEntity(String.class);
         response.close();
 
-        System.out.println(message);
         System.out.println(response.getStatus() + " "
                 + response.getStatusInfo() + " " + response);
-        System.out.println(response.getStatus());
         System.out.println(message);
-        System.out.println();
         JsonObject jsonObject = new Gson().fromJson(message, JsonObject.class);
         currentDeploymentInfo.setDeployment_id(jsonObject.get("deployment_id").getAsString());
     }
@@ -310,12 +300,18 @@ public class RefactoringManager {
         unDeploy(blueprintsData.getBptoken(), input);
     }
 
+    public void unDeployCurrentDeployment() {
+        unDeploy(currentDeploymentInfo.getDeployment_id(), currentDeploymentInfo.getUpdatedInput());
+    }
+
     public void unDeploy(String dpId, String inputFile) {
         System.out.println("Undeploying : " + dpId);
         ClientConfig config = new ClientConfig((MultiPartFeature.class));
         config.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
         Client client = ClientBuilder.newClient(config);
-        WebTarget webTarget = client.target(xopera).path("deployment/" + dpId + "/undeploy");
+        WebTarget webTarget =
+                client.target(xopera).path("deployment/" + dpId + "/undeploy")
+                        .queryParam("workers", 15);
         FormDataMultiPart multipart =
                 new FormDataMultiPart();
 
@@ -330,13 +326,11 @@ public class RefactoringManager {
             builder.header("X-API-Key", apikey);
         }
         Response response = builder
-                .build("DELETE", Entity.entity(multipart, multipart.getMediaType()))
+                .buildPost(Entity.entity(multipart, multipart.getMediaType()))
                 .invoke();
         String message = response.readEntity(String.class);
         response.close();
         System.out.println(message);
-        System.out.println(response);
-        System.out.println();
     }
 
     public void configure(BuleprintsDataSet buleprintsDatas) {

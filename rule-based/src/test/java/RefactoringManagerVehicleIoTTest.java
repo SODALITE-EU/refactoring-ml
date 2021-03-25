@@ -37,9 +37,9 @@ public class RefactoringManagerVehicleIoTTest {
         try {
             manager.loadCurrentDeployment();
             manager.saveDeploymentModelInKB();
-//            manager.buildIaCForCurrentDeployment();
-//            manager.deployCurrentDeployment();
-            saveAsFile("vehicleref.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
+            manager.buildIaCForCurrentDeployment();
+            manager.deployCurrentDeployment();
+//            saveAsFile("vehicleref.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
             System.out.println(deploymentInfo.getAadm_id());
             System.out.println(deploymentInfo.getBlueprint_token());
             System.out.println(deploymentInfo.getDeployment_id());
@@ -62,10 +62,10 @@ public class RefactoringManagerVehicleIoTTest {
 
     private static void update(RefactoringManager manager) {
         DeploymentInfo deploymentInfo = new DeploymentInfo();
-        deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/7ke93c8pgi7piknhgaat0q1n00/AADM_9gfoiqlpkkuh4thirvufqr2kl2refac");
+        deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/7ke93c8pgi7piknhgaat0q1n00/AADM_9gfoiqlpkkuh4thirvufqr2kl2");
         deploymentInfo.setInput("");
-        deploymentInfo.setDeployment_id("7e99e3fc-a1b9-4e95-9a4f-2678f46fb1e8");
-        deploymentInfo.setBlueprint_token("19ff5810-93f0-47e3-b117-86c0a1482cea");
+        deploymentInfo.setDeployment_id("10e28566-1bb1-42c6-924b-95b9afeae745");
+        deploymentInfo.setBlueprint_token("3bee2a0d-b367-409b-a967-037ced7f4b56");
         manager.setCurrentDeploymentInfo(deploymentInfo);
         try {
             manager.loadCurrentDeployment();
@@ -99,6 +99,18 @@ public class RefactoringManagerVehicleIoTTest {
         }
     }
 
+    private static void delete(RefactoringManager manager) {
+        try {
+            DeploymentInfo deploymentInfo = manager.getCurrentDeploymentInfo();
+            deploymentInfo.setDeployment_id("10e28566-1bb1-42c6-924b-95b9afeae745");
+            manager.unDeployCurrentDeployment();
+            System.out.println(deploymentInfo.getAadm_id());
+            System.out.println(deploymentInfo.getBlueprint_token());
+            System.out.println(deploymentInfo.getDeployment_id());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private static Property createProperty(String name, Object value) {
         Property property = new Property(name);
         property.setValue(String.valueOf(value));
