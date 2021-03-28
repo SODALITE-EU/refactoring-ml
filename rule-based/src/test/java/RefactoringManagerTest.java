@@ -16,7 +16,7 @@ public class RefactoringManagerTest {
         manager.setXopera("...:5000/");
         manager.setIacBuilderUri("...:8081/");
         manager.setUsername("indika");
-        manager.setPassword("...");
+        manager.setPassword("qwerty123");
         DeploymentInfo deploymentInfo = new DeploymentInfo();
         deploymentInfo.setInput("... ");
         manager.setCurrentDeploymentInfo(deploymentInfo);
@@ -32,10 +32,10 @@ public class RefactoringManagerTest {
 //              manager.getAadm().getExchangeAADM();
 //            manager.saveDeploymentModelInKB();
 //            saveAsFile("snowrefac.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
-            manager.buildIaCForCurrentDeployment();
-            manager.deployCurrentDeployment();
+//            manager.buildIaCForCurrentDeployment();
+//            manager.deployCurrentDeployment();
             System.out.println(deploymentInfo.getAadm_id());
-            System.out.println(deploymentInfo.getBlueprint_token());
+            System.out.println(deploymentInfo.getBlueprint_id());
             System.out.println(deploymentInfo.getDeployment_id());
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,9 +55,9 @@ public class RefactoringManagerTest {
             manager.saveDeploymentModelInKB();
             manager.buildIaCForCurrentDeployment();
 
-            manager.update(deploymentInfo.getDeployment_id(), deploymentInfo.getBlueprint_token(), deploymentInfo.getUpdatedInput());
+            manager.update(deploymentInfo.getDeployment_id(), deploymentInfo.getBlueprint_id(), deploymentInfo.getUpdatedInput());
             System.out.println(deploymentInfo.getAadm_id());
-            System.out.println(deploymentInfo.getBlueprint_token());
+            System.out.println(deploymentInfo.getBlueprint_id());
             System.out.println(deploymentInfo.getDeployment_id());
         } catch (Exception e) {
             e.printStackTrace();
@@ -67,10 +67,10 @@ public class RefactoringManagerTest {
     private static void delete(RefactoringManager manager) {
         try {
             DeploymentInfo deploymentInfo = manager.getCurrentDeploymentInfo();
-            deploymentInfo.setDeployment_id("056d14c9-83e8-47cc-983c-1b93fe858214");
+            deploymentInfo.setDeployment_id("3109dc19-aa67-44e3-a79d-0b7b5a144b8d");
             manager.unDeployCurrentDeployment();
             System.out.println(deploymentInfo.getAadm_id());
-            System.out.println(deploymentInfo.getBlueprint_token());
+            System.out.println(deploymentInfo.getBlueprint_id());
             System.out.println(deploymentInfo.getDeployment_id());
         } catch (Exception e) {
             e.printStackTrace();

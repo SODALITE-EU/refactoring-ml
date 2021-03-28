@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import nl.jads.sodalite.dto.*;
 import nl.jads.sodalite.events.*;
 import nl.jads.sodalite.rules.RefactoringManager;
-import nl.jads.sodalite.rules.RefactoringPolicyExecutor;
 import nl.jads.sodalite.rules.RulesException;
 import nl.jads.sodalite.scheduler.MonitoringDataCollector;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -22,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -32,36 +32,35 @@ public class RefactoringService {
     private static final Logger log = Logger.getLogger(RefactoringService.class.getName());
     @Context
     ServletContext servletContext;
-    private RefactoringPolicyExecutor policyExecutor;
-    private RefactoringManager refactoringManager;
+
+    private Map<String, RefactoringManager> managers = new HashMap<>();
     private MonitoringDataCollector monitoringDataCollector;
 
     public RefactoringService() {
-        refactoringManager = new RefactoringManager();
-        policyExecutor = new RefactoringPolicyExecutor("refactoring.drl", "rules/", refactoringManager);
+//        managers.putIfAbsent("anyapp", new RefactoringManager());
         monitoringDataCollector = new MonitoringDataCollector();
     }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/events")
-    public Response notify(InputEventData inputEventData) {
+    @Path("/{appid}/events")
+    public Response notify(@PathParam("appid") String appid, InputEventData inputEventData) {
         System.out.println("Received Message : " + inputEventData.toString());
         if ("LocationChanged".equals(inputEventData.getEventType())) {
             List<IEvent> iEventList = new ArrayList<>();
             iEventList.add(new LocationChangedEvent(
                     inputEventData.getPreviousLocation(), inputEventData.getNewLocation()));
             iEventList.add(new DeploymentChanged());
-            return executeRules(iEventList, inputEventData.getEventType());
+            return executeRules(appid, iEventList, inputEventData.getEventType());
         } else if ("DeploymentNeeded".equals(inputEventData.getEventType())) {
             List<IEvent> iEventList = new ArrayList<>();
             iEventList.add(new DeploymentNeeded(inputEventData.getNewLocation()));
-            return executeRules(iEventList, inputEventData.getEventType());
+            return executeRules(appid, iEventList, inputEventData.getEventType());
         } else if ("DeploymentRemove".equals(inputEventData.getEventType())) {
             List<IEvent> iEventList = new ArrayList<>();
             iEventList.add(new DeploymentRemove(inputEventData.getPreviousLocation()));
-            return executeRules(iEventList, inputEventData.getEventType());
+            return executeRules(appid, iEventList, inputEventData.getEventType());
         } else {
             return Response.serverError().entity("Unrecognized Event : " + inputEventData.getEventType()).build();
         }
@@ -70,8 +69,8 @@ public class RefactoringService {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/alerts")
-    public Response notifyAlerts(AlertsData alertsData) {
+    @Path("/{appid}/alerts")
+    public Response notifyAlerts(@PathParam("appid") String appid, AlertsData alertsData) {
         System.out.println("Received An Alert : " + alertsData.toString());
         List<IEvent> iEvents = new ArrayList<>();
         for (AlertDTO alertDTO : alertsData.getAlertDTOS()) {
@@ -89,7 +88,7 @@ public class RefactoringService {
             iEvents.add(alert);
         }
         try {
-            policyExecutor.insertEvent(iEvents);
+            managers.get(appid).getPolicyExecutor().insertEvent(iEvents);
         } catch (RulesException e) {
             log.warning(e.getMessage());
             return Response.serverError().entity("Error Executing Refactoring Logic").build();
@@ -100,13 +99,16 @@ public class RefactoringService {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/deployments")
-    public Response createDeployment(DeploymentInfo deploymentInfo) {
+    @Path("/{appid}/deployments")
+    public Response createDeployment(@PathParam("appid") String appid, DeploymentInfo deploymentInfo) {
         System.out.println("Received the Information about the deployment  : " + deploymentInfo.getAadm_id());
-        refactoringManager.setCurrentDeploymentInfo(deploymentInfo);
+        if (!managers.containsKey(appid)) {
+            managers.put(appid, new RefactoringManager());
+        }
+        managers.get(appid).setCurrentDeploymentInfo(deploymentInfo);
         try {
-            refactoringManager.loadDeployment(deploymentInfo.getAadm_id());
-            log.info("Blueprint ID : " + deploymentInfo.getBlueprint_token());
+            managers.get(appid).loadDeployment(deploymentInfo.getAadm_id());
+            log.info("Blueprint ID : " + deploymentInfo.getBlueprint_id());
             log.info("Deployment ID : " + deploymentInfo.getDeployment_id());
             log.info("Inputs : " + deploymentInfo.getInputs());
         } catch (Exception e) {
@@ -120,15 +122,15 @@ public class RefactoringService {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/anyalerts")
-    public Response notifyAnyAlerts(JsonNode jsonNode) {
+    @Path("/{appid}/anyalerts")
+    public Response notifyAnyAlerts(@PathParam("appid") String appid, JsonNode jsonNode) {
         System.out.println("Received An Alert : " + jsonNode.toString());
         return Response.ok("Alert Received").build();
     }
 
-    private Response executeRules(List<IEvent> iEventList, String eventType) {
+    private Response executeRules(String appid, List<IEvent> iEventList, String eventType) {
         try {
-            policyExecutor.insertEvent(iEventList);
+            managers.get(appid).getPolicyExecutor().insertEvent(iEventList);
         } catch (RulesException e) {
             log.warning(e.getMessage());
             return Response.serverError().entity("Error Executing Refactoring Logic").build();
@@ -139,20 +141,20 @@ public class RefactoringService {
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/variants")
-    public Response updateVariantsInfo(BuleprintsDataSet buleprintsDatas) {
+    @Path("/{appid}/variants")
+    public Response updateVariantsInfo(@PathParam("appid") String appid, BuleprintsDataSet buleprintsDatas) {
         System.out.println("Received VariantInfos : " + buleprintsDatas.toString());
-        refactoringManager.configure(buleprintsDatas);
+        managers.get(appid).configure(buleprintsDatas);
         return Response.ok("Updated VariantInfos").build();
     }
 
     @PUT
-    @Path("/rules")
+    @Path("/{appid}/rules")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response uploadFile(
-            @FormDataParam("file") InputStream uploadedInputStream,
-            @FormDataParam("file") FormDataContentDisposition fileDetail) throws IOException {
+    public Response uploadFile(@PathParam("appid") String appid,
+                               @FormDataParam("file") InputStream uploadedInputStream,
+                               @FormDataParam("file") FormDataContentDisposition fileDetail) throws IOException {
         String fileLocation = "e://" + fileDetail.getFileName();
         String actualPath = servletContext.getRealPath("/WEB-INF/classes");
         System.out.println("Received a File :" + fileLocation);
@@ -168,9 +170,7 @@ public class RefactoringService {
             log.warning(e.getMessage());
         }
         try {
-            policyExecutor.cleanUp();
-            policyExecutor =
-                    new RefactoringPolicyExecutor("refactoring.drl", "rules/", refactoringManager);
+            managers.get(appid).updatePolicyExecutor("refactoring.drl");
             return Response.ok("Rules updated").header("Access-Control-Allow-Origin", "*").
                     header("Access-Control-Allow-Origin", "POST").build();
 
@@ -202,7 +202,9 @@ public class RefactoringService {
 
     @PreDestroy
     public void destroy() {
-        policyExecutor.cleanUp();
+        for (RefactoringManager manager : managers.values()) {
+            manager.cleanUp();
+        }
         monitoringDataCollector.shutdown();
     }
 }

@@ -44,6 +44,7 @@ public class RefactoringManager {
     private DeploymentInfo currentDeploymentInfo;
     private DeploymentInfo nextDeploymentInfo;
     private String token;
+    private RefactoringPolicyExecutor policyExecutor;
 
     public RefactoringManager() {
         xopera = System.getenv("xopera");
@@ -63,6 +64,8 @@ public class RefactoringManager {
         if (buleprintsDatas != null) {
             configure(buleprintsDatas);
         }
+        policyExecutor = new RefactoringPolicyExecutor("refactoring.drl", "rules/", this);
+
     }
 
     public void addDeploymentOption(String name, String vsnId, Map<String, String> parameters) {
@@ -218,7 +221,7 @@ public class RefactoringManager {
             String result = response.readEntity(String.class);
             response.close();
             JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
-            currentDeploymentInfo.setBlueprint_token
+            currentDeploymentInfo.setBlueprint_id
                     (jsonObject.get("blueprint_id").getAsString());
         } catch (HttpClientErrorException ex) {
             if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
@@ -230,7 +233,7 @@ public class RefactoringManager {
     }
 
     public void deployCurrentDeployment() {
-        deploy(currentDeploymentInfo.getBlueprint_token(), currentDeploymentInfo.getUpdatedInput());
+        deploy(currentDeploymentInfo.getBlueprint_id(), currentDeploymentInfo.getUpdatedInput());
     }
 
     public void deploy(String bpToken, String inputFile) {
@@ -473,5 +476,17 @@ public class RefactoringManager {
         this.xopera = xopera;
     }
 
+    public RefactoringPolicyExecutor getPolicyExecutor() {
+        return policyExecutor;
+    }
+
+    public void updatePolicyExecutor(String ruleFile) {
+        policyExecutor.cleanUp();
+        policyExecutor = new RefactoringPolicyExecutor(ruleFile, "rules/", this);
+    }
+
+    public void cleanUp(){
+        policyExecutor.cleanUp();
+    }
 }
 

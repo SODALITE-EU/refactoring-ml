@@ -11,8 +11,8 @@ public class DeploymentInfo {
     private String aadm_id;
     @JsonProperty("deployment_id")
     private String deployment_id;
-    @JsonProperty("blueprint_token")
-    private String blueprint_token;
+    @JsonProperty("blueprint_id")
+    private String blueprint_id;
     @JsonProperty("inputs")
     private String inputs;
     private Map<String, Object> inputMap;
@@ -33,12 +33,12 @@ public class DeploymentInfo {
         this.deployment_id = deployment_id;
     }
 
-    public String getBlueprint_token() {
-        return blueprint_token;
+    public String getBlueprint_id() {
+        return blueprint_id;
     }
 
-    public void setBlueprint_token(String blueprint_token) {
-        this.blueprint_token = blueprint_token;
+    public void setBlueprint_id(String blueprint_id) {
+        this.blueprint_id = blueprint_id;
     }
 
     public String getInputs() {

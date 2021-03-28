@@ -14,8 +14,6 @@ rule "de_to_it"
   then
     disabledSet.disable("de_to_it");
     System.out.println("de_to_it rule triggered");
-    refMgt.undeployDeploymentModel($f1.getPreLoc());
-    refMgt.deployDeploymentModel($f1.getCurrentLoc());
     System.out.println("de_to_it rule executed");
 end
 
@@ -25,7 +23,6 @@ rule "deploy_it"
   then
     disabledSet.disable("deploy_it");
     System.out.println("deploy_it rule triggered");
-    refMgt.deployDeploymentModel($f1.getCurrentLoc());
     System.out.println("deploy_it rule executed");
 end
 
@@ -35,7 +32,6 @@ rule "deploy_at"
   then
     disabledSet.disable("deploy_at");
     System.out.println("deploy_at rule triggered");
-    refMgt.deployDeploymentModel($f1.getCurrentLoc());
     System.out.println("deploy_at rule executed");
 end
 
@@ -45,7 +41,6 @@ rule "deploy_remove_at"
   then
     disabledSet.disable("deploy_remove_at");
     System.out.println("deploy_remove_at rule triggered");
-    refMgt.undeployDeploymentModel($f1.getPreLoc());
     System.out.println("deploy_remove_at rule executed");
 end
 
@@ -55,50 +50,41 @@ rule "deploy_remove_it"
   then
     disabledSet.disable("deploy_remove_it");
     System.out.println("deploy_remove_it rule triggered");
-    refMgt.undeployDeploymentModel($f1.getPreLoc());
     System.out.println("deploy_remove_it rule executed");
 end
 
 rule "HostHighCpuLoad"
   when
-    $f1 : Alert(name == "HostHighCpuLoad", variant=="vehicle-iot-demo-v1")
+    $f1 : Alert(name == "HostHighCpuLoad")
   then
     disabledSet.disable("HostHighCpuLoad");
     System.out.println("HostHighCpuLoad rule triggered");
-//    refMgt.unDeploy("");
-//    refMgt.deploy("");
     System.out.println("HostHighCpuLoad rule executed");
 end
 
 rule "HostLowCpuLoad"
   when
-    $f1 : Alert(name == "HostLowCpuLoad", variant=="vehicle-iot-demo-v2")
+    $f1 : Alert(name == "HostLowCpuLoad")
   then
     disabledSet.disable("HostLowCpuLoad");
     System.out.println("HostLowCpuLoad rule triggered");
-//    refMgt.unDeploy("");
-//    refMgt.deploy("");
     System.out.println("HostLowCpuLoad rule executed");
 end
 
 rule "edgetpu_temp_warning"
   when
-    $f1 : Alert(name == "edgetpu_temp_warning", variant=="vehicle-iot-demo-v1")
+    $f1 : Alert(name == "edgetpu_temp_warning")
   then
     disabledSet.disable("edgetpu_temp_warning");
     System.out.println("edgetpu_temp_warning rule triggered");
-//    refMgt.unDeploy("");
-//    refMgt.deploy("");
     System.out.println("edgetpu_temp_warning rule executed");
 end
 
 rule "edgetpu_temp_critical"
   when
-    $f1 : Alert(name == "edgetpu_temp_critical", variant=="vehicle-iot-demo-v1")
+    $f1 : Alert(name == "edgetpu_temp_critical")
   then
     disabledSet.disable("edgetpu_temp_critical");
     System.out.println("edgetpu_temp_critical rule triggered");
-//    refMgt.unDeploy("");
-//    refMgt.deploy("");
     System.out.println("edgetpu_temp_critical rule executed");
 end
