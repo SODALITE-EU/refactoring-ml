@@ -14,6 +14,7 @@ ENV username  indika
 ENV client_id  client_id
 ENV client_secret  client_secret
 ENV apikey  test
+ENV graphdb http://graph-db:7200
 
 # Add docker-compose-wait tool -------------------
 ENV WAIT_VERSION 2.7.3

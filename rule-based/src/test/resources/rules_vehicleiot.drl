@@ -1,0 +1,37 @@
+global nl.jads.sodalite.rules.RefactoringManager manager;
+global nl.jads.sodalite.rules.DisabledRuleSet disabledSet;
+import nl.jads.sodalite.events.Alert
+import java.util.Arrays
+import nl.jads.sodalite.dto.AADMModel
+import tosca.mapper.dto.Node
+import tosca.mapper.dto.Property
+
+rule "TPUAvaiable"
+  when
+    $f1 : Alert(name == "TPUAvailable")
+  then
+    disabledSet.disable("TPUAvailable");
+    AADMModel aadmModel = manager.getAadm();
+    aadmModel.removeNode("node-xavier-nx-gpu-cpu");
+    Node node =  manager.findMatchingNode(
+                                "( ?edgetpus = "+ 1 +" ) && ( ?cpus = "+ 1+" )" + " && ( ?ready_status = "+ true+" )");
+    aadmModel.addNode(node);
+    aadmModel.updateRequirement("mysql-deployment-via-helm", "kube_node", node.getName());
+    manager.saveAndUpdate();
+    System.out.println("TPUAvailable rule executed");
+end
+
+rule "GPUAvaiable"
+  when
+    $f1 : Alert(name == "GPUAvailable")
+  then
+    disabledSet.disable("GPUAvailable");
+    AADMModel aadmModel = manager.getAadm();
+    aadmModel.removeNode("sgx-celsius-w550power");
+    Node node =  manager.findMatchingNode(
+                                    "( ?gpu = "+ 1 +" ) && ( ?cpus = "+ 1+" )" + " && ( ?ready_status = "+ true+" )");
+    aadmModel.addNode(node);
+    aadmModel.updateRequirement("mysql-deployment-via-helm", "kube_node", node.getName());
+    manager.saveAndUpdate();
+    System.out.println("GPUAvailable rule executed");
+end

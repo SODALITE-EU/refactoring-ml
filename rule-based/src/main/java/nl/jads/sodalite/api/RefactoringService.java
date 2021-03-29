@@ -105,7 +105,7 @@ public class RefactoringService {
         if (!managers.containsKey(appid)) {
             managers.put(appid, new RefactoringManager());
         }
-        managers.get(appid).setCurrentDeploymentInfo(deploymentInfo);
+        managers.get(appid).setOriginalDeploymentInfo(deploymentInfo);
         try {
             managers.get(appid).loadDeployment(deploymentInfo.getAadm_id());
             log.info("Blueprint ID : " + deploymentInfo.getBlueprint_id());

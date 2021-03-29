@@ -1,6 +1,7 @@
 import nl.jads.sodalite.dto.AADMModel;
 import nl.jads.sodalite.dto.DeploymentInfo;
 import nl.jads.sodalite.rules.RefactoringManager;
+import org.json.simple.parser.ParseException;
 import tosca.mapper.dto.Node;
 import tosca.mapper.dto.Property;
 
@@ -9,11 +10,14 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class RefactoringManagerVehicleIoTTest {
 
     public static void main(String[] args) {
         RefactoringManager manager = new RefactoringManager();
-        manager.setReasonerUri("...");
+        manager.setReasonerUri("http://160.40.52.200:8084/reasoner-api/v0.6/");
         manager.setApikey("test");
         manager.setClientId("...");
         manager.setClientSecret("...");
@@ -25,23 +29,40 @@ public class RefactoringManagerVehicleIoTTest {
 //        deploy(manager);
 //        update(manager);
 //        deployEdgeTPU(manager);
-        deploy(manager);
+//        deploy(manager);
+        loadNode(manager);
+//        String s = "https://www.sodalite.eu/ontologies/workspace/1/vehicleiot/node-sgx-celsius-w550power";
+//        String [] arrs = s.split("/");
+//        System.out.println(arrs[arrs.length-2] + "/"+arrs[arrs.length-1]);
     }
 
+    private static void loadNode(RefactoringManager manager) {
+        DeploymentInfo deploymentInfo = new DeploymentInfo();
+        deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/7ke93c8pgi7piknhgaat0q1n00/AADM_9gfoiqlpkkuh4thirvufqr2kl2");
+        deploymentInfo.setInput("");
+        manager.setOriginalDeploymentInfo(deploymentInfo);
+        try {
+            Node node = manager.findMatchingNode(
+                    "( ?edgetpus = "+ 1 +" ) && ( ?cpus = "+ 1+" )" + " && ( ?ready_status = "+ true+" )");
+            System.out.println(node.getOfType());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
     private static void deploy(RefactoringManager manager) {
         DeploymentInfo deploymentInfo = new DeploymentInfo();
         deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/7ke93c8pgi7piknhgaat0q1n00/AADM_9gfoiqlpkkuh4thirvufqr2kl2");
         deploymentInfo.setInput("");
-
 //        saveAsFile("vehicle.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
 //        deploymentInfo.setBlueprint_token("19ff5810-93f0-47e3-b117-86c0a1482cea");
-        manager.setCurrentDeploymentInfo(deploymentInfo);
+        manager.setOriginalDeploymentInfo(deploymentInfo);
         try {
-            manager.loadCurrentDeployment();
+            manager.loadRefactoredDeployment();
 //            manager.saveDeploymentModelInKB();
 //            manager.buildIaCForCurrentDeployment();
 //            manager.deployCurrentDeployment();
-//            saveAsFile("vehicleref.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
+//            manager.getAadm().getExchangeAADM();
+//            saveAsFile("vehicleref.ttl", manager.getAadm().getExchangeAADM());
             System.out.println(deploymentInfo.getAadm_id());
             System.out.println(deploymentInfo.getBlueprint_id());
             System.out.println(deploymentInfo.getDeployment_id());
@@ -54,9 +75,9 @@ public class RefactoringManagerVehicleIoTTest {
         DeploymentInfo deploymentInfo = new DeploymentInfo();
         deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/7ke93c8pgi7piknhgaat0q1n00/AADM_9gfoiqlpkkuh4thirvufqr2kl2");
         deploymentInfo.setInput("");
-        manager.setCurrentDeploymentInfo(deploymentInfo);
+        manager.setOriginalDeploymentInfo(deploymentInfo);
         try {
-            manager.loadCurrentDeployment();
+            manager.loadRefactoredDeployment();
 
             AADMModel aadmModel = manager.getAadm();
             aadmModel.removeNode("node-filesrv");
@@ -105,9 +126,9 @@ public class RefactoringManagerVehicleIoTTest {
         deploymentInfo.setInput("");
         deploymentInfo.setDeployment_id("10e28566-1bb1-42c6-924b-95b9afeae745");
         deploymentInfo.setBlueprint_id("3bee2a0d-b367-409b-a967-037ced7f4b56");
-        manager.setCurrentDeploymentInfo(deploymentInfo);
+        manager.setOriginalDeploymentInfo(deploymentInfo);
         try {
-            manager.loadCurrentDeployment();
+            manager.loadRefactoredDeployment();
 
             AADMModel aadmModel = manager.getAadm();
             aadmModel.removeNode("node-filesrv");
@@ -118,7 +139,6 @@ public class RefactoringManagerVehicleIoTTest {
             Set<Property> properties = new HashSet<>();
             properties.add(createProperty("name", "xavier-nx"));
             properties.add(createProperty("ready_status", true));
-            properties.add(createProperty("gpus", 1));
             properties.add(createProperty("gpus", 1));
             properties.add(createProperty("cpus", 1));
             properties.add(createProperty("arm64_cpus", 1));
@@ -142,7 +162,7 @@ public class RefactoringManagerVehicleIoTTest {
         try {
             DeploymentInfo deploymentInfo = new DeploymentInfo();
             deploymentInfo.setDeployment_id("612efea0-c666-42de-9803-5adce8d59eac");
-            manager.setCurrentDeploymentInfo(deploymentInfo);
+            manager.setOriginalDeploymentInfo(deploymentInfo);
             manager.unDeployCurrentDeployment();
             System.out.println(deploymentInfo.getAadm_id());
             System.out.println(deploymentInfo.getBlueprint_id());

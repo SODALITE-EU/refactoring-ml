@@ -2,6 +2,9 @@ package nl.jads.sodalite.rules;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import kb.repository.KB;
+import nl.jads.refactoringod.RefactoringOptionDiscovererKBApi;
+import nl.jads.refactoringod.dto.FindNodeInput;
 import nl.jads.sodalite.dto.*;
 import nl.jads.sodalite.utils.AADMModelBuilder;
 import nl.jads.sodalite.utils.POJOFactory;
@@ -13,17 +16,20 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+import tosca.mapper.dto.Node;
 
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RefactoringManager {
     private static final String BASE_REST_URI
@@ -41,9 +47,10 @@ public class RefactoringManager {
     private String input;
     private String apikey;
     private AADMModel aadm;
-    private DeploymentInfo currentDeploymentInfo;
-    private DeploymentInfo nextDeploymentInfo;
+    private DeploymentInfo originalDeploymentInfo;
+    private DeploymentInfo refactoredDeploymentInfo;
     private String token;
+    private String graphdb;
     private RefactoringPolicyExecutor policyExecutor;
 
     public RefactoringManager() {
@@ -52,6 +59,7 @@ public class RefactoringManager {
             xopera = BASE_REST_URI;
         }
         reasonerUri = System.getenv("reasoner");
+        graphdb = System.getenv("graphdb");
         apikey = System.getenv("apikey");
         iacBuilderUri = System.getenv("iacbuilder");
         authUri = System.getenv("authapi");
@@ -103,8 +111,12 @@ public class RefactoringManager {
         deploy(blueprintsData.getBptoken(), input);
     }
 
-    public void loadCurrentDeployment() throws Exception {
-        loadDeployment(currentDeploymentInfo.getAadm_id());
+    public void loadOriginalDeployment() throws Exception {
+        loadDeployment(originalDeploymentInfo.getAadm_id());
+    }
+
+    public void loadRefactoredDeployment() throws Exception {
+        loadDeployment(refactoredDeploymentInfo.getAadm_id());
     }
 
     public void loadDeployment(String aadmId) throws Exception {
@@ -112,7 +124,24 @@ public class RefactoringManager {
         aadm.setId(aadmId);
         aadm.updateNodeTypes();
         System.out.println("AADM runtime model was loaded : " + aadmId);
+    }
 
+    public Node getNodeFromKB(String nodeUri) throws ParseException {
+        Client client = ClientBuilder.newClient();
+        WebTarget webTarget =
+                client.target(reasonerUri).path("nodeFull").queryParam("resource", nodeUri);
+        Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
+        if (apikey != null) {
+            builder.header("X-API-Key", apikey);
+        }
+        Invocation invocation =
+                builder.buildGet();
+        Response response = invocation.invoke();
+        System.out.println(response.getStatus());
+        String nodeJson = response.readEntity(String.class);
+        response.close();
+        JSONObject json = (JSONObject) new JSONParser().parse(nodeJson);
+        return AADMModelBuilder.toNode(json, nodeUri);
     }
 
     public String getDeploymentSimple(String aadmId) {
@@ -151,17 +180,23 @@ public class RefactoringManager {
         return new Gson().fromJson(aadmJson, JsonObject.class);
     }
 
+    public void saveAndUpdate() throws Exception {
+        saveDeploymentModelInKB();
+        buildIaCForCurrentDeployment();
+        updateCurrentDeployment();
+    }
+
     public void saveDeploymentModelInKB() throws Exception {
         if (token == null) {
             refreshSecurityToken();
         }
         Client client = ClientBuilder.newClient();
         String aadmURI = aadm.getId();
-//        if (!aadmURI.endsWith("refac")) {
-//            aadmURI = aadmURI + "refac";
-//            aadm.setId(aadmURI);
-//            currentDeploymentInfo.setAadm_id(aadmURI);
-//        }
+        if (!aadmURI.endsWith("refac")) {
+            aadmURI = aadmURI + "refac";
+            aadm.setId(aadmURI);
+            refactoredDeploymentInfo.setAadm_id(aadmURI);
+        }
         WebTarget webTarget =
                 client.target(reasonerUri).path("saveAADM");
         Form form = new Form();
@@ -184,7 +219,7 @@ public class RefactoringManager {
             JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
             String aadmuri = jsonObject.get("aadmuri").getAsString();
             aadm.setId(aadmuri);
-            currentDeploymentInfo.setAadm_id(aadmURI);
+            refactoredDeploymentInfo.setAadm_id(aadmURI);
             System.out.println("AADM was saved : " + aadmuri);
         } catch (HttpClientErrorException ex) {
             if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
@@ -198,6 +233,31 @@ public class RefactoringManager {
     public void buildIaCForCurrentDeployment() throws Exception {
         buildIaC(aadm.getId(), aadm.getNamespace());
     }
+
+    public Node findMatchingNode(String expr) throws ParseException {
+        RefactoringOptionDiscovererKBApi kbApi = new RefactoringOptionDiscovererKBApi(
+                new KB(graphdb, KB.REPOSITORY));
+
+        Pattern pattern = Pattern.compile("\\?\\w+");
+        List<String> vars = new ArrayList<>();
+        Matcher matcher = pattern.matcher(expr);
+        while (matcher.find()) {
+            vars.add(matcher.group().substring(1));
+        }
+        FindNodeInput findNodeInput = new FindNodeInput();
+        findNodeInput.setExpr(expr);
+        findNodeInput.setVars(vars);
+        findNodeInput.setAadm(originalDeploymentInfo.getAadm_id());
+        Set<kb.dto.Node> nodes = kbApi.getComputeNodeInstances(findNodeInput);
+        System.out.println("Found " + nodes.size() + " node matching the expression : " + expr);
+        if (!nodes.isEmpty()) {
+            String[] arrs = ((kb.dto.Node) nodes.toArray()[0]).getUri().split("/");
+            String nodeUri = arrs[arrs.length - 2] + "/" + arrs[arrs.length - 1];
+            return getNodeFromKB(nodeUri);
+        }
+        return null;
+    }
+
 
     public void buildIaC(String aadmId, String nameSpace) throws Exception {
         JsonObject data = getCompleteDeploymentModel(aadmId);
@@ -221,7 +281,7 @@ public class RefactoringManager {
             String result = response.readEntity(String.class);
             response.close();
             JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
-            currentDeploymentInfo.setBlueprint_id
+            refactoredDeploymentInfo.setBlueprint_id
                     (jsonObject.get("blueprint_id").getAsString());
         } catch (HttpClientErrorException ex) {
             if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
@@ -233,7 +293,7 @@ public class RefactoringManager {
     }
 
     public void deployCurrentDeployment() {
-        deploy(currentDeploymentInfo.getBlueprint_id(), currentDeploymentInfo.getUpdatedInput());
+        deploy(refactoredDeploymentInfo.getBlueprint_id(), refactoredDeploymentInfo.getUpdatedInput());
     }
 
     public void deploy(String bpToken, String inputFile) {
@@ -263,7 +323,13 @@ public class RefactoringManager {
                 + response.getStatusInfo() + " " + response);
         System.out.println(message);
         JsonObject jsonObject = new Gson().fromJson(message, JsonObject.class);
-        currentDeploymentInfo.setDeployment_id(jsonObject.get("deployment_id").getAsString());
+        refactoredDeploymentInfo.setDeployment_id(jsonObject.get("deployment_id").getAsString());
+    }
+
+    public void updateCurrentDeployment() {
+        update(refactoredDeploymentInfo.getDeployment_id(),
+                refactoredDeploymentInfo.getBlueprint_id(),
+                refactoredDeploymentInfo.getUpdatedInput());
     }
 
     public void update(String dpId, String bpToken, String inputFile) {
@@ -295,7 +361,7 @@ public class RefactoringManager {
                 + response.getStatusInfo() + " " + response);
         System.out.println(message);
         JsonObject jsonObject = new Gson().fromJson(message, JsonObject.class);
-        currentDeploymentInfo.setDeployment_id(jsonObject.get("deployment_id").getAsString());
+        refactoredDeploymentInfo.setDeployment_id(jsonObject.get("deployment_id").getAsString());
     }
 
     public void undeployDeploymentModel(String target) {
@@ -304,7 +370,7 @@ public class RefactoringManager {
     }
 
     public void unDeployCurrentDeployment() {
-        unDeploy(currentDeploymentInfo.getDeployment_id(), currentDeploymentInfo.getUpdatedInput());
+        unDeploy(refactoredDeploymentInfo.getDeployment_id(), refactoredDeploymentInfo.getUpdatedInput());
     }
 
     public void unDeploy(String dpId, String inputFile) {
@@ -427,20 +493,25 @@ public class RefactoringManager {
         this.apikey = apikey;
     }
 
-    public DeploymentInfo getCurrentDeploymentInfo() {
-        return currentDeploymentInfo;
+    public DeploymentInfo getOriginalDeploymentInfo() {
+        return originalDeploymentInfo;
     }
 
-    public void setCurrentDeploymentInfo(DeploymentInfo currentDeploymentInfo) {
-        this.currentDeploymentInfo = currentDeploymentInfo;
+    public void setOriginalDeploymentInfo(DeploymentInfo originalDeploymentInfo) {
+        this.originalDeploymentInfo = originalDeploymentInfo;
+        this.refactoredDeploymentInfo = new DeploymentInfo();
+        this.refactoredDeploymentInfo.setDeployment_id(originalDeploymentInfo.getDeployment_id());
+        this.refactoredDeploymentInfo.setAadm_id(originalDeploymentInfo.getAadm_id());
+        this.refactoredDeploymentInfo.setBlueprint_id(originalDeploymentInfo.getBlueprint_id());
+        this.refactoredDeploymentInfo.setInput(originalDeploymentInfo.getInputs());
     }
 
-    public DeploymentInfo getNextDeploymentInfo() {
-        return nextDeploymentInfo;
+    public DeploymentInfo getRefactoredDeploymentInfo() {
+        return refactoredDeploymentInfo;
     }
 
-    public void setNextDeploymentInfo(DeploymentInfo nextDeploymentInfo) {
-        this.nextDeploymentInfo = nextDeploymentInfo;
+    public void setRefactoredDeploymentInfo(DeploymentInfo refactoredDeploymentInfo) {
+        this.refactoredDeploymentInfo = refactoredDeploymentInfo;
     }
 
     private void refreshSecurityToken() throws Exception {
@@ -485,8 +556,16 @@ public class RefactoringManager {
         policyExecutor = new RefactoringPolicyExecutor(ruleFile, "rules/", this);
     }
 
-    public void cleanUp(){
+    public void cleanUp() {
         policyExecutor.cleanUp();
+    }
+
+    public String getGraphdb() {
+        return graphdb;
+    }
+
+    public void setGraphdb(String graphdb) {
+        this.graphdb = graphdb;
     }
 }
 

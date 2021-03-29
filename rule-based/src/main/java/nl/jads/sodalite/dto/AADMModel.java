@@ -88,16 +88,21 @@ public class AADMModel {
                     String pValue = parameter.getValue();
                     if (!(pValue.contains(DTOConstraints.KUBE)
                             | pValue.contains(DTOConstraints.DOCKER)
-                            | pValue.contains(DTOConstraints.OPENSTACK))) {
+                            | pValue.contains(DTOConstraints.OPENSTACK)
+                            | pValue.startsWith(namespace))) {
                         parameter.setValue(namespace + "/" + parameter.getValue());
                     }
                 }
             }
             for (tosca.mapper.dto.Capability capability : node.getCapabilities()) {
-                if (!(capability.getValue().contains(DTOConstraints.KUBE)
-                        | capability.getValue().contains(DTOConstraints.DOCKER)
-                        | capability.getValue().contains(DTOConstraints.OPENSTACK))) {
-                    capability.setValue(namespace + "/" + capability.getValue());
+                for (Parameter parameter : capability.getParameters()) {
+                    String pValue = parameter.getValue();
+                    if (!(pValue.contains(DTOConstraints.KUBE)
+                            | pValue.contains(DTOConstraints.DOCKER)
+                            | pValue.contains(DTOConstraints.OPENSTACK))
+                            | pValue.startsWith(namespace)) {
+                        capability.setValue(namespace + "/" + capability.getValue());
+                    }
                 }
             }
         }

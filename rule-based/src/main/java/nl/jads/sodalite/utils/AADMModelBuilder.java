@@ -61,14 +61,18 @@ public class AADMModelBuilder {
         dm.setVersion((String) jsonObject.get(DTOConstraints.VERSION));
         dm.setId((String) jsonObject.get(DTOConstraints.ID));
         String nameSpace = (String) jsonObject.get(DTOConstraints.NAME_SPACE);
-//        if (!nameSpace.endsWith("refac")) {
-//            nameSpace = nameSpace + "refac";
-//        }
+        if (!nameSpace.endsWith("refac")) {
+            nameSpace = nameSpace + "refac";
+        }
         dm.setNamespace(nameSpace);
     }
 
 
     private static void buildNode(JSONObject jsonObject, AADMModel dm, String key) {
+        dm.addNode(toNode(jsonObject,key));
+    }
+
+    public static Node toNode(JSONObject jsonObject, String key){
         Node node = new Node(key.substring(key.lastIndexOf("/") + 1));
         String type = (String) jsonObject.get(DTOConstraints.TYPE);
         String context = type.substring(0, type.lastIndexOf("/"));
@@ -111,7 +115,7 @@ public class AADMModelBuilder {
 ////                node.addInterface(anInterface);
 ////            }
 ////        }
-        dm.addNode(node);
+        return node;
     }
 
     private static Parameter createParameter(JSONObject o, String key) {
