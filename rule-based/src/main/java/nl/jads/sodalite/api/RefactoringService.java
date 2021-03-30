@@ -69,6 +69,18 @@ public class RefactoringService {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/{appid}/r_events")
+    public Response notify(@PathParam("appid") String appid, List<ResourceEvent> events) {
+        System.out.println("Received events : " + events.size());
+        List<IEvent> iEventList = new ArrayList<>();
+        iEventList.addAll(events);
+        return executeRules(appid, iEventList, "Resource Events");
+    }
+
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{appid}/alerts")
     public Response notifyAlerts(@PathParam("appid") String appid, AlertsData alertsData) {
         System.out.println("Received An Alert : " + alertsData.toString());
@@ -127,6 +139,24 @@ public class RefactoringService {
         System.out.println("Received An Alert : " + jsonNode.toString());
         return Response.ok("Alert Received").build();
     }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/apps")
+    public Response getAllDeployments() {
+        List<DeploymentInfoOutput> outputs = new ArrayList<>();
+        for (String appid : managers.keySet()) {
+            RefactoringManager manager = managers.get(appid);
+            DeploymentInfoOutput infoOutput = new DeploymentInfoOutput();
+            infoOutput.setAppid(appid);
+            infoOutput.setOriginal(manager.getOriginalDeploymentInfo());
+            infoOutput.setCurrent(manager.getRefactoredDeploymentInfo());
+            outputs.add(infoOutput);
+        }
+        return Response.ok(outputs).build();
+    }
+
 
     private Response executeRules(String appid, List<IEvent> iEventList, String eventType) {
         try {
