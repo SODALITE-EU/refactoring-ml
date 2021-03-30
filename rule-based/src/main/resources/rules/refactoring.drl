@@ -4,6 +4,7 @@ import nl.jads.sodalite.events.LocationChangedEvent;
 import nl.jads.sodalite.events.DeploymentNeeded;
 import nl.jads.sodalite.events.DeploymentChanged;
 import nl.jads.sodalite.events.DeploymentRemove;
+import nl.jads.sodalite.events.ResourceEvent;
 import nl.jads.sodalite.events.Alert
 import java.util.Arrays
 
@@ -87,4 +88,22 @@ rule "edgetpu_temp_critical"
     disabledSet.disable("edgetpu_temp_critical");
     System.out.println("edgetpu_temp_critical rule triggered");
     System.out.println("edgetpu_temp_critical rule executed");
+end
+
+rule "GPUAdded"
+  when
+    $f1 : ResourceEvent(eType == "ResourceAdded", rType=="gpu")
+  then
+    disabledSet.disable("GPUAdded");
+    System.out.println("GPUAdded rule triggered");
+    System.out.println("GPUAdded rule executed");
+end
+
+rule "TPUAdded"
+  when
+    $f1 : ResourceEvent(eType == "ResourceAdded", rType=="tpu")
+  then
+    disabledSet.disable("TPUAdded");
+    System.out.println("TPUAdded rule triggered");
+    System.out.println("TPUAdded rule executed");
 end
