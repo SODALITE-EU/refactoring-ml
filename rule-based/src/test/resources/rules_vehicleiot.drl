@@ -5,10 +5,11 @@ import java.util.Arrays
 import nl.jads.sodalite.dto.AADMModel
 import tosca.mapper.dto.Node
 import tosca.mapper.dto.Property
+import nl.jads.sodalite.events.ResourceEvent;
 
 rule "TPUAvaiable"
   when
-    $f1 : Alert(name == "TPUAvailable")
+    $f1 : ResourceEvent(eType == "ResourceAdded", rType=="edgetpu")
   then
     disabledSet.disable("TPUAvailable");
     AADMModel aadmModel = manager.getAadm();
@@ -23,7 +24,7 @@ end
 
 rule "GPUAvaiable"
   when
-    $f1 : Alert(name == "GPUAvailable")
+    $f1 : ResourceEvent(eType == "ResourceAdded", rType=="gpu")
   then
     disabledSet.disable("GPUAvailable");
     AADMModel aadmModel = manager.getAadm();

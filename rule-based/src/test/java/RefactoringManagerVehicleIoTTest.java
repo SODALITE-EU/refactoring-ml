@@ -10,30 +10,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-
 public class RefactoringManagerVehicleIoTTest {
 
     public static void main(String[] args) {
-        RefactoringManager manager = new RefactoringManager();
-        manager.setReasonerUri("http://160.40.52.200:8084/reasoner-api/v0.6/");
-        manager.setApikey("test");
-        manager.setClientId("...");
-        manager.setClientSecret("...");
-        manager.setAuthUri("....");
-        manager.setXopera("...");
-        manager.setIacBuilderUri("..");
-        manager.setUsername("...");
-        manager.setPassword("...");
-//        deploy(manager);
-//        update(manager);
-//        deployEdgeTPU(manager);
-//        deploy(manager);
-        loadNode(manager);
-//        String s = "https://www.sodalite.eu/ontologies/workspace/1/vehicleiot/node-sgx-celsius-w550power";
-//        String [] arrs = s.split("/");
-//        System.out.println(arrs[arrs.length-2] + "/"+arrs[arrs.length-1]);
+
     }
 
     private static void loadNode(RefactoringManager manager) {
@@ -59,8 +39,8 @@ public class RefactoringManagerVehicleIoTTest {
         try {
             manager.loadRefactoredDeployment();
 //            manager.saveDeploymentModelInKB();
-//            manager.buildIaCForCurrentDeployment();
-//            manager.deployCurrentDeployment();
+            manager.buildIaCForCurrentDeployment();
+            manager.deployCurrentDeployment();
 //            manager.getAadm().getExchangeAADM();
 //            saveAsFile("vehicleref.ttl", manager.getAadm().getExchangeAADM());
             System.out.println(deploymentInfo.getAadm_id());
@@ -87,11 +67,11 @@ public class RefactoringManagerVehicleIoTTest {
             Node node = new Node(celsius);
             node.setOfType("kube/sodalite.nodes.Kubernetes.Node");
             Set<Property> properties = new HashSet<>();
-            properties.add(createProperty("name", "sgx-celsius-w550power"));
-            properties.add(createProperty("ready_status", true));
-            properties.add(createProperty("edgetpus", 1));
-            properties.add(createProperty("cpus", 1));
-            properties.add(createProperty("amd64_cpus", 1));
+            properties.add(manager.createProperty("name", "sgx-celsius-w550power"));
+            properties.add(manager.createProperty("ready_status", String.valueOf(true)));
+            properties.add(manager.createProperty("edgetpus", String.valueOf(1)));
+            properties.add(manager.createProperty("cpus", String.valueOf(1)));
+            properties.add(manager.createProperty("amd64_cpus", String.valueOf(1)));
             node.setProperties(properties);
             aadmModel.addNode(node);
             aadmModel.updateRequirement("mysql-deployment-via-helm", "kube_node", celsius);
@@ -137,11 +117,11 @@ public class RefactoringManagerVehicleIoTTest {
             Node node = new Node(xavier);
             node.setOfType("kube/sodalite.nodes.Kubernetes.Node");
             Set<Property> properties = new HashSet<>();
-            properties.add(createProperty("name", "xavier-nx"));
-            properties.add(createProperty("ready_status", true));
-            properties.add(createProperty("gpus", 1));
-            properties.add(createProperty("cpus", 1));
-            properties.add(createProperty("arm64_cpus", 1));
+            properties.add(manager.createProperty("name", "xavier-nx"));
+            properties.add(manager.createProperty("ready_status", String.valueOf(true)));
+            properties.add(manager.createProperty("gpus", String.valueOf(1)));
+            properties.add(manager.createProperty("cpus", String.valueOf(1)));
+            properties.add(manager.createProperty("arm64_cpus", String.valueOf(1)));
             node.setProperties(properties);
             aadmModel.addNode(node);
             aadmModel.updateRequirement("mysql-deployment-via-helm", "kube_node", xavier);
@@ -170,10 +150,5 @@ public class RefactoringManagerVehicleIoTTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    private static Property createProperty(String name, Object value) {
-        Property property = new Property(name);
-        property.setValue(String.valueOf(value));
-        return property;
     }
 }

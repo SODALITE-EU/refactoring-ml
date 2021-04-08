@@ -1,5 +1,8 @@
+import nl.jads.sodalite.dto.AADMModel;
 import nl.jads.sodalite.dto.DeploymentInfo;
 import nl.jads.sodalite.rules.RefactoringManager;
+import org.json.simple.parser.ParseException;
+import tosca.mapper.dto.Node;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,33 +10,76 @@ import java.io.IOException;
 public class RefactoringManagerTest {
 
     public static void main(String[] args) {
-        RefactoringManager manager = new RefactoringManager();
-        manager.setReasonerUri("...");
-        manager.setApikey("test");
-        manager.setClientId("sodalite-ide");
-        manager.setClientSecret("1...");
-        manager.setAuthUri("...:8080/");
-        manager.setXopera("...:5000/");
-        manager.setIacBuilderUri("...:8081/");
-        manager.setUsername("indika");
-        manager.setPassword("qwerty123");
-        DeploymentInfo deploymentInfo = new DeploymentInfo();
-        deploymentInfo.setInput("... ");
-        manager.setOriginalDeploymentInfo(deploymentInfo);
-//        deploy(manager);
+
+    }
+
+    private static Node loadNode(RefactoringManager manager){
+        try {
+            Node node = manager.findMatchingNode("( ?name = \"snow-vm_new_2\" )");
+            System.out.println(node.getOfType() + node.getName());
+            return node;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static void createNewAADM(RefactoringManager manager) {
+        try {
+            DeploymentInfo deploymentInfo = manager.getOriginalDeploymentInfo();
+            manager.loadRefactoredDeployment();
+            AADMModel aadmModel = manager.getAadm();
+            aadmModel.removeNode("snow-vm-2");
+            aadmModel.removeNode("snow-docker-host-2");
+            aadmModel.removeNode("snow-docker-registry-certificate-2");
+            aadmModel.updateRequirement("snow-skyline-extractor", "host", "snow-docker-host");
+            aadmModel.updateRequirement("snow-skyline-alignment", "host", "snow-docker-host");
+            aadmModel.updateRequirement("snow-configuration-demo", "remote_server", "snow-vm");
+            aadmModel.removeRequirementWithValue("snow-docker-registry", "dependency",
+                    "snow-docker-registry-certificate-2");
+            manager.saveDeploymentModelInKB();
+            System.out.println(deploymentInfo.getAadm_id());
+            System.out.println(deploymentInfo.getBlueprint_id());
+            System.out.println(deploymentInfo.getDeployment_id());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private static void createNewAADM2VMs(RefactoringManager manager) {
+        try {
+            DeploymentInfo deploymentInfo = manager.getOriginalDeploymentInfo();
+            Node snowvm2node = manager.findMatchingNode("( ?name = \"snow-vm_new_2\" )");
+//            Node
+            manager.loadRefactoredDeployment();
+            AADMModel aadmModel = manager.getAadm();
+            aadmModel.addNode(snowvm2node);
+            aadmModel.removeNode("snow-docker-host-2");
+            aadmModel.removeNode("snow-docker-registry-certificate-2");
+            aadmModel.updateRequirement("snow-skyline-extractor", "host", "snow-docker-host");
+            aadmModel.updateRequirement("snow-skyline-alignment", "host", "snow-docker-host");
+            aadmModel.updateRequirement("snow-configuration-demo", "remote_server", "snow-vm");
+            aadmModel.removeRequirementWithValue("snow-docker-registry", "dependency",
+                    "snow-docker-registry-certificate-2");
+            manager.saveDeploymentModelInKB();
+            System.out.println(deploymentInfo.getAadm_id());
+            System.out.println(deploymentInfo.getBlueprint_id());
+            System.out.println(deploymentInfo.getDeployment_id());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static void deploy(RefactoringManager manager) {
         try {
-            DeploymentInfo deploymentInfo = manager.getOriginalDeploymentInfo();
-            deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/opgr7qto1uv6n96i4eqkfv4k8o/AADM_3kmq0iknmsd0s89rnba0hhr88e");
+            DeploymentInfo deploymentInfo = manager.getRefactoredDeploymentInfo();
+            deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/vbeit9auui3d3j0tdekbljfndl/AADM_92aj0uo7t6l6u8mv5tmh99pjnbrefac");
 //            saveAsFile("snow.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
             manager.loadRefactoredDeployment();
 //              manager.getAadm().getExchangeAADM();
 //            manager.saveDeploymentModelInKB();
 //            saveAsFile("snowrefac.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
-//            manager.buildIaCForCurrentDeployment();
-//            manager.deployCurrentDeployment();
+            manager.buildIaCForCurrentDeployment();
+            manager.deployCurrentDeployment();
             System.out.println(deploymentInfo.getAadm_id());
             System.out.println(deploymentInfo.getBlueprint_id());
             System.out.println(deploymentInfo.getDeployment_id());

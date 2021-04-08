@@ -125,7 +125,7 @@ public class RefactoringService {
             log.info("Inputs : " + deploymentInfo.getInputs());
         } catch (Exception e) {
             return Response.serverError().entity("Error loading the AADM with id " +
-                    deploymentInfo.getAadm_id() + "Error is " + e.getMessage()).build();
+                    deploymentInfo.getAadm_id() + " Error message is " + e.getMessage()).build();
         }
         return Response.ok("Information about the deployment with id " +
                 deploymentInfo.getAadm_id() + " received").build();

@@ -132,4 +132,34 @@ public class AADMModel {
             }
         }
     }
+
+    public void removeRequirement(String nodeName, String name) {
+        Requirement tobeRemoved = null;
+        for (Requirement requirement : getNode(nodeName).getRequirements()) {
+            if (requirement.getName().equals(name)) {
+                tobeRemoved = requirement;
+                break;
+            }
+        }
+        if (tobeRemoved != null) {
+            getNode(nodeName).getRequirements().remove(tobeRemoved);
+        }
+    }
+
+    public void removeRequirementWithValue(String nodeName, String name, String value) {
+        Requirement tobeRemoved = null;
+        for (Requirement requirement : getNode(nodeName).getRequirements()) {
+            if (requirement.getName().equals(name)) {
+                for (Parameter parameter : requirement.getParameters()) {
+                    if (parameter.getValue().contains(value)) {
+                        tobeRemoved = requirement;
+                        break;
+                    }
+                }
+            }
+        }
+        if (tobeRemoved != null) {
+            getNode(nodeName).getRequirements().remove(tobeRemoved);
+        }
+    }
 }

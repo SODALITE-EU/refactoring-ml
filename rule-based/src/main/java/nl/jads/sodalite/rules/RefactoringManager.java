@@ -22,6 +22,8 @@ import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import tosca.mapper.dto.Node;
+import tosca.mapper.dto.Parameter;
+import tosca.mapper.dto.Property;
 
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.Form;
@@ -279,6 +281,7 @@ public class RefactoringManager {
             Response response = invocation.invoke();
             System.out.println(response.getStatus());
             String result = response.readEntity(String.class);
+            System.out.println(result);
             response.close();
             JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
             refactoredDeploymentInfo.setBlueprint_id
@@ -566,6 +569,32 @@ public class RefactoringManager {
 
     public void setGraphdb(String graphdb) {
         this.graphdb = graphdb;
+    }
+
+    public tosca.mapper.dto.Property createProperty(String name, String value) {
+        Property property = new Property(name);
+        if (value.contains(DTOConstraints.GET_INPUT)) {
+            String value1 = value.split(DTOConstraints.GET_INPUT)[1].trim();
+            Set<Parameter> parameters = new HashSet<>();
+            Parameter parameter = new Parameter(DTOConstraints.GET_INPUT);
+            parameter.setValue(value1);
+            parameters.add(parameter);
+            property.setParameters(parameters);
+        } else {
+            property.setValue(value);
+        }
+        return property;
+    }
+
+    public tosca.mapper.dto.Requirement createRequirement(String name, String value) {
+        tosca.mapper.dto.Requirement property = new tosca.mapper.dto.Requirement(name);
+        String[] values = value.split(":");
+        Set<Parameter> parameters = new HashSet<>();
+        Parameter parameter = new Parameter(values[0].trim());
+        parameter.setValue(values[1].trim());
+        parameters.add(parameter);
+        property.setParameters(parameters);
+        return property;
     }
 }
 
