@@ -7,6 +7,7 @@ import nl.jads.sodalite.events.DeploymentRemove;
 import nl.jads.sodalite.events.ResourceEvent;
 import nl.jads.sodalite.events.Alert
 import java.util.Arrays
+import tosca.mapper.dto.Node
 
 rule "de_to_it"
   when
@@ -90,6 +91,32 @@ rule "edgetpu_temp_critical"
     System.out.println("edgetpu_temp_critical rule executed");
 end
 
+rule "KBUpdated"
+  when
+    $f1 : ResourceEvent(eType == "KBUpdated", rType=="any")
+  then
+    disabledSet.disable("KBUpdated");
+    ResourceEvent newREvent = new ResourceEvent();
+    newREvent.seteType("ResourceAdded");
+
+    Node nodeTPU =  refMgt.findMatchingNodeFromRM(
+                                "( ?edgetpus = "+ 1 +" ) && ( ?cpus = "+ 1+" )" + " && ( ?ready_status = "+ true+" )");
+    if(nodeTPU != null) {
+           newREvent.setNode(nodeTPU);
+           newREvent.setrType("edgetpu");
+    } else {
+        Node nodeGPU =  refMgt.findMatchingNodeFromRM(
+                                                    "( ?gpu = "+ 1 +" ) && ( ?cpus = "+ 1+" )" + " && ( ?ready_status = "+ true+" )");
+        newREvent.setNode(nodeGPU);
+        if(nodeGPU != null){
+            newREvent.setrType("gpu");
+        }
+    }
+    retract($f1);
+    insert(newREvent);
+    System.out.println("KBUpdated rule executed");
+end
+
 rule "GPUAdded"
   when
     $f1 : ResourceEvent(eType == "ResourceAdded", rType=="gpu")
@@ -101,7 +128,7 @@ end
 
 rule "TPUAdded"
   when
-    $f1 : ResourceEvent(eType == "ResourceAdded", rType=="tpu")
+    $f1 : ResourceEvent(eType == "ResourceAdded", rType=="edgetpu")
   then
     disabledSet.disable("TPUAdded");
     System.out.println("TPUAdded rule triggered");

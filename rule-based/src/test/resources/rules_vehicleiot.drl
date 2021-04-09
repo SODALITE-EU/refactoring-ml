@@ -17,7 +17,7 @@ rule "KBUpdated"
 
     Node nodeTPU =  manager.findMatchingNodeFromRM(
                                 "( ?edgetpus = "+ 1 +" ) && ( ?cpus = "+ 1+" )" + " && ( ?ready_status = "+ true+" )");
-    if(nodeTPU != null){
+    if(nodeTPU != null) {
            newREvent.setNode(nodeTPU);
            newREvent.setrType("edgetpu");
     } else {
@@ -28,8 +28,8 @@ rule "KBUpdated"
             newREvent.setrType("gpu");
         }
     }
-    retract($f1)
-    insert(newREvent)
+    retract($f1);
+    insert(newREvent);
     System.out.println("KBUpdated rule executed");
 end
 

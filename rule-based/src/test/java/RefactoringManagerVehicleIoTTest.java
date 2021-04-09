@@ -13,7 +13,7 @@ import java.util.Set;
 public class RefactoringManagerVehicleIoTTest {
 
     public static void main(String[] args) {
-       
+     
     }
 
     private static void loadNode(RefactoringManager manager) {

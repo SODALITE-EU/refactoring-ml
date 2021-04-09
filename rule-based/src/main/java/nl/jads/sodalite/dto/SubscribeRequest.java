@@ -9,7 +9,7 @@ public class SubscribeRequest {
     @JsonProperty("endpoint")
     private String endpoint;
     @JsonProperty("payload")
-    private ResourceEvent payload;
+    private ResourceEvent [] payload;
 
     public String getNamespace() {
         return namespace;
@@ -27,11 +27,11 @@ public class SubscribeRequest {
         this.endpoint = endpoint;
     }
 
-    public ResourceEvent getPayload() {
+    public ResourceEvent[] getPayload() {
         return payload;
     }
 
-    public void setPayload(ResourceEvent payload) {
+    public void setPayload(ResourceEvent[] payload) {
         this.payload = payload;
     }
 }

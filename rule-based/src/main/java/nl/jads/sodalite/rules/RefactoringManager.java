@@ -213,7 +213,10 @@ public class RefactoringManager {
         ResourceEvent resourceEvent = new ResourceEvent();
         resourceEvent.setrType("any");
         resourceEvent.seteType("KBUpdated");
-        request.setPayload(resourceEvent);
+        List<ResourceEvent> resourceEvents = new ArrayList<>();
+        resourceEvents.add(resourceEvent);
+        ResourceEvent[] arr = new ResourceEvent[resourceEvents.size()];
+        request.setPayload(resourceEvents.toArray(arr));
         Invocation invocation =
                 builder.buildPost(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE));
         try {
