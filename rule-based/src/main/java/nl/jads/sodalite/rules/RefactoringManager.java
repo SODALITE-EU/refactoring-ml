@@ -1,6 +1,7 @@
 package nl.jads.sodalite.rules;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import kb.repository.KB;
 import nl.jads.refactoringod.RefactoringOptionDiscovererKBApi;
@@ -83,7 +84,11 @@ public class RefactoringManager {
             configure(buleprintsDatas);
         }
         policyExecutor = new RefactoringPolicyExecutor("refactoring.drl", "rules/", this);
-        kbApi = new RefactoringOptionDiscovererKBApi(new KB(graphdb, KB.REPOSITORY));
+        try {
+            kbApi = new RefactoringOptionDiscovererKBApi(new KB(graphdb, KB.REPOSITORY));
+        } catch (Exception e) {
+            log.warn(e);
+        }
     }
 
     public void addDeploymentOption(String name, String vsnId, Map<String, String> parameters) {
@@ -217,8 +222,12 @@ public class RefactoringManager {
         resourceEvents.add(resourceEvent);
         ResourceEvent[] arr = new ResourceEvent[resourceEvents.size()];
         request.setPayload(resourceEvents.toArray(arr));
+        Gson gson = new GsonBuilder()
+                .excludeFieldsWithoutExposeAnnotation()
+                .create();
+        String jsonString = gson.toJson(request);
         Invocation invocation =
-                builder.buildPost(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE));
+                builder.buildPost(Entity.json(jsonString));
         try {
             Response response = invocation.invoke();
             System.out.println(response.getStatus());
@@ -658,6 +667,10 @@ public class RefactoringManager {
 
     public String getNamespace() {
         return namespace;
+    }
+
+    public void setRefactorer(String refactorer) {
+        this.refactorer = refactorer;
     }
 }
 

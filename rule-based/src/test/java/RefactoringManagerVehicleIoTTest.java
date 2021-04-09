@@ -13,7 +13,14 @@ import java.util.Set;
 public class RefactoringManagerVehicleIoTTest {
 
     public static void main(String[] args) {
-     
+
+    }
+    private static void subscribetopds(RefactoringManager manager) {
+        try {
+            manager.subscribeToPDS();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static void loadNode(RefactoringManager manager) {

@@ -1,15 +1,15 @@
 package nl.jads.sodalite.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.Expose;
 import nl.jads.sodalite.events.ResourceEvent;
 
 public class SubscribeRequest {
-    @JsonProperty("namespace")
+    @Expose
     private String namespace;
-    @JsonProperty("endpoint")
+    @Expose
     private String endpoint;
-    @JsonProperty("payload")
-    private ResourceEvent [] payload;
+    @Expose
+    private ResourceEvent[] payload;
 
     public String getNamespace() {
         return namespace;

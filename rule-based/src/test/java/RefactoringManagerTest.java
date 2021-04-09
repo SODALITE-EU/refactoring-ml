@@ -10,9 +10,8 @@ import java.io.IOException;
 public class RefactoringManagerTest {
 
     public static void main(String[] args) {
-
+       
     }
-
     private static Node loadNode(RefactoringManager manager){
         try {
             Node node = manager.findMatchingNodeFromRM("( ?name = \"snow-vm_new_2\" )");

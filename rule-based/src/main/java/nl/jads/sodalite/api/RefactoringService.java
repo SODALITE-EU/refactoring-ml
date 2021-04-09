@@ -77,6 +77,16 @@ public class RefactoringService {
         return executeRules(appid, iEventList, "Resource Events");
     }
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/{appid}/r_event")
+    public Response notify(@PathParam("appid") String appid, ResourceEvent event) {
+        System.out.println("Received event : " + event.geteType());
+        List<IEvent> iEventList = new ArrayList<>();
+        iEventList.add(event);
+        return executeRules(appid, iEventList, "Resource Event");
+    }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)

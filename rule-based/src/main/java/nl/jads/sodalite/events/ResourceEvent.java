@@ -1,12 +1,15 @@
 package nl.jads.sodalite.events;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.Expose;
 import tosca.mapper.dto.Node;
 
 public class ResourceEvent implements  IEvent{
     @JsonProperty("e_type")
+    @Expose
     String eType;
     @JsonProperty("r_type")
+    @Expose
     String rType;
     private Node node;
 
