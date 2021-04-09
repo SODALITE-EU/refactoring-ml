@@ -84,6 +84,13 @@ public class RefactoringManager {
             configure(buleprintsDatas);
         }
         policyExecutor = new RefactoringPolicyExecutor("refactoring.drl", "rules/", this);
+        initKB();
+    }
+
+    public void initKB() {
+        if (kbApi != null) {
+            return;
+        }
         try {
             kbApi = new RefactoringOptionDiscovererKBApi(new KB(graphdb, KB.REPOSITORY));
         } catch (Exception e) {
@@ -226,6 +233,7 @@ public class RefactoringManager {
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
         String jsonString = gson.toJson(request);
+        System.out.println(jsonString);
         Invocation invocation =
                 builder.buildPost(Entity.json(jsonString));
         try {
