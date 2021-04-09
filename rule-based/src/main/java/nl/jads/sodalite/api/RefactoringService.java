@@ -115,7 +115,13 @@ public class RefactoringService {
     public Response createDeployment(@PathParam("appid") String appid, DeploymentInfo deploymentInfo) {
         System.out.println("Received the Information about the deployment  : " + deploymentInfo.getAadm_id());
         if (!managers.containsKey(appid)) {
-            managers.put(appid, new RefactoringManager());
+            RefactoringManager manager = new RefactoringManager(appid);
+            managers.put(appid, manager);
+            try {
+                manager.subscribeToPDS();
+            } catch (Exception e) {
+                log.warning(e.getMessage());
+            }
         }
         managers.get(appid).setOriginalDeploymentInfo(deploymentInfo);
         try {

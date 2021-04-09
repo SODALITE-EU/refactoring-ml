@@ -13,7 +13,7 @@ import java.util.Set;
 public class RefactoringManagerVehicleIoTTest {
 
     public static void main(String[] args) {
-
+       
     }
 
     private static void loadNode(RefactoringManager manager) {
@@ -22,7 +22,7 @@ public class RefactoringManagerVehicleIoTTest {
         deploymentInfo.setInput("");
         manager.setOriginalDeploymentInfo(deploymentInfo);
         try {
-            Node node = manager.findMatchingNode(
+            Node node = manager.findMatchingNodeFromRM(
                     "( ?edgetpus = "+ 1 +" ) && ( ?cpus = "+ 1+" )" + " && ( ?ready_status = "+ true+" )");
             System.out.println(node.getOfType());
         } catch (ParseException e) {

@@ -15,7 +15,7 @@ public class RefactoringManagerTest {
 
     private static Node loadNode(RefactoringManager manager){
         try {
-            Node node = manager.findMatchingNode("( ?name = \"snow-vm_new_2\" )");
+            Node node = manager.findMatchingNodeFromRM("( ?name = \"snow-vm_new_2\" )");
             System.out.println(node.getOfType() + node.getName());
             return node;
         } catch (ParseException e) {
@@ -48,7 +48,7 @@ public class RefactoringManagerTest {
     private static void createNewAADM2VMs(RefactoringManager manager) {
         try {
             DeploymentInfo deploymentInfo = manager.getOriginalDeploymentInfo();
-            Node snowvm2node = manager.findMatchingNode("( ?name = \"snow-vm_new_2\" )");
+            Node snowvm2node = manager.findMatchingNodeFromRM("( ?name = \"snow-vm_new_2\" )");
 //            Node
             manager.loadRefactoredDeployment();
             AADMModel aadmModel = manager.getAadm();

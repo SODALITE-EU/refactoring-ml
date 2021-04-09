@@ -7,6 +7,32 @@ import tosca.mapper.dto.Node
 import tosca.mapper.dto.Property
 import nl.jads.sodalite.events.ResourceEvent;
 
+rule "KBUpdated"
+  when
+    $f1 : ResourceEvent(eType == "KBUpdated", rType=="any")
+  then
+    disabledSet.disable("KBUpdated");
+    ResourceEvent newREvent = new ResourceEvent();
+    newREvent.seteType("ResourceAdded");
+
+    Node nodeTPU =  manager.findMatchingNodeFromRM(
+                                "( ?edgetpus = "+ 1 +" ) && ( ?cpus = "+ 1+" )" + " && ( ?ready_status = "+ true+" )");
+    if(nodeTPU != null){
+           newREvent.setNode(nodeTPU);
+           newREvent.setrType("edgetpu");
+    } else {
+        Node nodeGPU =  manager.findMatchingNodeFromRM(
+                                                    "( ?gpu = "+ 1 +" ) && ( ?cpus = "+ 1+" )" + " && ( ?ready_status = "+ true+" )");
+        newREvent.setNode(nodeGPU);
+        if(nodeGPU != null){
+            newREvent.setrType("gpu");
+        }
+    }
+    retract($f1)
+    insert(newREvent)
+    System.out.println("KBUpdated rule executed");
+end
+
 rule "TPUAvaiable"
   when
     $f1 : ResourceEvent(eType == "ResourceAdded", rType=="edgetpu")
@@ -14,8 +40,7 @@ rule "TPUAvaiable"
     disabledSet.disable("TPUAvailable");
     AADMModel aadmModel = manager.getAadm();
     aadmModel.removeNode("node-xavier-nx-gpu-cpu");
-    Node node =  manager.findMatchingNode(
-                                "( ?edgetpus = "+ 1 +" ) && ( ?cpus = "+ 1+" )" + " && ( ?ready_status = "+ true+" )");
+    Node node =  $f1.getNode();
     aadmModel.addNode(node);
     aadmModel.updateRequirement("mysql-deployment-via-helm", "kube_node", node.getName());
     manager.saveAndUpdate();
@@ -29,8 +54,7 @@ rule "GPUAvaiable"
     disabledSet.disable("GPUAvailable");
     AADMModel aadmModel = manager.getAadm();
     aadmModel.removeNode("sgx-celsius-w550power");
-    Node node =  manager.findMatchingNode(
-                                    "( ?gpu = "+ 1 +" ) && ( ?cpus = "+ 1+" )" + " && ( ?ready_status = "+ true+" )");
+    Node node =  $f1.getNode();
     aadmModel.addNode(node);
     aadmModel.updateRequirement("mysql-deployment-via-helm", "kube_node", node.getName());
     manager.saveAndUpdate();

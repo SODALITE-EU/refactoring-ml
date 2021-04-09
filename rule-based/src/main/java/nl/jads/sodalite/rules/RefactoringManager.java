@@ -6,6 +6,7 @@ import kb.repository.KB;
 import nl.jads.refactoringod.RefactoringOptionDiscovererKBApi;
 import nl.jads.refactoringod.dto.FindNodeInput;
 import nl.jads.sodalite.dto.*;
+import nl.jads.sodalite.events.ResourceEvent;
 import nl.jads.sodalite.utils.AADMModelBuilder;
 import nl.jads.sodalite.utils.POJOFactory;
 import nl.jads.sodalite.utils.ResourceUtil;
@@ -48,14 +49,19 @@ public class RefactoringManager {
     private String clientSecret;
     private String input;
     private String apikey;
+    private String pdsUri;
     private AADMModel aadm;
     private DeploymentInfo originalDeploymentInfo;
     private DeploymentInfo refactoredDeploymentInfo;
     private String token;
     private String graphdb;
     private RefactoringPolicyExecutor policyExecutor;
+    RefactoringOptionDiscovererKBApi kbApi;
+    private String namespace;
+    private String refactorer;
 
-    public RefactoringManager() {
+    public RefactoringManager(String namespace) {
+        this.namespace = namespace;
         xopera = System.getenv("xopera");
         if (xopera == null || "".equals(xopera.trim())) {
             xopera = BASE_REST_URI;
@@ -69,13 +75,15 @@ public class RefactoringManager {
         password = System.getenv("password");
         clientId = System.getenv("client_id");
         clientSecret = System.getenv("client_secret");
+        pdsUri = System.getenv("pdsUri");
+        refactorer = System.getenv("refactorer");
 
         BuleprintsDataSet buleprintsDatas = POJOFactory.fromJsonFile("blueprintdata.json");
         if (buleprintsDatas != null) {
             configure(buleprintsDatas);
         }
         policyExecutor = new RefactoringPolicyExecutor("refactoring.drl", "rules/", this);
-
+        kbApi = new RefactoringOptionDiscovererKBApi(new KB(graphdb, KB.REPOSITORY));
     }
 
     public void addDeploymentOption(String name, String vsnId, Map<String, String> parameters) {
@@ -188,6 +196,41 @@ public class RefactoringManager {
         updateCurrentDeployment();
     }
 
+    public void subscribeToPDS() throws Exception {
+//        if (token == null) {
+//            refreshSecurityToken();
+//        }
+        Client client = ClientBuilder.newClient();
+        WebTarget webTarget =
+                client.target(pdsUri).path("subscribe");
+        Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
+        if (apikey != null) {
+            builder.header("X-API-Key", apikey);
+        }
+        SubscribeRequest request = new SubscribeRequest();
+        request.setNamespace(namespace);
+        request.setEndpoint(refactorer + namespace + "/r_events");
+        ResourceEvent resourceEvent = new ResourceEvent();
+        resourceEvent.setrType("any");
+        resourceEvent.seteType("KBUpdated");
+        request.setPayload(resourceEvent);
+        Invocation invocation =
+                builder.buildPost(Entity.entity(request, MediaType.APPLICATION_JSON_TYPE));
+        try {
+            Response response = invocation.invoke();
+            System.out.println(response.getStatus());
+            String result = response.readEntity(String.class);
+            response.close();
+            System.out.println("Subscribed to PDS : " + result);
+        } catch (HttpClientErrorException ex) {
+            if (ex.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                refreshSecurityToken();
+            } else {
+                throw ex;
+            }
+        }
+    }
+
     public void saveDeploymentModelInKB() throws Exception {
         if (token == null) {
             refreshSecurityToken();
@@ -236,10 +279,15 @@ public class RefactoringManager {
         buildIaC(aadm.getId(), aadm.getNamespace());
     }
 
-    public Node findMatchingNode(String expr) throws ParseException {
-        RefactoringOptionDiscovererKBApi kbApi = new RefactoringOptionDiscovererKBApi(
-                new KB(graphdb, KB.REPOSITORY));
+    public Node findMatchingNodeFromRM(String expr) throws ParseException {
+        return findMatchingNode(expr, originalDeploymentInfo.getAadm_id());
+    }
 
+    public Node findMatchingNodeFromDM(String expr) throws ParseException {
+        return findMatchingNode(expr, refactoredDeploymentInfo.getAadm_id());
+    }
+
+    public Node findMatchingNode(String expr, String aadm) throws ParseException {
         Pattern pattern = Pattern.compile("\\?\\w+");
         List<String> vars = new ArrayList<>();
         Matcher matcher = pattern.matcher(expr);
@@ -249,7 +297,7 @@ public class RefactoringManager {
         FindNodeInput findNodeInput = new FindNodeInput();
         findNodeInput.setExpr(expr);
         findNodeInput.setVars(vars);
-        findNodeInput.setAadm(originalDeploymentInfo.getAadm_id());
+        findNodeInput.setAadm(aadm);
         Set<kb.dto.Node> nodes = kbApi.getComputeNodeInstances(findNodeInput);
         System.out.println("Found " + nodes.size() + " node matching the expression : " + expr);
         if (!nodes.isEmpty()) {
@@ -595,6 +643,18 @@ public class RefactoringManager {
         parameters.add(parameter);
         property.setParameters(parameters);
         return property;
+    }
+
+    public String getPdsUri() {
+        return pdsUri;
+    }
+
+    public void setPdsUri(String pdsUri) {
+        this.pdsUri = pdsUri;
+    }
+
+    public String getNamespace() {
+        return namespace;
     }
 }
 
