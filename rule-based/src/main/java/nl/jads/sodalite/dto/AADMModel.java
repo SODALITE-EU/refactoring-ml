@@ -6,10 +6,7 @@ import tosca.mapper.dto.Property;
 import tosca.mapper.dto.Requirement;
 import tosca.mapper.exchange.generator.AADMGenerator;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class AADMModel {
     private Map<String, Node> nodes = new HashMap<>();
@@ -117,6 +114,18 @@ public class AADMModel {
         }
     }
 
+    public void updateArrayProperty(String nodeName, String name, String value) {
+        for (Property p : getNode(nodeName).getProperties()) {
+            if (p.getName().equals(name)) {
+                ArrayList<String> values = new ArrayList<>();
+                for (String s : value.split(",")) {
+                    values.add(s.trim());
+                }
+                p.setValues(values);
+            }
+        }
+    }
+
     public void updateRequirement(String nodeName, String name, String value) {
         for (Requirement requirement : getNode(nodeName).getRequirements()) {
             if (requirement.getName().equals(name)) {
@@ -144,6 +153,10 @@ public class AADMModel {
         if (tobeRemoved != null) {
             getNode(nodeName).getRequirements().remove(tobeRemoved);
         }
+    }
+
+    public void addRequirement(String nodeName, Requirement requirement) {
+        getNode(nodeName).getRequirements().add(requirement);
     }
 
     public void removeRequirementWithValue(String nodeName, String name, String value) {

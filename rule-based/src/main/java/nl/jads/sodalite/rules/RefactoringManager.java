@@ -233,7 +233,7 @@ public class RefactoringManager {
                 .excludeFieldsWithoutExposeAnnotation()
                 .create();
         String jsonString = gson.toJson(request);
-        System.out.println(jsonString);
+
         Invocation invocation =
                 builder.buildPost(Entity.json(jsonString));
         try {
@@ -282,6 +282,7 @@ public class RefactoringManager {
             String result = response.readEntity(String.class);
             response.close();
             JsonObject jsonObject = new Gson().fromJson(result, JsonObject.class);
+            System.out.println(jsonObject.toString());
             String aadmuri = jsonObject.get("aadmuri").getAsString();
             aadm.setId(aadmuri);
             refactoredDeploymentInfo.setAadm_id(aadmURI);
@@ -326,6 +327,26 @@ public class RefactoringManager {
             return getNodeFromKB(nodeUri);
         }
         return null;
+    }
+
+    public List<Node> getNodeMatchingReqFromRM(String expr) throws ParseException {
+        return getNodeMatchingReq(expr, originalDeploymentInfo.getAadm_id());
+    }
+
+    public List<Node> getNodeMatchingReqFromDM(String expr) throws ParseException {
+        return getNodeMatchingReq(expr, refactoredDeploymentInfo.getAadm_id());
+    }
+
+    public List<Node> getNodeMatchingReq(String expr, String aadm) throws ParseException {
+        Set<kb.dto.Node> nodes = kbApi.getNodeMatchingReq(expr, aadm);
+        System.out.println("Found " + nodes.size() + " node matching the expression : " + expr);
+        List<Node> nodeList = new ArrayList<>();
+        for(kb.dto.Node nodeKB: nodes){
+            String[] arrs = nodeKB.getUri().split("/");
+            String nodeUri = arrs[arrs.length - 2] + "/" + arrs[arrs.length - 1];
+            nodeList.add(getNodeFromKB(nodeUri));
+        }
+        return nodeList;
     }
 
 
@@ -409,7 +430,6 @@ public class RefactoringManager {
                 .register(MultiPartFeature.class).build();
         WebTarget webTarget = client.target(xopera).path("deployment/" + dpId + "/update")
                 .queryParam("blueprint_id", bpToken).queryParam("workers", 15);
-        ;
 
         FormDataMultiPart multipart = new FormDataMultiPart();
 
