@@ -40,10 +40,13 @@ public class RefactoringManagerTest {
             aadmModel.updateArrayProperty("snow-skyline-alignment", "ports", "8081:8080,82:8080");
             aadmModel.updateRequirement("snow-skyline-extractor", "host", "snow-docker-host");
             aadmModel.updateRequirement("snow-skyline-alignment", "host", "snow-docker-host");
+//            aadmModel.updateRequirement("snow-mysql", "host", "snow-docker-host");
             aadmModel.updateRequirement("snow-configuration-demo", "remote_server", "snow-vm");
             aadmModel.removeRequirementWithValue("snow-docker-registry", "dependency",
                     "snow-docker-registry-certificate-2");
-            manager.saveDeploymentModelInKB();
+//            manager.saveDeploymentModelInKB();
+            manager.saveAndUpdate();
+            deploymentInfo = manager.getRefactoredDeploymentInfo();
             System.out.println(deploymentInfo.getAadm_id());
             System.out.println(deploymentInfo.getBlueprint_id());
             System.out.println(deploymentInfo.getDeployment_id());
@@ -71,10 +74,12 @@ public class RefactoringManagerTest {
             aadmModel.updateRequirement("snow-skyline-alignment", "host", "snow-docker-host-2");
             aadmModel.addRequirement("snow-docker-registry", manager.createRequirement("dependency",
                     "node: snow-docker-registry-certificate-2"));
+            aadmModel.updateRequirement("snow-configuration-demo", "remote_server", "snow-vm-2");
             aadmModel.updateNodeTypes();
 //            saveAsFile("snow3.ttl", aadmModel.getExchangeAADM());
-            manager.saveDeploymentModelInKB();
+//            manager.saveDeploymentModelInKB();
 //            manager.buildIaCForCurrentDeployment();
+            manager.saveAndUpdate();
             System.out.println(deploymentInfo.getAadm_id());
             System.out.println(deploymentInfo.getBlueprint_id());
             System.out.println(deploymentInfo.getDeployment_id());
@@ -86,7 +91,7 @@ public class RefactoringManagerTest {
     private static void deploy(RefactoringManager manager) {
         try {
             DeploymentInfo deploymentInfo = manager.getRefactoredDeploymentInfo();
-            deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/vbeit9auui3d3j0tdekbljfndl/AADM_92aj0uo7t6l6u8mv5tmh99pjnbrefac");
+//            deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/vbeit9auui3d3j0tdekbljfndl/AADM_92aj0uo7t6l6u8mv5tmh99pjnbrefac");
 //            saveAsFile("snow.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
             manager.loadRefactoredDeployment();
 //              manager.getAadm().getExchangeAADM();

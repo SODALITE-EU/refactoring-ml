@@ -114,6 +114,18 @@ public class AADMModel {
         }
     }
 
+    public void updateParameterOfProperty(String nodeName, String name,  String pname, String value) {
+        for (Property p : getNode(nodeName).getProperties()) {
+            if (p.getName().equals(name)) {
+                for (Parameter par: p.getParameters()){
+                    if (par.getName().equals(pname)) {
+                        par.setValue(value);
+                    }
+                }
+            }
+        }
+    }
+
     public void updateArrayProperty(String nodeName, String name, String value) {
         for (Property p : getNode(nodeName).getProperties()) {
             if (p.getName().equals(name)) {

@@ -180,6 +180,7 @@ public class RefactoringManager {
         Response response = invocation.invoke();
         System.out.println(response.getStatus());
         String aadmJson = response.readEntity(String.class);
+        System.out.println(aadmJson);
         response.close();
         return aadmJson;
     }
@@ -393,7 +394,7 @@ public class RefactoringManager {
         Client client = ClientBuilder.newBuilder()
                 .register(MultiPartFeature.class).build();
         WebTarget webTarget = client.target(xopera).path("deployment/deploy")
-                .queryParam("blueprint_id", bpToken).queryParam("workers", 15);
+                .queryParam("blueprint_id", bpToken).queryParam("workers", 1);
 
         FormDataMultiPart multipart =
                 new FormDataMultiPart();
@@ -429,7 +430,7 @@ public class RefactoringManager {
         Client client = ClientBuilder.newBuilder()
                 .register(MultiPartFeature.class).build();
         WebTarget webTarget = client.target(xopera).path("deployment/" + dpId + "/update")
-                .queryParam("blueprint_id", bpToken).queryParam("workers", 15);
+                .queryParam("blueprint_id", bpToken).queryParam("workers", 1);
 
         FormDataMultiPart multipart = new FormDataMultiPart();
 
@@ -471,7 +472,7 @@ public class RefactoringManager {
         Client client = ClientBuilder.newClient(config);
         WebTarget webTarget =
                 client.target(xopera).path("deployment/" + dpId + "/undeploy")
-                        .queryParam("workers", 15);
+                        .queryParam("workers", 1);
         FormDataMultiPart multipart =
                 new FormDataMultiPart();
 

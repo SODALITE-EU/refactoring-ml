@@ -13,7 +13,6 @@ import java.util.Set;
 public class RefactoringManagerVehicleIoTTest {
 
     public static void main(String[] args) {
-
     }
 
     private static void subscribetopds(RefactoringManager manager) {
@@ -26,14 +25,19 @@ public class RefactoringManagerVehicleIoTTest {
 
     private static void loadNode(RefactoringManager manager) {
         DeploymentInfo deploymentInfo = new DeploymentInfo();
-        deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/dua7bkcrurljtfrk5hsbphjlar/AADM_kkon1b1i1ffj5kjvf169p8g02p");
+        deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/7ke93c8pgi7piknhgaat0q1n00/AADM_9gfoiqlpkkuh4thirvufqr2kl2");
         deploymentInfo.setInput("");
         manager.setOriginalDeploymentInfo(deploymentInfo);
+
         try {
-            Node node = manager.findMatchingNodeFromRM(
-                    "( ?edgetpus = " + 1 + " ) && ( ?cpus = " + 1 + " )" + " && ( ?ready_status = " + true + " )");
-            System.out.println(node.getOfType());
+            manager.loadRefactoredDeployment();
+            manager.getAadm();
+            Node node = manager.findMatchingNode(
+                    "( ?name = \"minikube\" ) && ( ?edgetpus = " + 0 + " ) && ( ?cpus = " + 1 + " )" + " && ( ?ready_status = " + true + " )", "https://www.sodalite.eu/ontologies/workspace/1/dua7bkcrurljtfrk5hsbphjlar/AADM_kkon1b1i1ffj5kjvf169p8g02p");
+            System.out.println(node.getName());
         } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -146,6 +150,23 @@ public class RefactoringManagerVehicleIoTTest {
             e.printStackTrace();
         }
     }
+
+    private static void update2(RefactoringManager manager) {
+         DeploymentInfo deploymentInfo = manager.getRefactoredDeploymentInfo();
+        try {
+            manager.loadRefactoredDeployment();
+            AADMModel aadmModel = manager.getAadm();
+            aadmModel.updateParameterOfProperty("mysql-deployment-via-helm", "values",
+                    "imageTag", "8.0.18");
+            manager.saveAndUpdate();
+            System.out.println(deploymentInfo.getAadm_id());
+            System.out.println(deploymentInfo.getBlueprint_id());
+            System.out.println(deploymentInfo.getDeployment_id());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private static void delete(RefactoringManager manager) {
         try {
