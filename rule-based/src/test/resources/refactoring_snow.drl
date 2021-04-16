@@ -24,10 +24,13 @@ rule "HostHighCpuLoad"
       for (Node node : nodes) {
             aadmModel.addNode(node);
       }
+    aadmModel.updateArrayProperty("snow-skyline-extractor", "ports", "8080:8080");
+    aadmModel.updateArrayProperty("snow-skyline-alignment", "ports", "8081:8080,80:8080");
     aadmModel.updateRequirement("snow-skyline-extractor", "host", "snow-docker-host-2");
     aadmModel.updateRequirement("snow-skyline-alignment", "host", "snow-docker-host-2");
     aadmModel.addRequirement("snow-docker-registry", refMgt.createRequirement("dependency",
-                    "node: snow-docker-registry-certificate-2"));
+                       "node: snow-docker-registry-certificate-2"));
+    aadmModel.updateRequirement("snow-configuration-demo", "remote_server", "snow-vm-2");
     aadmModel.updateNodeTypes();
     refMgt.saveAndUpdate();
     System.out.println("HostHighCpuLoad rule executed");
@@ -49,7 +52,7 @@ rule "HostLowCpuLoad"
     aadmModel.updateRequirement("snow-skyline-alignment", "host", "snow-docker-host");
     aadmModel.updateRequirement("snow-configuration-demo", "remote_server", "snow-vm");
     aadmModel.removeRequirementWithValue("snow-docker-registry", "dependency",
-                        "snow-docker-registry-certificate-2");
+                    "snow-docker-registry-certificate-2");
     refMgt.saveAndUpdate();
     System.out.println("HostLowCpuLoad rule executed");
 end
