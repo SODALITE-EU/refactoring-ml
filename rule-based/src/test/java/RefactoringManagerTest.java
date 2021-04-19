@@ -11,7 +11,7 @@ import java.util.List;
 public class RefactoringManagerTest {
 
     public static void main(String[] args) {
-
+       
     }
 
     private static List<Node> loadNode(RefactoringManager manager) {
@@ -40,12 +40,11 @@ public class RefactoringManagerTest {
             aadmModel.updateArrayProperty("snow-skyline-alignment", "ports", "8081:8080,82:8080");
             aadmModel.updateRequirement("snow-skyline-extractor", "host", "snow-docker-host");
             aadmModel.updateRequirement("snow-skyline-alignment", "host", "snow-docker-host");
-//            aadmModel.updateRequirement("snow-mysql", "host", "snow-docker-host");
             aadmModel.updateRequirement("snow-configuration-demo", "remote_server", "snow-vm");
             aadmModel.removeRequirementWithValue("snow-docker-registry", "dependency",
                     "snow-docker-registry-certificate-2");
-//            manager.saveDeploymentModelInKB();
-            manager.saveAndUpdate();
+            manager.saveDeploymentModelInKB();
+//            manager.saveAndUpdate();
             deploymentInfo = manager.getRefactoredDeploymentInfo();
             System.out.println(deploymentInfo.getAadm_id());
             System.out.println(deploymentInfo.getBlueprint_id());
@@ -79,7 +78,7 @@ public class RefactoringManagerTest {
 //            saveAsFile("snow3.ttl", aadmModel.getExchangeAADM());
 //            manager.saveDeploymentModelInKB();
 //            manager.buildIaCForCurrentDeployment();
-            manager.saveAndUpdate();
+//            manager.saveAndUpdate();
             System.out.println(deploymentInfo.getAadm_id());
             System.out.println(deploymentInfo.getBlueprint_id());
             System.out.println(deploymentInfo.getDeployment_id());

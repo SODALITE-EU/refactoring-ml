@@ -126,6 +126,23 @@ public class AADMModel {
         }
     }
 
+    public void updateNestedParameterOfProperty(String nodeName, String name,  String pname,  String npname, String value) {
+        for (Property p : getNode(nodeName).getProperties()) {
+            if (p.getName().equals(name)) {
+                for (Parameter par: p.getParameters()){
+                    if (par.getName().equals(pname)) {
+                        for (Parameter npar: par.getParameters()) {
+                            if (npar.getName().equals(npname)) {
+                                npar.setValue(value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     public void updateArrayProperty(String nodeName, String name, String value) {
         for (Property p : getNode(nodeName).getProperties()) {
             if (p.getName().equals(name)) {

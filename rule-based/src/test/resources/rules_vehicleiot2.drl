@@ -1,0 +1,52 @@
+global nl.jads.sodalite.rules.RefactoringManager manager;
+global nl.jads.sodalite.rules.DisabledRuleSet disabledSet;
+import nl.jads.sodalite.events.Alert
+import java.util.Arrays
+import nl.jads.sodalite.dto.AADMModel
+import tosca.mapper.dto.Node
+import tosca.mapper.dto.Property
+import nl.jads.sodalite.events.ResourceEvent;
+
+rule "KBUpdated"
+  when
+    $f1 : ResourceEvent(eType == "KBUpdated", rType=="any")
+  then
+    disabledSet.disable("KBUpdated");
+    ResourceEvent newREvent = new ResourceEvent();
+    newREvent.setrType("gpu");
+    Node nodeGPU = manager.findMatchingNodeFromRM(
+                        "( ?name = \"xavier-nx\" ) && ( ?gpus = " + 1 + " ) && ( ?cpus = " + 1 + " )" + " && ( ?ready_status = " + true + " )");
+    if (nodeGPU != null) {
+           newREvent.seteType("ResourceAdded");
+           newREvent.setNode(nodeGPU);
+    } else {
+           newREvent.seteType("ResourceRemoved");
+    }
+    retract($f1);
+    insert(newREvent);
+    System.out.println("KBUpdated rule executed");
+end
+
+rule "GPUUnavailable"
+  when
+    $f1 : ResourceEvent(eType == "ResourceRemoved", rType=="gpu")
+  then
+    disabledSet.disable("GPUUnavailable");
+    AADMModel aadmModel = manager.getAadm();
+    aadmModel.updateNestedParameterOfProperty("mysql-deployment-via-helm", "values", "accelerators",
+                       "gpu", "false");
+    manager.saveAndUpdate();
+    System.out.println("GPU Unavailable rule executed");
+end
+
+rule "GPUAvaiable"
+  when
+    $f1 : ResourceEvent(eType == "ResourceAdded", rType=="gpu")
+  then
+    disabledSet.disable("GPUAvailable");
+    AADMModel aadmModel = manager.getAadm();
+    aadmModel.updateNestedParameterOfProperty("mysql-deployment-via-helm", "values", "accelerators",
+                         "gpu", "true");
+    manager.saveAndUpdate();
+    System.out.println("GPUAvailable rule executed");
+end
