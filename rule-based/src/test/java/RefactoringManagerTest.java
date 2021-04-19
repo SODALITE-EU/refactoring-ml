@@ -11,7 +11,7 @@ import java.util.List;
 public class RefactoringManagerTest {
 
     public static void main(String[] args) {
-       
+
     }
 
     private static List<Node> loadNode(RefactoringManager manager) {

@@ -258,11 +258,11 @@ public class RefactoringManager {
         }
         Client client = ClientBuilder.newClient();
         String aadmURI = aadm.getId();
-        if (!aadmURI.endsWith("refac")) {
-            aadmURI = aadmURI + "refac";
-            aadm.setId(aadmURI);
-            refactoredDeploymentInfo.setAadm_id(aadmURI);
-        }
+//        if (!aadmURI.endsWith("refac")) {
+//            aadmURI = aadmURI + "refac";
+//            aadm.setId(aadmURI);
+//            refactoredDeploymentInfo.setAadm_id(aadmURI);
+//        }
         WebTarget webTarget =
                 client.target(reasonerUri).path("saveAADM");
         Form form = new Form();

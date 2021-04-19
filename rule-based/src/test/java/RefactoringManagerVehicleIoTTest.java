@@ -151,11 +151,9 @@ public class RefactoringManagerVehicleIoTTest {
         try {
             manager.loadRefactoredDeployment();
             AADMModel aadmModel = manager.getAadm();
-            aadmModel.updateParameterOfProperty("mysql-deployment-via-helm", "values",
-                    "imageTag", "8.0.18");
-            manager.saveDeploymentModelInKB();
-            manager.buildIaCForCurrentDeployment();
-            manager.deployCurrentDeployment();
+            aadmModel.updateNestedParameterOfProperty("knowgo-score-helm", "values", "accelerators",
+                    "gpu", "true");
+            manager.saveAndUpdate();
             System.out.println(deploymentInfo.getAadm_id());
             System.out.println(deploymentInfo.getBlueprint_id());
             System.out.println(deploymentInfo.getDeployment_id());

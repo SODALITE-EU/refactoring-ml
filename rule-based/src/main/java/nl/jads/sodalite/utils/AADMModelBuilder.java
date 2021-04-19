@@ -61,9 +61,9 @@ public class AADMModelBuilder {
         dm.setVersion((String) jsonObject.get(DTOConstraints.VERSION));
         dm.setId((String) jsonObject.get(DTOConstraints.ID));
         String nameSpace = (String) jsonObject.get(DTOConstraints.NAME_SPACE);
-        if (!nameSpace.endsWith("refac")) {
-            nameSpace = nameSpace + "refac";
-        }
+//        if (!nameSpace.endsWith("refac")) {
+//            nameSpace = nameSpace + "refac";
+//        }
         dm.setNamespace(nameSpace);
     }
 
