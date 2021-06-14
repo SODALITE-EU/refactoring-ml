@@ -123,7 +123,8 @@ public class RefactoringService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/{appid}/deployments")
     public Response createDeployment(@PathParam("appid") String appid, DeploymentInfo deploymentInfo) {
-        System.out.println("Received the Information about the deployment  : " + deploymentInfo.getAadm_id());
+        System.out.println("Received the Information about the deployment : " +
+                deploymentInfo.getAadm_id() + " for the namespace : " + appid);
         if (!managers.containsKey(appid)) {
             RefactoringManager manager = new RefactoringManager(appid);
             managers.put(appid, manager);

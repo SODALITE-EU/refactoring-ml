@@ -13,7 +13,22 @@ import java.util.Set;
 public class RefactoringManagerVehicleIoTTest {
 
     public static void main(String[] args) {
-
+        RefactoringManager manager = new RefactoringManager("vehicleiot");
+        manager.setReasonerUri("http://192.168.2.97:8080/reasoner-api/v0.6/");
+        manager.setApikey("test");
+        manager.setClientId("sodalite-ide");
+        manager.setClientSecret("1a1083bc-c183-416a-9192-26076f605cc3");
+        manager.setAuthUri("http://192.168.2.53:8080/");
+        manager.setXopera("http://192.168.2.18:5000/");
+        manager.setIacBuilderUri("http://192.168.2.107:8081/");
+        manager.setUsername("indika");
+        manager.setPassword("qwerty123");
+        manager.setGraphdb("http://192.168.2.97:7200/");
+        deployEdgeTPU(manager);
+//        DeploymentInfo deploymentInfo = new DeploymentInfo();
+//        deploymentInfo.setInput("");
+//        deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/vbeit9auui3d3j0tdekbljfndl/AADM_92aj0uo7t6l6u8mv5tmh99pjnb");
+//        manager.setOriginalDeploymentInfo(deploymentInfo);
     }
 
     private static void subscribetopds(RefactoringManager manager) {

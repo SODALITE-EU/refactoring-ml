@@ -40,7 +40,7 @@ rule "GPUUnavailable"
     System.out.println("GPU Unavailable rule executed");
 end
 
-rule "GPUAvaiable"
+rule "GPUAvailable"
   when
     $f1 : ResourceEvent(eType == "ResourceAdded", rType=="gpu")
   then
@@ -49,5 +49,5 @@ rule "GPUAvaiable"
     aadmModel.updateNestedParameterOfProperty("knowgo-score-helm", "values", "accelerators",
                          "gpu", "true");
     refMgt.saveAndUpdate();
-    System.out.println("GPUAvailable rule executed");
+    System.out.println("GPU available rule executed");
 end
