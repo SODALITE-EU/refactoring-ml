@@ -157,6 +157,15 @@ public class RefactoringService {
         return Response.ok("Alert Received").build();
     }
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/alerts")
+    public Response notifyAnyAlerts(JsonNode jsonNode) {
+        System.out.println("Received An Alert : " + jsonNode.toString());
+        return Response.ok("Alert Received").build();
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
