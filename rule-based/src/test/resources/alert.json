@@ -1,0 +1,80 @@
+{
+  "receiver": "refactorer-engine",
+  "status": "firing",
+  "alerts": [
+    {
+      "status": "firing",
+      "labels": {
+        "alertname": "CPURunning",
+        "instance": "192.168.3.9:9100"
+      },
+      "annotations": {
+        "description": "Test 1 of the integration between monitoring and refactoring. CPU load below 0.1% on instance $labels.instance).\n LABELS: map[instance:192.168.3.9:9100]",
+        "instance": "192.168.3.9:9100",
+        "monitoring_id": "testing",
+        "summary": "Simple alert to test integration.",
+        "value": "7.923809523649865"
+      },
+      "startsAt": "2021-09-01T08:59:57.894147135Z",
+      "endsAt": "0001-01-01T00:00:00Z",
+      "generatorURL": "http://3ca455c01420:9090/graph?g0.expr=100+-+%28avg+by%28instance%29+%28rate%28node_cpu_seconds_total%7Bmode%3D%22idle%22%2Cmonitoring_id%3D%22testing%22%7D%5B2m%5D%29%29+%2A+100%29+%3E+0.1&g0.tab=1",
+      "fingerprint": "6cf046afa1e81af7"
+    }
+  ],
+  "groupLabels": {},
+  "commonLabels": {
+    "alertname": "CPURunning",
+    "instance": "192.168.3.9:9100"
+  },
+  "commonAnnotations": {
+    "description": "Test 1 of the integration between monitoring and refactoring. CPU load below 0.1% on instance $labels.instance).\n LABELS: map[instance:192.168.3.9:9100]",
+    "instance": "192.168.3.9:9100",
+    "monitoring_id": "testing",
+    "summary": "Simple alert to test integration.",
+    "value": "7.923809523649865"
+  },
+  "externalURL": "http://d9a7abd2caf8:9093",
+  "version": "4",
+  "groupKey": "{}:{}",
+  "truncatedAlerts": 0
+}
+
+{
+  "receiver": "default-receiver",
+  "status": "firing",
+  "alerts": [
+    {
+      "status": "firing",
+      "labels": {
+        "alertname": "HostHighCpuLoad",
+        "instance": "154.48.185.159:9100",
+        "severity": "warning"
+      },
+      "annotations": {
+        "description": "CPU load is \\u003e 80%\\n  VALUE = 81.29999999999806\\n  LABELS: map[instance:154.48.185.159:9100]",
+        "summary": "Host high CPU load (instance 154.48.185.159:9100)"
+      },
+      "startsAt": "2021-04-16T10:57:27.287074165Z",
+      "endsAt": "0001-01-01T00:00:00Z",
+      "generatorURL": "http://154.48.185.213/graph?g0.expr=100+-+%28avg+by%28instance%29+%28irate%28node_cpu_seconds_total%7Bmode%3D%22idle%22%7D%5B5m%5D%29%29+%2A+100%29+%3E+80\\u0026g0.tab=1",
+      "fingerprint": "44ed747b85e76fff"
+    }
+  ],
+  "groupLabels": {
+    "alertname": "HostHighCpuLoad"
+  },
+  "commonLabels": {
+    "alertname": "HostHighCpuLoad",
+    "instance": "154.48.185.159:9100",
+    "os_id": "vehicle-iot-demo-v1",
+    "severity": "warning"
+  },
+  "commonAnnotations": {
+    "description": "CPU load is \\u003e 80%\\n  VALUE = 81.29999999999806\\n  LABELS: map[instance:154.48.185.159:9100]",
+    "summary": "Host high CPU load (instance 154.48.185.159:9100)"
+  },
+  "externalURL": "http://154.48.185.213:9093",
+  "version": "4",
+  "groupKey": "d",
+  "truncatedAlerts": 0
+}

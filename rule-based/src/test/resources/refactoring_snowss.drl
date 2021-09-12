@@ -1,0 +1,52 @@
+global nl.jads.sodalite.rules.RefactoringManager refMgt;
+global nl.jads.sodalite.rules.DisabledRuleSet disabledSet;
+import nl.jads.sodalite.events.LocationChangedEvent;
+import nl.jads.sodalite.events.DeploymentNeeded;
+import nl.jads.sodalite.events.DeploymentChanged;
+import nl.jads.sodalite.events.DeploymentRemove;
+import nl.jads.sodalite.events.ResourceEvent;
+import nl.jads.sodalite.events.Alert
+import java.util.Arrays
+import tosca.mapper.dto.Node
+import nl.jads.sodalite.dto.AADMModel
+import java.util.List
+
+rule "HostHighCpuLoad"
+  when
+    $f1 : Alert(name == "HostHighCpuLoad")
+  then
+    Node snowvm2node = refMgt.findMatchingNodeFromRM("( ?name = \"snow-vm_new_2\" )");
+    AADMModel aadmModel = refMgt.getAadm();
+    aadmModel.addNode(snowvm2node);
+    List<Node> nodes = refMgt.getNodeMatchingReqFromRM("snow/snow-vm-2");
+      for (Node node : nodes) {
+            aadmModel.addNode(node);
+      }
+    aadmModel.updateArrayProperty("snow-skyline-extractor", "ports", "8080:8080");
+    aadmModel.updateArrayProperty("snow-skyline-alignment", "ports", "8081:8080,80:8080");
+    aadmModel.updateRequirement("snow-skyline-extractor", "host", "snow-docker-host-2");
+    aadmModel.updateRequirement("snow-skyline-alignment", "host", "snow-docker-host-2");
+    aadmModel.addRequirement("snow-docker-registry", refMgt.createRequirement("dependency",
+                       "node: snow-docker-registry-certificate-2"));
+    aadmModel.updateRequirement("snow-configuration-demo", "remote_server", "snow-vm-2");
+    aadmModel.updateNodeTypes();
+    refMgt.saveAndUpdate();
+end
+
+rule "HostLowCpuLoad"
+  when
+    $f1 : Alert(name == "HostLowCpuLoad")
+  then
+    AADMModel aadmModel = refMgt.getAadm();
+    aadmModel.removeNode("snow-vm-2");
+    aadmModel.removeNode("snow-docker-host-2");
+    aadmModel.removeNode("snow-docker-registry-certificate-2");
+    aadmModel.updateArrayProperty("snow-skyline-extractor", "ports", "8082:8080");
+    aadmModel.updateArrayProperty("snow-skyline-alignment", "ports", "8081:8080,82:8080");
+    aadmModel.updateRequirement("snow-skyline-extractor", "host", "snow-docker-host");
+    aadmModel.updateRequirement("snow-skyline-alignment", "host", "snow-docker-host");
+    aadmModel.updateRequirement("snow-configuration-demo", "remote_server", "snow-vm");
+    aadmModel.removeRequirementWithValue("snow-docker-registry", "dependency",
+                    "snow-docker-registry-certificate-2");
+    refMgt.saveAndUpdate();
+end
