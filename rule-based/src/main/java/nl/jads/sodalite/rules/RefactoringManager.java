@@ -170,8 +170,10 @@ public class RefactoringManager {
         Client client = ClientBuilder.newClient();
         WebTarget webTarget =
                 client.target(reasonerUri).path("aadm").queryParam("aadmIRI", aadmId).
-                        queryParam("version", version)
-                        .queryParam("refactorer", true);
+                        queryParam("refactorer", true);
+        if (version != null && !version.isEmpty()) {
+            webTarget = webTarget.queryParam("version", version);
+        }
         Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
         if (apikey != null) {
             builder.header("X-API-Key", apikey);
@@ -189,8 +191,12 @@ public class RefactoringManager {
     public JsonObject getCompleteDeploymentModel(String aadmId, String version) throws Exception {
         Client client = ClientBuilder.newClient();
         WebTarget webTarget =
-                client.target(reasonerUri).path("aadm").queryParam("version", version)
+                client.target(reasonerUri).path("aadm")
                         .queryParam("aadmIRI", aadmId);
+
+        if (version != null && !version.isEmpty()) {
+            webTarget = webTarget.queryParam("version", version);
+        }
         Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
         if (apikey != null) {
             builder.header("X-API-Key", apikey);
