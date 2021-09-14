@@ -15,6 +15,8 @@ public class DeploymentInfo {
     private String blueprint_id;
     @JsonProperty("inputs")
     private String inputs;
+    @JsonProperty("version")
+    private String version;
     private Map<String, Object> inputMap;
 
     public String getAadm_id() {
@@ -64,5 +66,13 @@ public class DeploymentInfo {
         StringWriter writer = new StringWriter();
         yaml.dump(inputMap, writer);
         return writer.toString();
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

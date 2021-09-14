@@ -136,7 +136,7 @@ public class RefactoringService {
         }
         managers.get(appid).setOriginalDeploymentInfo(deploymentInfo);
         try {
-            managers.get(appid).loadDeployment(deploymentInfo.getAadm_id());
+            managers.get(appid).loadDeployment(deploymentInfo.getAadm_id(), deploymentInfo.getVersion());
             log.info("Blueprint ID : " + deploymentInfo.getBlueprint_id());
             log.info("Deployment ID : " + deploymentInfo.getDeployment_id());
             log.info("Inputs : " + deploymentInfo.getInputs());

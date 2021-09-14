@@ -134,15 +134,15 @@ public class RefactoringManager {
     }
 
     public void loadOriginalDeployment() throws Exception {
-        loadDeployment(originalDeploymentInfo.getAadm_id());
+        loadDeployment(originalDeploymentInfo.getAadm_id(), originalDeploymentInfo.getVersion());
     }
 
     public void loadRefactoredDeployment() throws Exception {
-        loadDeployment(refactoredDeploymentInfo.getAadm_id());
+        loadDeployment(refactoredDeploymentInfo.getAadm_id(), refactoredDeploymentInfo.getVersion());
     }
 
-    public void loadDeployment(String aadmId) throws Exception {
-        aadm = AADMModelBuilder.fromJsonText(getDeploymentSimple(aadmId));
+    public void loadDeployment(String aadmId, String version) throws Exception {
+        aadm = AADMModelBuilder.fromJsonText(getDeploymentSimple(aadmId, version));
         aadm.setId(aadmId);
         aadm.updateNodeTypes();
         System.out.println("AADM runtime model was loaded : " + aadmId);
@@ -166,10 +166,11 @@ public class RefactoringManager {
         return AADMModelBuilder.toNode(json, nodeUri);
     }
 
-    public String getDeploymentSimple(String aadmId) {
+    public String getDeploymentSimple(String aadmId, String version) {
         Client client = ClientBuilder.newClient();
         WebTarget webTarget =
-                client.target(reasonerUri).path("aadm").queryParam("aadmIRI", aadmId)
+                client.target(reasonerUri).path("aadm").queryParam("aadmIRI", aadmId).
+                        queryParam("version", version)
                         .queryParam("refactorer", true);
         Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
         if (apikey != null) {
@@ -185,10 +186,11 @@ public class RefactoringManager {
         return aadmJson;
     }
 
-    public JsonObject getCompleteDeploymentModel(String aadmId) throws Exception {
+    public JsonObject getCompleteDeploymentModel(String aadmId, String version) throws Exception {
         Client client = ClientBuilder.newClient();
         WebTarget webTarget =
-                client.target(reasonerUri).path("aadm").queryParam("aadmIRI", aadmId);
+                client.target(reasonerUri).path("aadm").queryParam("version", version)
+                        .queryParam("aadmIRI", aadmId);
         Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
         if (apikey != null) {
             builder.header("X-API-Key", apikey);
@@ -269,6 +271,7 @@ public class RefactoringManager {
         form.param("aadmTTL", aadm.getExchangeAADM());
         form.param("token", token);
         form.param("aadmURI", aadmURI);
+        form.param("version", aadm.getVersion());
         form.param("namespace", aadm.getNamespace());
 
         Invocation.Builder builder = webTarget.request(MediaType.APPLICATION_JSON_TYPE);
@@ -298,7 +301,7 @@ public class RefactoringManager {
     }
 
     public void buildIaCForCurrentDeployment() throws Exception {
-        buildIaC(aadm.getId(), aadm.getNamespace());
+        buildIaC(aadm.getId(), aadm.getNamespace(), aadm.getVersion());
     }
 
     public Node findMatchingNodeFromRM(String expr) throws ParseException {
@@ -342,7 +345,7 @@ public class RefactoringManager {
         Set<kb.dto.Node> nodes = kbApi.getNodeMatchingReq(expr, aadm);
         System.out.println("Found " + nodes.size() + " node matching the expression : " + expr);
         List<Node> nodeList = new ArrayList<>();
-        for(kb.dto.Node nodeKB: nodes){
+        for (kb.dto.Node nodeKB : nodes) {
             String[] arrs = nodeKB.getUri().split("/");
             String nodeUri = arrs[arrs.length - 2] + "/" + arrs[arrs.length - 1];
             nodeList.add(getNodeFromKB(nodeUri));
@@ -351,8 +354,8 @@ public class RefactoringManager {
     }
 
 
-    public void buildIaC(String aadmId, String nameSpace) throws Exception {
-        JsonObject data = getCompleteDeploymentModel(aadmId);
+    public void buildIaC(String aadmId, String nameSpace, String version) throws Exception {
+        JsonObject data = getCompleteDeploymentModel(aadmId, version);
         IaCBuilderInput input = new IaCBuilderInput();
         input.setName(nameSpace);
         input.setData(data);
@@ -596,6 +599,7 @@ public class RefactoringManager {
         this.refactoredDeploymentInfo.setAadm_id(originalDeploymentInfo.getAadm_id());
         this.refactoredDeploymentInfo.setBlueprint_id(originalDeploymentInfo.getBlueprint_id());
         this.refactoredDeploymentInfo.setInput(originalDeploymentInfo.getInputs());
+        this.refactoredDeploymentInfo.setVersion(originalDeploymentInfo.getVersion());
     }
 
     public DeploymentInfo getRefactoredDeploymentInfo() {
