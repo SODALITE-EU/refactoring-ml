@@ -606,6 +606,7 @@ public class RefactoringManager {
         this.refactoredDeploymentInfo.setBlueprint_id(originalDeploymentInfo.getBlueprint_id());
         this.refactoredDeploymentInfo.setInput(originalDeploymentInfo.getInputs());
         this.refactoredDeploymentInfo.setVersion(originalDeploymentInfo.getVersion());
+        this.refactoredDeploymentInfo.setMonitoring_id(originalDeploymentInfo.getMonitoring_id());
     }
 
     public DeploymentInfo getRefactoredDeploymentInfo() {

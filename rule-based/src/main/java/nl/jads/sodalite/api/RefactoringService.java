@@ -139,6 +139,7 @@ public class RefactoringService {
             managers.get(appid).loadDeployment(deploymentInfo.getAadm_id(), deploymentInfo.getVersion());
             log.info("Blueprint ID : " + deploymentInfo.getBlueprint_id());
             log.info("Deployment ID : " + deploymentInfo.getDeployment_id());
+            log.info("Monitoring ID : " + deploymentInfo.getMonitoring_id());
             log.info("Inputs : " + deploymentInfo.getInputs());
         } catch (Exception e) {
             return Response.serverError().entity("Error loading the AADM with id " +

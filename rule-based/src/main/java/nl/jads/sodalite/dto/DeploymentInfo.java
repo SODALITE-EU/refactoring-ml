@@ -17,7 +17,17 @@ public class DeploymentInfo {
     private String inputs;
     @JsonProperty("version")
     private String version;
+    @JsonProperty("monitoring_id")
+    private String monitoring_id;
     private Map<String, Object> inputMap;
+
+    public String getMonitoring_id() {
+        return monitoring_id;
+    }
+
+    public void setMonitoring_id(String monitoring_id) {
+        this.monitoring_id = monitoring_id;
+    }
 
     public String getAadm_id() {
         return aadm_id;
