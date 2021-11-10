@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 
 def train(structured_data):
     X = structured_data.iloc[:, 0:14]  # Feature Matrix
-    Y = structured_data['cumulative_moving_avg_rt']
+    Y = structured_data['response_time']
     # Perform grid search and get optimal params
     train_sizes = [0.1, 0.2, 0.3, 0.4, 0.5]
     # Perform grid search and get optimal params

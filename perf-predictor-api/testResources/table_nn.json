@@ -16,6 +16,6 @@
     "D16"
   ],
   "metrics": [
-    "cumulative_moving_avg_rt"
+    "response_time"
   ]
 }

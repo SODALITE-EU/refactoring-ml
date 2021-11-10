@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 
 def train(structured_data):
     X = structured_data.iloc[:, 0:14]  # Feature Matrix
-    Y = structured_data['mean_rt']  # Target Variable
+    Y = structured_data['response_time']  # Target Variable
     trees = [100, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]
     sizes = [0.1, 0.2, 0.3, 0.4, 0.5]
     size_score = perform_RFR_GridSearch(X, Y, trees, sizes)

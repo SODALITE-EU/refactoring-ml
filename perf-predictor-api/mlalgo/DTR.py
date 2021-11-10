@@ -9,7 +9,7 @@ from sklearn.tree import DecisionTreeRegressor
 
 def train(structured_data):
     X = structured_data.iloc[:, 0:14]  # Feature Matrix
-    y = structured_data['mean_rt']  # Target Variable
+    y = structured_data['response_time']  # Target Variable
 
     best_params, dept_df, depth = param_tuningDTR(X, y)
     size_score = trainsize_gridsearch(X, y, best_params)

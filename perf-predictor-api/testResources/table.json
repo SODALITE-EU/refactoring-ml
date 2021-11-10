@@ -16,6 +16,6 @@
     "D16"
   ],
   "metrics": [
-    "mean_rt"
+    "response_time"
   ]
 }
