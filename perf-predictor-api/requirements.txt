@@ -7,7 +7,7 @@ pickle-mixin
 gensim
 pytest
 pytest-cov
-keras==2.4.0
+keras==2.6.0rc3
 tensorflow>=2.2.1
 spacy==2.3.2
 treelib
