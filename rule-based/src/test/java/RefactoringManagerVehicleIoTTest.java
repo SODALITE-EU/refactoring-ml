@@ -21,8 +21,7 @@ public class RefactoringManagerVehicleIoTTest {
         manager.setAuthUri("http://192.168.2.53:8080/");
         manager.setXopera("http://192.168.2.18:5000/");
         manager.setIacBuilderUri("http://192.168.2.107:8081/");
-        manager.setUsername("indika");
-        manager.setPassword("qwerty909");
+        
         manager.setGraphdb("http://192.168.2.97:7200/");
 //        deployEdgeTPU(manager);
         DeploymentInfo deploymentInfo = new DeploymentInfo();
