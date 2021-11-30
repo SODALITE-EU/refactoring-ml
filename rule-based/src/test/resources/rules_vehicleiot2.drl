@@ -16,7 +16,7 @@ rule "KBUpdated"
     newREvent.setrType("gpu");
     Node nodeGPU = refMgt.findMatchingNode(
                         "( ?name = \"xavier-nx\" ) && ( ?gpus = " + 1 + " ) && ( ?cpus = " + 1 + " )" + " && ( ?ready_status = " + true + " )",
-                        "https://www.sodalite.eu/ontologies/workspace/1/o230knu18qom2q90vp5r38l70u/AADM_2cgge1rho1sjmfl4ogs6rko5sp");
+                        "https://www.sodalite.eu/ontologies/workspace/1/6inp70u8k18dpf8gda7g3n3lv5/AADM_c2sm3t0eon1fivdpnsj41f6b6k");
     if (nodeGPU != null) {
            newREvent.seteType("ResourceAdded");
            newREvent.setNode(nodeGPU);

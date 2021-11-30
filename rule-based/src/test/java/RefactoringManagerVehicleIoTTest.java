@@ -22,13 +22,20 @@ public class RefactoringManagerVehicleIoTTest {
         manager.setXopera("http://192.168.2.18:5000/");
         manager.setIacBuilderUri("http://192.168.2.107:8081/");
         manager.setUsername("indika");
-        manager.setPassword("qwerty123");
+        manager.setPassword("qwerty909");
         manager.setGraphdb("http://192.168.2.97:7200/");
-        deployEdgeTPU(manager);
-//        DeploymentInfo deploymentInfo = new DeploymentInfo();
-//        deploymentInfo.setInput("");
-//        deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/vbeit9auui3d3j0tdekbljfndl/AADM_92aj0uo7t6l6u8mv5tmh99pjnb");
-//        manager.setOriginalDeploymentInfo(deploymentInfo);
+//        deployEdgeTPU(manager);
+        DeploymentInfo deploymentInfo = new DeploymentInfo();
+        deploymentInfo.setInput("");
+        deploymentInfo.setVersion("v1.0");
+        deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/o6fl33ghg9q33qmerlt616dm4k/AADM_fgcns9flmo0sfi6fc6b5kd8usv");
+//        deploymentInfo.setAadm_id("https://www.sodalite.eu/ontologies/workspace/1/6inp70u8k18dpf8gda7g3n3lv5/AADM_c2sm3t0eon1fivdpnsj41f6b6k");
+        manager.setOriginalDeploymentInfo(deploymentInfo);
+        manager.initKB();
+//        update4(manager);
+        deploy(manager);
+//        update3(manager);
+//        loadNode(manager);
     }
 
     private static void subscribetopds(RefactoringManager manager) {
@@ -45,7 +52,7 @@ public class RefactoringManagerVehicleIoTTest {
             manager.loadRefactoredDeployment();
 //            manager.getAadm();
             Node node = manager.findMatchingNodeFromRM(
-                    "( ?name = \"xavier-nx\" ) && ( ?gpus = " + 1 + " ) && ( ?cpus = " + 1 + " )" + " && ( ?ready_status = " + true + " )");
+                    "( ?name = \"node-xavier-nx\" ) && ( ?gpus = " + 1 + " ) && ( ?cpus = " + 1 + " )" + " && ( ?ready_status = " + true + " )");
             System.out.println(node.getName());
         } catch (ParseException e) {
             e.printStackTrace();
@@ -57,13 +64,14 @@ public class RefactoringManagerVehicleIoTTest {
     private static void deploy(RefactoringManager manager) {
         DeploymentInfo deploymentInfo = manager.getRefactoredDeploymentInfo();
 //        saveAsFile("vehicle.json", manager.getDeploymentSimple(deploymentInfo.getAadm_id()));
-//        deploymentInfo.setBlueprint_token("19ff5810-93f0-47e3-b117-86c0a1482cea");
+        deploymentInfo.setBlueprint_id("33fdceb9-c148-4506-b767-0275ff097a52");
+        deploymentInfo.setDeployment_id("d11922da-0c87-4534-884e-33bef5dc35a5");
 //        manager.setOriginalDeploymentInfo(deploymentInfo);
         try {
             manager.loadRefactoredDeployment();
 //            manager.saveDeploymentModelInKB();
-            manager.buildIaCForCurrentDeployment();
-            manager.deployCurrentDeployment();
+//            manager.buildIaCForCurrentDeployment();
+//            manager.deployCurrentDeployment();
 //            manager.getAadm().getExchangeAADM();
 //            saveAsFile("vehicleref.ttl", manager.getAadm().getExchangeAADM());
             System.out.println(deploymentInfo.getAadm_id());
@@ -163,12 +171,49 @@ public class RefactoringManagerVehicleIoTTest {
 
     private static void update2(RefactoringManager manager) {
          DeploymentInfo deploymentInfo = manager.getRefactoredDeploymentInfo();
+         deploymentInfo.setBlueprint_id("355554f2-95f2-4440-9ce1-16b1fecfcccf");
+         deploymentInfo.setDeployment_id("10e28566-1bb1-42c6-924b-95b9afeae745");
         try {
             manager.loadRefactoredDeployment();
             AADMModel aadmModel = manager.getAadm();
             aadmModel.updateNestedParameterOfProperty("knowgo-score-helm", "values", "accelerators",
                     "gpu", "true");
             manager.saveAndUpdate();
+            System.out.println(deploymentInfo.getAadm_id());
+            System.out.println(deploymentInfo.getBlueprint_id());
+            System.out.println(deploymentInfo.getDeployment_id());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void update3(RefactoringManager manager) {
+        DeploymentInfo deploymentInfo = manager.getRefactoredDeploymentInfo();
+        deploymentInfo.setBlueprint_id("355554f2-95f2-4440-9ce1-16b1fecfcccf");
+        deploymentInfo.setDeployment_id("10e28566-1bb1-42c6-924b-95b9afeae745");
+        try {
+            manager.loadRefactoredDeployment();
+            AADMModel aadmModel = manager.getAadm();
+            String xavier = "node-xavier-nx";
+            aadmModel.updateRequirement("mysql-deployment-via-helm", "kube_node", xavier);
+            manager.saveAndUpdate();
+            System.out.println(deploymentInfo.getAadm_id());
+            System.out.println(deploymentInfo.getBlueprint_id());
+            System.out.println(deploymentInfo.getDeployment_id());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void update4(RefactoringManager manager) {
+        DeploymentInfo deploymentInfo = manager.getRefactoredDeploymentInfo();
+        try {
+            manager.loadRefactoredDeployment();
+            AADMModel aadmModel = manager.getAadm();
+            String xavier = "node-filesrv";
+            aadmModel.updateRequirement("mysql-deployment-via-helm", "kube_node", xavier);
+            aadmModel.getExchangeAADM();
+            manager.saveDeploymentModelInKB();
             System.out.println(deploymentInfo.getAadm_id());
             System.out.println(deploymentInfo.getBlueprint_id());
             System.out.println(deploymentInfo.getDeployment_id());
