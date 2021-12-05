@@ -2,10 +2,15 @@ import json
 import pickle
 
 import pandas as pd
+import shap
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
+
+from utils.xai_util import global_plot
+
+shap.initjs()
 
 
 def train_kfold_grid(structured_data):
@@ -44,6 +49,11 @@ def train(structured_data):
 
     with open('models/dtr.pkl', 'wb') as output_file:
         pickle.dump(mlregr_final, output_file)
+
+    explainer = shap.TreeExplainer(model=mlregr_final, model_output='raw')
+    shap_values = explainer.shap_values(X_test)
+    global_plot(name='force_plot_drl.html', explainer=explainer, shap_values=shap_values, X_test=X_test,
+                feature_names=x.columns, plot_type='force_plot')
 
     return json_out
 

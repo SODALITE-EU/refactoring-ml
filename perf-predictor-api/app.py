@@ -1,3 +1,5 @@
+import base64
+
 import pandas as pd
 from flask import Flask, json, request, Response
 
@@ -73,6 +75,18 @@ def predict_perf(model):
     resp.headers['Access-Control-Allow-Methods'] = 'POST'
     resp.headers['Access-Control-Max-Age'] = '1000'
     return resp
+
+
+@app.route('/per-predictor/<model>/explain-global', methods=['GET'])
+def predict_perf(model):
+    js = read_file("force_plot_" + model + ".svg")
+    resp = Response(js, status=200, mimetype='application/json')
+    return resp
+
+
+def read_file(name):
+    with open(name, "rb") as image_file:
+        return {"image": base64.b64encode(image_file.read())}
 
 
 app.run(host='0.0.0.0', port=5000)
