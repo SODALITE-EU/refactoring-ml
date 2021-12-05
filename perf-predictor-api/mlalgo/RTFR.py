@@ -4,22 +4,61 @@ import pickle
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 
 
+def train_kfold_grid(structured_data):
+    x = structured_data.loc[:, structured_data.columns != 'response_time']
+    # x = structured_data.iloc[:, 0:xindex]  # Feature Matrix
+    y = structured_data['response_time']  # Target Variable
+    return hyper_par_girdcv(x, y)
+
+
+def hyper_par_girdcv(x, y):
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.7, random_state=42)
+    model = RandomForestRegressor()
+    print(model.get_params().keys())
+    parameters = {"n_estimators": [100, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000],
+                  "min_samples_leaf": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                  "max_features": ["auto", "log2", "sqrt", None],
+                  "max_leaf_nodes": [None, 10, 20, 30, 40, 50, 60, 70, 80, 90]}
+    gs = GridSearchCV(model,
+                      param_grid={'n_estimators': [100, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]},
+                      cv=10,
+                      n_jobs=1,
+                      scoring='neg_mean_squared_error')
+
+    gs.fit(X_train, y_train)
+    print(gs.best_params_)
+    best_grid = gs.best_estimator_
+    y_pred = best_grid.predict(X_test)
+    text_out = {
+        "R-squared": round(r2_score(y_test, y_pred), 3),
+        "MAE": round(mean_absolute_error(y_test, y_pred), 3),
+        "MSE": round(mean_squared_error(y_test, y_pred), 3)
+    }
+    json_out = json.dumps(text_out, sort_keys=False, indent=4)
+
+    with open('models/rtfr.pkl', 'wb') as output_file:
+        pickle.dump(best_grid, output_file)
+
+    return json_out
+
+
 def train(structured_data):
-    X = structured_data.iloc[:, 0:14]  # Feature Matrix
-    Y = structured_data['response_time']  # Target Variable
+    x = structured_data.loc[:, structured_data.columns != 'response_time']
+    y = structured_data['response_time']  # Target Variable
     trees = [100, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000]
     sizes = [0.1, 0.2, 0.3, 0.4, 0.5]
-    size_score = perform_RFR_GridSearch(X, Y, trees, sizes)
+    size_score = perform_RFR_GridSearch(x, y, trees, sizes)
 
     best = size_score.iloc[size_score['r2_score'].idxmax()]
     bes_n_est = int(best[2])
     best_mx_feat = int(best[3])
     best_train_size = round(1 - best[0], 2)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=best_train_size, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=best_train_size, random_state=42)
     rfReg = RandomForestRegressor(n_estimators=bes_n_est, max_features=best_mx_feat)
     rfReg.fit(X_train, y_train)
     model_score = rfReg.score(X_train, y_train)

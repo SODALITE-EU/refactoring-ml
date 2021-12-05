@@ -3,20 +3,28 @@ import pickle
 
 import pandas as pd
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
 
 
+def train_kfold_grid(structured_data):
+    x = structured_data.loc[:, structured_data.columns != 'response_time']
+    # x = structured_data.iloc[:, 0:xindex]  # Feature Matrix
+    y = structured_data['response_time']  # Target Variable
+    return hyper_par_girdcv(x, y)
+
+
 def train(structured_data):
-    X = structured_data.iloc[:, 0:14]  # Feature Matrix
+    x = structured_data.loc[:, structured_data.columns != 'response_time']
     y = structured_data['response_time']  # Target Variable
 
-    best_params, dept_df, depth = param_tuningDTR(X, y)
-    size_score = trainsize_gridsearch(X, y, best_params)
+    best_params, dept_df, depth = param_tuningDTR(x, y)
+    size_score = trainsize_gridsearch(x, y, best_params)
     size_score = size_score.iloc[size_score['r2_score'].idxmax()]
     best_train_size = round(1 - size_score[0], 2)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=best_train_size, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=best_train_size, random_state=42)
     mlregr_final = DecisionTreeRegressor(criterion=str(best_params[0]), splitter=best_params[1],
                                          max_depth=int(best_params[2]),
                                          max_features='auto')
@@ -36,6 +44,37 @@ def train(structured_data):
 
     with open('models/dtr.pkl', 'wb') as output_file:
         pickle.dump(mlregr_final, output_file)
+
+    return json_out
+
+
+def hyper_par_girdcv(x, y):
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.7, random_state=42)
+    model = DecisionTreeRegressor()
+    parameters = {"splitter": ["best", "random"],
+                  "max_depth": range(1, 20),
+                  "min_samples_leaf": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                  "max_features": ["auto", "log2", "sqrt", None],
+                  "max_leaf_nodes": [None, 10, 20, 30, 40, 50, 60, 70, 80, 90]}
+    gs = GridSearchCV(model,
+                      param_grid={'max_depth': range(1, 20)},
+                      cv=10,
+                      n_jobs=1,
+                      scoring='neg_mean_squared_error')
+
+    gs.fit(X_train, y_train)
+    print(gs.best_params_)
+    best_grid = gs.best_estimator_
+    y_pred = best_grid.predict(X_test)
+    text_out = {
+        "R-squared": round(r2_score(y_test, y_pred), 3),
+        "MAE": round(mean_absolute_error(y_test, y_pred), 3),
+        "MSE": round(mean_squared_error(y_test, y_pred), 3)
+    }
+    json_out = json.dumps(text_out, sort_keys=False, indent=4)
+
+    with open('models/dtr.pkl', 'wb') as output_file:
+        pickle.dump(best_grid, output_file)
 
     return json_out
 

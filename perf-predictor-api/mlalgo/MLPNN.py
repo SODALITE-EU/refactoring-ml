@@ -7,22 +7,67 @@ from keras.models import Sequential
 from keras.models import load_model
 from keras.optimizers import Adam
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPRegressor
+
+
+def train_kfold_grid(structured_data):
+    x = structured_data.loc[:, structured_data.columns != 'response_time']
+    # x = structured_data.iloc[:, 0:xindex]  # Feature Matrix
+    y = structured_data['response_time']  # Target Variable
+    return hyper_par_girdcv(x, y)
+
+
+def hyper_par_girdcv(x, y):
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.7, random_state=42)
+    parameters = {
+        'hidden_layer_sizes': [(8, 8, 8, 8), (16, 16, 16, 16), (32, 32, 32, 32), (64, 64, 64, 64), (128, 128, 128, 128),
+                               (256, 256, 256, 256)],
+        # 'activation': ['tanh', 'relu'],
+        'solver': ['adam'],
+        #             'alpha':  [0.0001, 0.05],
+        #             'learning_rate': ['constant','adaptive'],
+    }
+
+    mlp = MLPRegressor(activation='relu', alpha=0.001, learning_rate='adaptive', shuffle=False, verbose=0,
+                       batch_size=100)
+    gs = GridSearchCV(mlp,
+                      param_grid=parameters,
+                      cv=10,
+                      n_jobs=1,
+                      scoring='neg_mean_squared_error')
+
+    gs.fit(X_train, y_train)
+    print(gs.best_params_)
+    best_grid = gs.best_estimator_
+    y_pred = best_grid.predict(X_test)
+    text_out = {
+        "R-squared": round(r2_score(y_test, y_pred), 3),
+        "MAE": round(mean_absolute_error(y_test, y_pred), 3),
+        "MSE": round(mean_squared_error(y_test, y_pred), 3)
+    }
+    json_out = json.dumps(text_out, sort_keys=False, indent=4)
+
+    with open('models/mlpnn.pkl', 'wb') as output_file:
+        pickle.dump(best_grid, output_file)
+
+    return json_out
 
 
 def train(structured_data):
-    X = structured_data.iloc[:, 0:14]  # Feature Matrix
-    Y = structured_data['response_time']
+    x = structured_data.loc[:, structured_data.columns != 'response_time']
+    y = structured_data['response_time']
     # Perform grid search and get optimal params
     train_sizes = [0.1, 0.2, 0.3, 0.4, 0.5]
     # Perform grid search and get optimal params
     # train_sizes = [0.4,0.5]
-    units, best_scores, neurons, sizes, all_units = deep_layer_neurons(X, Y, train_sizes)
+    units, best_scores, neurons, sizes, all_units = deep_layer_neurons(x, y, train_sizes)
     best = best_scores.iloc[best_scores['r2_score'].idxmax()]
     best_train_size = round(1 - best[0], 2)
     best_neurons = int(best[2])
     # Optimal NN model
-    XX_train, XX_test, yy_train, yy_test = train_test_split(X, Y, test_size=best_train_size, random_state=42)
+    XX_train, XX_test, yy_train, yy_test = train_test_split(x, y, test_size=best_train_size, random_state=42)
 
     model_final = Sequential()
     model_final.add(Dense(units, input_shape=(14,), kernel_initializer='normal', activation='relu'))
