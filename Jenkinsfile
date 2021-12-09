@@ -94,6 +94,12 @@ pipeline {
         }
     }
 	stage('Build docker images') {
+	        when {
+				allOf {
+				// Triggered on every tag
+					expression{tag "*"}
+				   }
+            } 
             steps {
                 sh "cd rule-based; docker build -t rule_based_refactorer -f Dockerfile ."   
 		        sh "cd perf-predictor-api; docker build -t fo_perf_predictor_api -f Dockerfile ."
@@ -102,8 +108,11 @@ pipeline {
     }   
     stage('Push Dockerfile to DockerHub') {
             when {
-               branch "master"
-            }
+				allOf {
+				// Triggered on every tag
+					expression{tag "*"}
+				   }
+            } 
             steps {
                 withDockerRegistry(credentialsId: 'jenkins-sodalite.docker_token', url: '') {
                     sh  """#!/bin/bash                       
