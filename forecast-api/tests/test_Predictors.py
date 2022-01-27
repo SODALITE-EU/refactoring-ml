@@ -35,7 +35,7 @@ class TestForcaster(unittest.TestCase):
         assert rmses is not None
 
     def test_ploy(self):
-        datas = read_csv('../testResources/polydata.csv')
+        datas = read_csv('testResources/polydata.csv')
         X = datas.iloc[:, 0:1].values
         y = datas.iloc[:, 1].values
         linear, poly = fit_forecast(datas)
