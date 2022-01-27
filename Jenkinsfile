@@ -39,10 +39,10 @@ pipeline {
 					. .venv/bin/activate
 					python3 -m pip install --upgrade pip
 					python3 -m pip install -r requirements.txt			        
-                    python3 -m pytest --pyargs -s ./tests --junitxml="results1.xml" --cov=mlalgo --cov-report xml tests/
+                    python3 -m pytest --pyargs -s ./tests --junitxml="results.xml" --cov=mlalgo --cov-report xml tests/
 					cp *.xml $WORKSPACE
                 """
-            junit 'results1.xml'
+            junit 'results.xml'
         }
     }
 	stage('Test made-api') {
@@ -53,10 +53,10 @@ pipeline {
 					. .venv/bin/activate
 					python3 -m pip install --upgrade pip
 					python3 -m pip install -r requirements.txt			        
-                    python3 -m pytest --pyargs -s ./tests --junitxml="results2.xml" --cov=mlalgo --cov-report xml tests/
+                    python3 -m pytest --pyargs -s ./tests --junitxml="results.xml" --cov=mlalgo --cov-report xml tests/
 					cp *.xml $WORKSPACE
                 """
-            junit 'results2.xml'
+            junit 'results.xml'
         }
     }
     stage ('Build rule-based refactorer') {
