@@ -1,8 +1,11 @@
+import unittest
+
 import pandas as pd
+
 import mlalgo.DTR as dtr_model
 
 
-class TestPredictors:
+class TestPredictors(unittest.TestCase):
 
     def test_dtr(self):
         with open('testResources/data.json') as json_file:
