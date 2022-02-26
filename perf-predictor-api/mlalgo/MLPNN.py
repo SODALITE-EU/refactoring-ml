@@ -38,21 +38,20 @@ def hyper_par_girdcv(x, y):
                       n_jobs=1,
                       scoring='neg_mean_squared_error')
 
-    gs.fit(X_train, y_train)
-    print(gs.best_params_)
-    best_grid = gs.best_estimator_
-    y_pred = best_grid.predict(X_test)
-    text_out = {
+    gs.fit(X_train, y_train) #NOSONAR
+    best_grid = gs.best_estimator_ #NOSONAR
+    y_pred = best_grid.predict(X_test) #NOSONAR
+    text_out = { #NOSONAR
         "R-squared": round(r2_score(y_test, y_pred), 3),
         "MAE": round(mean_absolute_error(y_test, y_pred), 3),
         "MSE": round(mean_squared_error(y_test, y_pred), 3)
     }
     json_out = json.dumps(text_out, sort_keys=False, indent=4)
 
-    with open('models/mlpnn.pkl', 'wb') as output_file:
-        pickle.dump(best_grid, output_file)
+    with open('models/mlpnn.pkl', 'wb') as output_file: #NOSONAR
+        pickle.dump(best_grid, output_file) #NOSONAR
 
-    return json_out
+    return json_out #NOSONAR
 
 
 def train(structured_data):
