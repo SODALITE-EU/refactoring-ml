@@ -5,7 +5,7 @@ import pandas as pd
 from keras.layers import Dense
 from keras.models import Sequential
 from keras.models import load_model
-from keras.optimizers import Adam
+from keras.optimizers_v1 import Adam
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
