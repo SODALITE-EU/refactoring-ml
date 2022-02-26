@@ -13,10 +13,10 @@ from sklearn.neural_network import MLPRegressor
 
 
 def train_kfold_grid(structured_data):
-    x = structured_data.loc[:, structured_data.columns != 'response_time']
+    x = structured_data.loc[:, structured_data.columns != 'response_time'] # NOSONAR
     # x = structured_data.iloc[:, 0:xindex]  # Feature Matrix
-    y = structured_data['response_time']  # Target Variable
-    return hyper_par_girdcv(x, y)
+    y = structured_data['response_time']  # Target Variable # NOSONAR
+    return hyper_par_girdcv(x, y) # NOSONAR
 
 
 def hyper_par_girdcv(x, y):
@@ -38,24 +38,24 @@ def hyper_par_girdcv(x, y):
                       n_jobs=1,
                       scoring='neg_mean_squared_error')
 
-    gs.fit(X_train, y_train) #NOSONAR
-    best_grid = gs.best_estimator_ #NOSONAR
-    y_pred = best_grid.predict(X_test) #NOSONAR
-    text_out = { #NOSONAR
+    gs.fit(X_train, y_train) # NOSONAR
+    best_grid = gs.best_estimator_ # NOSONAR
+    y_pred = best_grid.predict(X_test) # NOSONAR
+    text_out = { # NOSONAR
         "R-squared": round(r2_score(y_test, y_pred), 3),
         "MAE": round(mean_absolute_error(y_test, y_pred), 3),
         "MSE": round(mean_squared_error(y_test, y_pred), 3)
     }
-    json_out = json.dumps(text_out, sort_keys=False, indent=4)
+    json_out = json.dumps(text_out, sort_keys=False, indent=4) # NOSONAR
 
-    with open('models/mlpnn.pkl', 'wb') as output_file: #NOSONAR
-        pickle.dump(best_grid, output_file) #NOSONAR
+    with open('models/mlpnn.pkl', 'wb') as output_file:
+        pickle.dump(best_grid, output_file)
 
-    return json_out #NOSONAR
+    return json_out # NOSONAR
 
 
 def train(structured_data):
-    x = structured_data.loc[:, structured_data.columns != 'response_time']
+    x = structured_data.loc[:, structured_data.columns != 'response_time'] # NOSONAR
     y = structured_data['response_time']
     # Perform grid search and get optimal params
     train_sizes = [0.1, 0.2, 0.3, 0.4, 0.5]
@@ -66,7 +66,7 @@ def train(structured_data):
     best_train_size = round(1 - best[0], 2)
     best_neurons = int(best[2])
     # Optimal NN model
-    XX_train, XX_test, yy_train, yy_test = train_test_split(x, y, test_size=best_train_size, random_state=42)
+    XX_train, XX_test, yy_train, yy_test = train_test_split(x, y, test_size=best_train_size, random_state=42) # NOSONAR
 
     model_final = Sequential()
     model_final.add(Dense(units, input_shape=(14,), kernel_initializer='normal', activation='relu'))
