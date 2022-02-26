@@ -42,13 +42,15 @@ class TestPredictors(unittest.TestCase):
         value = rt_model.predict(data.iloc[9:10, 0:14])
         assert value is not None
 
-    # def test_mlp(self):
-    #     with open('testResources/data_nn.json') as json_file:
-    #         data = pd.read_json(json_file)
-    #     train_out = mlp_model.train(data)
-    #     assert train_out is not None
-    #     value = mlp_model.predict(data.iloc[9:10, 0:14])
-    #     assert value is not None
+    def test_mlp(self):
+        with open('testResources/data_nn.json') as json_file:
+            data = pd.read_json(json_file)
+        gs, X_train, X_test, y_train, y_test = mlp_model.prepare_model(data)
+        assert gs is not None
+        assert X_train is not None
+        assert X_test is not None
+        assert y_train is not None
+        assert y_test is not None
     #
     # def test_mlpkfold(self):
     #     with open('testResources/data_nn.json') as json_file:

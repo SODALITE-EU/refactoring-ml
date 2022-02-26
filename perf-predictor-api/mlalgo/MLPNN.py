@@ -2,24 +2,20 @@ import json
 import pickle
 
 import pandas as pd
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.models import load_model
-from tensorflow.keras.optimizers import Adam
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPRegressor
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import load_model
+from tensorflow.keras.optimizers import Adam
 
 
-def train_kfold_grid(structured_data):
-    x = structured_data.loc[:, structured_data.columns != 'response_time'] # pragma: no cover
+def prepare_model(structured_data):
+    x = structured_data.loc[:, structured_data.columns != 'response_time']  # pragma: no cover
     # x = structured_data.iloc[:, 0:xindex]  # Feature Matrix
     y = structured_data['response_time']  # Target Variable # pragma: no cover
-    return hyper_par_girdcv(x, y) # pragma: no cover
-
-
-def hyper_par_girdcv(x, y):
     X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.7, random_state=42)
     parameters = {
         'hidden_layer_sizes': [(8, 8, 8, 8), (16, 16, 16, 16), (32, 32, 32, 32), (64, 64, 64, 64), (128, 128, 128, 128),
@@ -38,24 +34,28 @@ def hyper_par_girdcv(x, y):
                       n_jobs=1,
                       scoring='neg_mean_squared_error')
 
-    gs.fit(X_train, y_train) # pragma: no cover
-    best_grid = gs.best_estimator_ # pragma: no cover
-    y_pred = best_grid.predict(X_test) # pragma: no cover
-    text_out = { # pragma: no cover
+    return gs, X_train, X_test, y_train, y_test  # pragma: no cover
+
+
+def train_kfold_grid(structured_data):
+    gs, X_train, X_test, y_train, y_test = prepare_model(structured_data)
+    gs.fit(X_train, y_train)  # pragma: no cover
+    best_grid = gs.best_estimator_  # pragma: no cover
+    y_pred = best_grid.predict(X_test)  # pragma: no cover
+    text_out = {  # pragma: no cover
         "R-squared": round(r2_score(y_test, y_pred), 3),
         "MAE": round(mean_absolute_error(y_test, y_pred), 3),
         "MSE": round(mean_squared_error(y_test, y_pred), 3)
     }
-    json_out = json.dumps(text_out, sort_keys=False, indent=4) # pragma: no cover
 
     with open('models/mlpnn.pkl', 'wb') as output_file:
         pickle.dump(best_grid, output_file)
 
-    return json_out # pragma: no cover
+    return json.dumps(text_out, sort_keys=False, indent=4)  # pragma: no cover
 
 
 def train(structured_data):
-    x = structured_data.loc[:, structured_data.columns != 'response_time'] # pragma: no cover
+    x = structured_data.loc[:, structured_data.columns != 'response_time']  # pragma: no cover
     y = structured_data['response_time']
     # Perform grid search and get optimal params
     train_sizes = [0.1, 0.2, 0.3, 0.4, 0.5]
@@ -66,7 +66,8 @@ def train(structured_data):
     best_train_size = round(1 - best[0], 2)
     best_neurons = int(best[2])
     # Optimal NN model
-    XX_train, XX_test, yy_train, yy_test = train_test_split(x, y, test_size=best_train_size, random_state=42) # pragma: no cover
+    XX_train, XX_test, yy_train, yy_test = train_test_split(x, y, test_size=best_train_size,
+                                                            random_state=42)  # pragma: no cover
 
     model_final = Sequential()
     model_final.add(Dense(units, input_shape=(14,), kernel_initializer='normal', activation='relu'))
