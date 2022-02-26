@@ -21,7 +21,6 @@ def train_kfold_grid(structured_data):
 def hyper_par_girdcv(x, y):
     X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.7, random_state=42)
     model = RandomForestRegressor()
-    print(model.get_params().keys())
     parameters = {"n_estimators": [100, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000],
                   "min_samples_leaf": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                   "max_features": ["auto", "log2", "sqrt", None],
@@ -33,7 +32,6 @@ def hyper_par_girdcv(x, y):
                       scoring='neg_mean_squared_error')
 
     gs.fit(X_train, y_train)
-    print(gs.best_params_)
     best_grid = gs.best_estimator_
     y_pred = best_grid.predict(X_test)
     text_out = {
