@@ -42,18 +42,18 @@ class TestPredictors(unittest.TestCase):
         value = rt_model.predict(data.iloc[9:10, 0:14])
         assert value is not None
 
-    def test_mlp(self):
-        with open('testResources/data_nn.json') as json_file:
-            data = pd.read_json(json_file)
-        train_out = mlp_model.train(data)
-        assert train_out is not None
-        value = mlp_model.predict(data.iloc[9:10, 0:14])
-        assert value is not None
-
-    def test_mlpkfold(self):
-        with open('testResources/data_nn.json') as json_file:
-            data = pd.read_json(json_file)
-        train_out = mlp_model.train_kfold_grid(data)
-        assert train_out is not None
-        value = mlp_model.predict(data.iloc[9:10, 0:14])
-        assert value is not None
+    # def test_mlp(self):
+    #     with open('testResources/data_nn.json') as json_file:
+    #         data = pd.read_json(json_file)
+    #     train_out = mlp_model.train(data)
+    #     assert train_out is not None
+    #     value = mlp_model.predict(data.iloc[9:10, 0:14])
+    #     assert value is not None
+    #
+    # def test_mlpkfold(self):
+    #     with open('testResources/data_nn.json') as json_file:
+    #         data = pd.read_json(json_file)
+    #     train_out = mlp_model.train_kfold_grid(data)
+    #     assert train_out is not None
+    #     value = mlp_model.predict(data.iloc[9:10, 0:14])
+    #     assert value is not None
