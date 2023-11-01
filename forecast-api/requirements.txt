@@ -5,3 +5,4 @@ pystan==2.18
 fbprophet==0.7.1
 pytest
 pytest-cov
+werkzeug>=3.0.1 # not directly required, pinned by Snyk to avoid a vulnerability
