@@ -60,12 +60,12 @@
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-decisiontables</artifactId>
-            <version>7.63.0.t20211129</version>
+            <version>10.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-persistence-api</artifactId>
-            <version>7.63.0.t20211129</version>
+            <version>10.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.drools</groupId>
